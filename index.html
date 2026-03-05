@@ -9,18 +9,18 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;600;900&display=swap');
         :root { --gold: #f59e0b; }
-        body { background: radial-gradient(circle at top right, #1a1a1a, #000); color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; min-height: 100vh; }
+        body { background: radial-gradient(circle at top right, #1a1a1a, #000); color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; padding-bottom: 100px; }
         .imperial-font { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: -1px; }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 2.5rem; }
         .shimmer-text { background: linear-gradient(90deg, #fff, var(--gold), #fff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
         @keyframes shimmer { to { background-position: 200% center; } }
     </style>
 </head>
-<body class="flex flex-col items-center p-4 md:p-10">
+<body class="flex flex-col items-center p-4">
 
-    <header class="w-full max-w-5xl flex justify-between items-center mb-12">
-        <div class="space-y-1">
-            <h1 class="imperial-font text-2xl md:text-3xl font-black italic">NAWI EMPIRE</h1>
+    <header class="w-full max-w-5xl flex justify-between items-center my-8">
+        <div>
+            <h1 class="imperial-font text-2xl font-black italic">NAWI EMPIRE</h1>
             <p class="text-[8px] font-black text-amber-500 uppercase tracking-[0.5em]">Global Node: Online</p>
         </div>
     </header>
@@ -28,50 +28,45 @@
     <main class="w-full max-w-5xl space-y-6">
         <section class="glass-card p-10 relative overflow-hidden">
             <p class="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-4">Sovereign Reserve Asset</p>
-            <h2 id="balance-display" class="shimmer-text text-6xl md:text-8xl font-black italic tracking-tighter mb-10">25.0M</h2>
+            <h2 id="balance-util" class="shimmer-text text-6xl font-black italic tracking-tighter mb-10">25.0M</h2>
             <div class="flex gap-4">
-                <button onclick="alert('System Initializing...')" class="bg-white text-black px-8 py-4 rounded-2xl font-black uppercase text-[11px]">Acquire DB</button>
+                <button onclick="alert('Accessing Vault...')" class="bg-white text-black px-6 py-3 rounded-xl font-black uppercase text-[10px]">Acquire DB</button>
             </div>
             <i data-lucide="gem" class="absolute -bottom-10 -right-10 w-64 h-64 text-white opacity-[0.02] -rotate-12"></i>
         </section>
 
-        <section class="glass-card p-6 flex items-center justify-between">
+        <section class="glass-card p-6 flex items-center justify-between border-l-4 border-amber-500">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center">
-                    <i data-lucide="crown" class="text-black w-6 h-6"></i>
+                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
+                    <i data-lucide="crown" class="text-black w-5 h-5"></i>
                 </div>
                 <div>
-                    <p class="text-[8px] font-black text-zinc-500 uppercase">Executive Authority</p>
-                    <p class="text-sm font-black italic uppercase">H.E. Nsikak A. Warri</p>
+                    <p class="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Executive Authority</p>
+                    <p class="text-xs font-black italic uppercase">H.E. Nsikak Akpan Warri</p>
                 </div>
             </div>
-            <div class="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[8px] text-emerald-500 font-bold uppercase">Verified</div>
+            <div class="px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[8px] text-emerald-500 font-bold uppercase">Verified</div>
         </section>
     </main>
 
     <div id="command-center" class="fixed inset-0 bg-black/95 z-[100] hidden flex flex-col items-center justify-center p-6 backdrop-blur-xl">
         <div class="glass-card w-full max-w-sm p-8 space-y-6 border-amber-500/50">
-            <div class="text-center">
-                <h2 class="imperial-font text-xl text-amber-500">Imperial Command</h2>
-                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Identity Required</p>
-            </div>
-            <input type="password" id="founder-key" placeholder="Enter Sovereign Key" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-amber-500">
-            
+            <h2 class="imperial-font text-xl text-amber-500 text-center">Imperial Command</h2>
+            <input type="password" id="founder-key" placeholder="Enter Key" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-amber-500 focus:outline-none">
             <div id="admin-controls" class="hidden space-y-4">
-                <input type="number" id="new-balance" placeholder="New Balance (e.g. 30000000)" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-white">
-                <button onclick="updateReserve()" class="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase text-xs">Update Global Ledger</button>
+                <input type="number" id="new-balance" placeholder="New Total" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-white">
+                <button onclick="updateReserve()" class="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase text-xs">Update Ledger</button>
             </div>
-            
-            <button onclick="authenticateFounder()" id="auth-btn" class="w-full border border-white/20 py-4 rounded-xl font-black uppercase text-xs">Verify Key</button>
-            <button onclick="closeCommandCenter()" class="w-full text-zinc-600 text-[10px] uppercase font-bold pt-4">Exit System</button>
+            <button onclick="authenticateFounder()" id="auth-btn" class="w-full border border-white/20 py-4 rounded-xl font-black uppercase text-xs">Verify Authority</button>
+            <button onclick="document.getElementById('command-center').classList.add('hidden')" class="w-full text-zinc-600 text-[10px] uppercase font-bold pt-4 text-center">Exit System</button>
         </div>
     </div>
 
-    <nav class="fixed bottom-8 w-[90%] md:w-[400px] glass-card p-3 flex gap-2 shadow-2xl z-50">
+    <nav class="fixed bottom-8 w-[92%] max-w-[400px] glass-card p-2 flex gap-1 z-50">
         <button onclick="alert('Home Active')" class="flex-1 py-4 flex justify-center text-white bg-white/10 rounded-[1.5rem]"><i data-lucide="layout-grid"></i></button>
-        <button onclick="alert('Vault Locked')" class="flex-1 py-4 flex justify-center text-zinc-600 hover:text-amber-500"><i data-lucide="landmark"></i></button>
-        <button onclick="revealCommandCenter()" class="flex-1 py-4 flex justify-center text-zinc-600 hover:text-amber-500"><i data-lucide="shield-alert"></i></button>
-        <button onclick="alert('Biometrics Active')" class="flex-1 py-4 flex justify-center text-zinc-600 hover:text-amber-500"><i data-lucide="fingerprint"></i></button>
+        <button onclick="alert('Vault Locked')" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="landmark"></i></button>
+        <button onclick="revealCommandCenter()" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="shield-alert"></i></button>
+        <button onclick="alert('Biometrics Active')" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="fingerprint"></i></button>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -86,34 +81,25 @@
           messagingSenderId: "647688594230",
           appId: "1:647688594230:web:ce034f0a595a342460875e"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Sync Balance with Database
         db.ref('reserve/balance').on('value', (snapshot) => {
             const val = snapshot.val() || 25000000;
-            document.getElementById('balance-display').innerText = (val / 1000000).toFixed(1) + "M";
+            document.getElementById('balance-util').innerText = (val / 1000000).toFixed(1) + "M";
         });
 
         function revealCommandCenter() { document.getElementById('command-center').classList.remove('hidden'); }
-        function closeCommandCenter() { document.getElementById('command-center').classList.add('hidden'); }
-
         function authenticateFounder() {
-            const key = document.getElementById('founder-key').value;
-            if(key === "NAWI-ALPHA-01") {
+            if(document.getElementById('founder-key').value === "NAWI-ALPHA-01") {
                 document.getElementById('admin-controls').classList.remove('hidden');
                 document.getElementById('auth-btn').classList.add('hidden');
                 document.getElementById('founder-key').classList.add('hidden');
-            } else { alert("Invalid Authority Key"); }
+            } else { alert("Denied"); }
         }
-
         function updateReserve() {
-            const newBal = document.getElementById('new-balance').value;
-            if(newBal) {
-                db.ref('reserve').set({ balance: parseInt(newBal) })
-                  .then(() => { alert("Global Balance Updated"); closeCommandCenter(); });
-            }
+            const nb = document.getElementById('new-balance').value;
+            if(nb) { db.ref('reserve').set({ balance: parseInt(nb) }).then(() => { location.reload(); }); }
         }
         lucide.createIcons();
     </script>
