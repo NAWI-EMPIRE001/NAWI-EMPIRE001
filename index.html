@@ -3,77 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7 PILLARS | NAWI-EMPIRE</title>
+    <title>7 PILLARS | EXCHANGE NODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: #000; color: white; font-family: sans-serif; overflow-x: hidden; }
+        body { background: #000; color: white; font-family: sans-serif; }
         .gold { color: #f59e0b; }
         .panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #111; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .gift-btn { background: linear-gradient(45deg, #f59e0b, #b45309); color: black; font-weight: 900; }
     </style>
 </head>
 <body class="pb-28">
 
     <div class="p-4">
-        <div class="panel h-14 flex items-center justify-center border-dashed border-amber-600/50">
-            <p class="text-[9px] font-black tracking-[4px] gold uppercase animate-pulse">7 PILLARS GLOBAL NETWORK: ONLINE</p>
+        <div class="panel h-48 bg-zinc-900 rounded-xl overflow-hidden mb-2 relative">
+             <iframe class="w-full h-full" src="https://www.youtube.com/embed/live_stream?channel=YOUR_ID" frameborder="0"></iframe>
+             <div class="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] gold font-bold">₦ RATE: 1,500/$</div>
+        </div>
+        
+        <div class="flex gap-2 mb-6">
+            <button onclick="sendGift('Bronze Pillar', 500)" class="flex-1 gift-btn py-3 rounded-lg text-[10px] uppercase">Send ₦500 Gift</button>
+            <button onclick="sendGift('Silver Pillar', 5000)" class="flex-1 gift-btn py-3 rounded-lg text-[10px] uppercase">Send ₦5k Gift</button>
+            <button onclick="sendGift('Gold Pillar', 50000)" class="flex-1 gift-btn py-3 rounded-lg text-[10px] uppercase">Send ₦50k Gift</button>
         </div>
     </div>
 
-    <div class="px-6 py-4 flex justify-between items-center">
-        <div>
-            <p class="text-[7px] text-zinc-500 uppercase tracking-widest">Public Reserve</p>
-            <h2 class="text-3xl font-black italic gold uppercase tracking-tighter">3.0M USD</h2>
-        </div>
-        <div class="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-            <p class="text-[7px] text-emerald-500 font-bold uppercase">Node Verified</p>
-        </div>
-    </div>
-
-    <div class="px-4 mb-6">
-        <div class="video-container panel">
-            <iframe src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig&autoplay=1&mute=1" allowfullscreen></iframe>
-        </div>
-        <p class="text-[8px] text-zinc-500 mt-2 uppercase font-bold text-center tracking-widest italic">Live: Imperial Data Stream</p>
+    <div class="px-6 mb-6">
+        <p class="text-[8px] text-zinc-500 uppercase">System Liquidity</p>
+        <h2 class="text-3xl font-black italic gold uppercase">3.0M USD</h2>
     </div>
 
     <div class="px-4 grid grid-cols-2 gap-3">
-        <button onclick="alert('Wallet: NAWI-7-SVRGN')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="wallet" class="text-emerald-500 w-5 h-5 mb-2"></i>
-            <span class="text-[8px] font-black uppercase">Deposit</span>
+        <button onclick="alert('Balance: ₦0.00\nDeposit Naira to start gifting.')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="banknote" class="text-emerald-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">Wallet</span>
         </button>
-        <button onclick="alert('Marketplace: Restricted')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="shopping-bag" class="text-blue-500 w-5 h-5 mb-2"></i>
-            <span class="text-[8px] font-black uppercase">The Shop</span>
-        </button>
-        <button onclick="alert('Gaming Engine Active')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="gamepad-2" class="text-purple-500 w-5 h-5 mb-2"></i>
-            <span class="text-[8px] font-black uppercase">Gaming</span>
-        </button>
-        <button onclick="alert('Kitchen: Menu Loading')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="utensils" class="text-orange-500 w-5 h-5 mb-2"></i>
-            <span class="text-[8px] font-black uppercase">Kitchen</span>
+        <button onclick="alert('Exchange Rate Locked: ₦1,500 per 1 Pillar Credit')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="refresh-cw" class="text-blue-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">Exchange</span>
         </button>
     </div>
 
     <div class="fixed bottom-0 w-full p-6 bg-black border-t border-white/10 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center font-bold text-black">7</div>
-            <p class="text-[10px] font-black italic uppercase tracking-[2px] text-zinc-300">7 PILLARS AUTHORITY</p>
+            <p class="text-[10px] font-black italic uppercase text-zinc-300">7 PILLARS AUTHORITY</p>
         </div>
-        <button onclick="vault()" class="bg-zinc-900 border border-white/10 text-[7px] px-4 py-2 rounded uppercase font-bold text-zinc-500">Vault Access</button>
+        <button onclick="vault()" class="bg-zinc-900 border border-white/10 text-[7px] px-4 py-2 rounded font-bold text-zinc-500 uppercase">Vault</button>
     </div>
 
     <script>
         lucide.createIcons();
+        function sendGift(type, amount) {
+            let confirm = window.confirm("Send " + type + " for ₦" + amount + "?");
+            if(confirm) {
+                alert("GIFT SENT!\nProcessing " + type + " through the 7 Pillars Reserve.");
+            }
+        }
         function vault() {
             let p = prompt("AUTHORITY KEY:");
             if(p === "NAWI-ALPHA-01") {
-                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nSTATUS: TOTAL SOVEREIGNTY\nACCESS: DIRECTORATE ALPHA");
+                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nIDENTITY: [PROTECTED]\nSTATUS: SOVEREIGN");
             }
         }
     </script>
 </body>
 </html>
+
