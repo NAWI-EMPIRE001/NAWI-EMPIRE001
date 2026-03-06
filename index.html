@@ -3,66 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7 PILLARS | NAWI-EMPIRE FULL NODE</title>
+    <title>7 PILLARS | NAWI-EMPIRE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: #000; color: white; font-family: sans-serif; }
-        .gold { color: #f59e0b; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
-        .panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; }
-        .hidden { display: none !important; }
+        body { background: #000; color: white; font-family: sans-serif; overflow-x: hidden; }
+        .gold { color: #f59e0b; }
+        .panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #111; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     </style>
 </head>
-<body class="p-6">
+<body class="pb-28">
 
-    <div class="text-center mb-8">
-        <h1 class="text-[8px] tracking-[6px] text-zinc-500 uppercase mb-2">Sovereign Reserve</h1>
-        <h2 id="amt" class="text-5xl font-black gold italic">35,000,000</h2>
-        <p class="text-[7px] text-amber-500 mt-2 tracking-[4px]">7 PILLARS OFFICIAL NODE</p>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3 mb-8">
-        <button onclick="alert('P2P Portal: Contact Director for Node Address')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="arrow-down-to-line" class="text-emerald-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">Deposit</span>
-        </button>
-        <button onclick="alert('Withdrawal Request Sent to Queue')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="arrow-up-from-line" class="text-zinc-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase tracking-tighter">Withdraw</span>
-        </button>
-        <button onclick="alert('10/10 Slots Reserved')" class="panel p-4 flex flex-col items-center col-span-2">
-            <i data-lucide="users" class="text-amber-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">Founders Registry (10)</span>
-        </button>
-        <div class="panel p-4 flex flex-col items-center">
-            <i data-lucide="trending-up" class="text-blue-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">Growth: +12%</span>
+    <div class="p-4">
+        <div class="panel h-14 flex items-center justify-center border-dashed border-amber-600/50">
+            <p class="text-[9px] font-black tracking-[4px] gold uppercase animate-pulse">7 PILLARS GLOBAL NETWORK: ONLINE</p>
         </div>
-        <button onclick="alert('No recent transactions')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="list" class="text-zinc-400 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">History</span>
+    </div>
+
+    <div class="px-6 py-4 flex justify-between items-center">
+        <div>
+            <p class="text-[7px] text-zinc-500 uppercase tracking-widest">Public Reserve</p>
+            <h2 class="text-3xl font-black italic gold uppercase tracking-tighter">3.0M USD</h2>
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+            <p class="text-[7px] text-emerald-500 font-bold uppercase">Node Verified</p>
+        </div>
+    </div>
+
+    <div class="px-4 mb-6">
+        <div class="video-container panel">
+            <iframe src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig&autoplay=1&mute=1" allowfullscreen></iframe>
+        </div>
+        <p class="text-[8px] text-zinc-500 mt-2 uppercase font-bold text-center tracking-widest italic">Live: Imperial Data Stream</p>
+    </div>
+
+    <div class="px-4 grid grid-cols-2 gap-3">
+        <button onclick="alert('Wallet: NAWI-7-SVRGN')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="wallet" class="text-emerald-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">Deposit</span>
         </button>
-        <button onclick="alert('Opening Encrypted Channel...')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="message-square" class="text-purple-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">Director Chat</span>
+        <button onclick="alert('Marketplace: Restricted')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="shopping-bag" class="text-blue-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">The Shop</span>
         </button>
-        <button onclick="alert('Voting Closed')" class="panel p-4 flex flex-col items-center">
-            <i data-lucide="gavel" class="text-red-500 mb-2"></i>
-            <span class="text-[9px] font-bold uppercase">Governance</span>
+        <button onclick="alert('Gaming Engine Active')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="gamepad-2" class="text-purple-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">Gaming</span>
+        </button>
+        <button onclick="alert('Kitchen: Menu Loading')" class="panel p-4 flex flex-col items-center">
+            <i data-lucide="utensils" class="text-orange-500 w-5 h-5 mb-2"></i>
+            <span class="text-[8px] font-black uppercase">Kitchen</span>
         </button>
     </div>
 
-    <div class="panel p-6 text-center border-amber-600/30">
-        <p class="text-[8px] uppercase text-zinc-500 mb-1">Directorate Authority</p>
-        <p class="text-lg font-black italic tracking-widest uppercase">7 PILLARS</p>
+    <div class="fixed bottom-0 w-full p-6 bg-black border-t border-white/10 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center font-bold text-black">7</div>
+            <p class="text-[10px] font-black italic uppercase tracking-[2px] text-zinc-300">7 PILLARS AUTHORITY</p>
+        </div>
+        <button onclick="vault()" class="bg-zinc-900 border border-white/10 text-[7px] px-4 py-2 rounded uppercase font-bold text-zinc-500">Vault Access</button>
     </div>
 
     <script>
         lucide.createIcons();
-        window.onload = function() {
-            const s = localStorage.getItem('nawi_v2');
-            if(s) document.getElementById('amt').innerText = Number(s).toLocaleString();
-        };
+        function vault() {
+            let p = prompt("AUTHORITY KEY:");
+            if(p === "NAWI-ALPHA-01") {
+                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nSTATUS: TOTAL SOVEREIGNTY\nACCESS: DIRECTORATE ALPHA");
+            }
+        }
     </script>
 </body>
 </html>
