@@ -1,90 +1,107 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7 PILLARS | NAWI EMPIRE</title>
+    <title>7 PILLARS | SOVEREIGN HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: #000; color: white; font-family: sans-serif; }
+        body { background: #000; color: white; font-family: sans-serif; overflow: hidden; }
         .gold { color: #f59e0b; }
-        .app-card { background: #111; border-radius: 20px; overflow: hidden; border: 1px solid #222; }
-        .live-tag { background: #ff0050; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .action-btn { background: #222; transition: 0.2s; border: 1px solid #333; }
-        .action-btn:active { background: #f59e0b; transform: scale(0.95); }
+        .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; }
+        .socket-active { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        .live-theater { width: 100%; height: 380px; background: #050505; border-radius: 35px; position: relative; border: 1px solid #111; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        /* Professional TikTok-style scroll */
+        .feed-container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .section { height: 100vh; scroll-snap-align: start; padding: 20px; }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-    <div class="p-4 space-y-4">
+    <div class="feed-container">
         
-        <div class="app-card relative">
-            <div class="absolute top-4 left-4 z-10 flex gap-2">
-                <span class="live-tag px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">LIVE</span>
-                <span class="bg-black/50 px-3 py-1 rounded-full text-[10px] font-bold">12.4k Watchers</span>
+        <section class="section flex flex-col justify-center">
+            <div class="flex justify-between items-center mb-6 px-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                    <span class="text-[9px] font-bold socket-active tracking-[3px]">SOCKET CONNECTED</span>
+                </div>
+                <i data-lucide="settings" class="text-zinc-600 w-5 h-5"></i>
             </div>
-            <iframe src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig&autoplay=1&mute=1" class="w-full h-[450px]" frameborder="0" allow="autoplay; encrypted-media"></iframe>
-            
-            <div class="absolute bottom-4 right-4 flex flex-col gap-4 items-center">
-                <button onclick="gift(50000)" class="flex flex-col items-center"><i data-lucide="heart" class="text-pink-500 fill-pink-500"></i><span class="text-[8px]">50K</span></button>
-                <button onclick="gift(5000)" class="flex flex-col items-center"><i data-lucide="gift" class="text-amber-500"></i><span class="text-[8px]">5K</span></button>
-                <button onclick="gift(500)" class="flex flex-col items-center"><i data-lucide="share-2" class="text-white"></i><span class="text-[8px]">500</span></button>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-4 gap-2">
-            <button onclick="window.location.href='https://www.callofduty.com/mobile'" class="action-btn p-3 rounded-2xl flex flex-col items-center">
-                <i data-lucide="target" class="text-red-500 w-5 h-5 mb-1"></i>
-                <span class="text-[7px] font-bold">COD</span>
-            </button>
-            <button onclick="window.location.href='https://www.pubgmobile.com'" class="action-btn p-3 rounded-2xl flex flex-col items-center">
-                <i data-lucide="crosshair" class="text-emerald-500 w-5 h-5 mb-1"></i>
-                <span class="text-[7px] font-bold">PUBG</span>
-            </button>
-            <button onclick="window.location.href='https://ff.garena.com'" class="action-btn p-3 rounded-2xl flex flex-col items-center">
-                <i data-lucide="zap" class="text-orange-500 w-5 h-5 mb-1"></i>
-                <span class="text-[7px] font-bold">FREE FIRE</span>
-            </button>
-            <button onclick="alert('Balance: ₦3.0M')" class="action-btn p-3 rounded-2xl flex flex-col items-center">
-                <i data-lucide="wallet" class="text-blue-500 w-5 h-5 mb-1"></i>
-                <span class="text-[7px] font-bold">WALLET</span>
-            </button>
-        </div>
+            <div class="live-theater overflow-hidden mb-6">
+                <div class="absolute top-6 left-6 z-10 bg-black/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
+                    <p class="text-[10px] gold font-black italic">7 PILLARS TV</p>
+                    <p class="text-[7px] text-zinc-400">12.4K WATCHING</p>
+                </div>
+                <iframe src="http://googleusercontent.com/youtube.com/5" class="w-full h-full" allow="autoplay; encrypted-media"></iframe>
+            </div>
 
-        <div class="grid grid-cols-2 gap-3">
-            <div onclick="alert('Menu: Order Now')" class="app-card p-6 flex flex-col items-center">
-                <i data-lucide="utensils" class="text-orange-500 mb-2"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Empire Kitchen</span>
+            <div class="grid grid-cols-2 gap-4 px-2">
+                <button onclick="triggerSocket('Battlefield')" class="glass p-6 flex flex-col items-center gap-2">
+                    <i data-lucide="swords" class="text-red-500 w-6 h-6"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest">Battlefield</span>
+                </button>
+                <button onclick="triggerSocket('Market')" class="glass p-6 flex flex-col items-center gap-2">
+                    <i data-lucide="shopping-bag" class="text-blue-500 w-6 h-6"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest">The Market</span>
+                </button>
+                <button onclick="triggerSocket('Wallet')" class="glass p-6 flex flex-col items-center gap-2">
+                    <i data-lucide="wallet" class="text-emerald-500 w-6 h-6"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest">₦ Wallet</span>
+                </button>
+                <button onclick="triggerSocket('Gifting')" class="glass p-6 flex flex-col items-center gap-2 border-amber-600/30">
+                    <i data-lucide="gift" class="text-amber-500 w-6 h-6"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest">Gift Hub</span>
+                </button>
             </div>
-            <div onclick="alert('Shop: New Merch In')" class="app-card p-6 flex flex-col items-center">
-                <i data-lucide="shopping-bag" class="text-pink-500 mb-2"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">The Shop</span>
-            </div>
-        </div>
+        </section>
+
     </div>
 
-    <div class="fixed bottom-0 w-full p-4 bg-black/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center font-black text-black text-xl italic">7</div>
-            <div>
-                <p class="text-[10px] font-black gold tracking-tighter italic uppercase">7 PILLARS AUTHORITY</p>
-                <p class="text-[7px] text-zinc-500 uppercase">Sovereign Node v3.0</p>
-            </div>
+    <div class="fixed bottom-0 w-full bg-black/90 backdrop-blur-2xl border-t border-white/5 px-10 py-6 flex justify-between items-center z-50">
+        <i data-lucide="home" class="gold w-6 h-6"></i>
+        <i data-lucide="search" class="text-zinc-600 w-6 h-6"></i>
+        <div onclick="vault()" class="bg-zinc-900 border border-white/10 w-14 h-14 rounded-full flex items-center justify-center -mt-12 shadow-2xl">
+            <span class="gold font-black text-2xl italic">7</span>
         </div>
-        <button onclick="vault()" class="bg-white text-black text-[9px] font-black px-6 py-2 rounded-full uppercase tracking-widest">Vault</button>
+        <i data-lucide="bell" class="text-zinc-600 w-6 h-6"></i>
+        <i data-lucide="user" class="text-zinc-600 w-6 h-6"></i>
     </div>
 
     <script>
         lucide.createIcons();
-        function gift(n) {
-            alert("NAWI EMPIRE:\n₦" + n + " GIFT RECEIVED!\n\nExchanging via Sovereign Reserve...");
+
+        // THE SOCKET ENGINE
+        function triggerSocket(pillar) {
+            console.log("Socket Pulse: Connecting to " + pillar);
+            
+            if(pillar === 'Battlefield') {
+                let g = prompt("BATTLEFIELD SOCKET ACTIVE:\n1. COD\n2. PUBG\n3. FREE FIRE");
+                if(g == '1') window.location.href='https://www.callofduty.com/mobile';
+                if(g == '2') window.location.href='https://www.pubgmobile.com';
+                if(g == '3') window.location.href='https://ff.garena.com';
+            }
+            
+            if(pillar === 'Market') {
+                alert("MARKET SOCKET ACTIVE:\n- Kitchen Menu Synced\n- Merch Store Verified\n- Asset Marketplace Live");
+            }
+
+            if(pillar === 'Wallet') {
+                alert("WALLET SOCKET ACTIVE:\nCurrent Balance: ₦3,000,000.00\nNode: Sovereign Alpha");
+            }
+
+            if(pillar === 'Gifting') {
+                let n = prompt("GIFT SOCKET ACTIVE:\nEnter Naira Amount (₦):");
+                if(n) alert("₦" + n + " GIFT SENT!\nNotifying Director via Secure Channel...");
+            }
         }
+
         function vault() {
             let p = prompt("AUTHORITY KEY:");
             if(p === "NAWI-ALPHA-01") {
-                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nDIRECTORATE: PROTECTED\nSTATUS: TOTAL SOVEREIGNTY");
+                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nSTATUS: TOTAL SOVEREIGNTY\nDIRECTOR: [ENCRYPTED]");
             }
         }
     </script>
