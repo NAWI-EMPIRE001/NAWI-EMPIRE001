@@ -1,107 +1,77 @@
-!DOCTYPE html>
+<7 pillars html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAWI EMPIRE | Global Sovereign Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAWI EMPIRE | LIVE NODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;600;900&display=swap');
-        :root { --gold: #f59e0b; }
-        body { background: radial-gradient(circle at top right, #1a1a1a, #000); color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; padding-bottom: 100px; }
-        .imperial-font { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: -1px; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 2.5rem; }
-        .shimmer-text { background: linear-gradient(90deg, #fff, var(--gold), #fff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
-        @keyframes shimmer { to { background-position: 200% center; } }
+        body { background: #010101; color: white; font-family: sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; }
+        .gold-text { color: #f59e0b; font-weight: 900; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="flex flex-col items-center p-4">
+<body class="p-6">
 
-    <header class="w-full max-w-5xl flex justify-between items-center my-8">
-        <div>
-            <h1 class="imperial-font text-2xl font-black italic">NAWI EMPIRE</h1>
-            <p class="text-[8px] font-black text-amber-500 uppercase tracking-[0.5em]">Global Node: Online</p>
+    <div id="dashboard">
+        <h1 class="text-xs tracking-[5px] text-zinc-500 mb-2 uppercase">Sovereign Reserve Asset</h1>
+        <h2 id="display-reserve" class="text-6xl font-black italic gold-text mb-8">25.0M</h2>
+        
+        <div class="glass p-6 mb-10">
+            <p class="text-[10px] uppercase text-zinc-400 mb-1">Executive Authority</p>
+            <p class="text-sm font-bold italic text-white">H.E. NSIKAK AKPAN WARRI <span class="text-emerald-500 text-[8px] ml-2 font-black border border-emerald-500 px-2 rounded">VERIFIED</span></p>
         </div>
-    </header>
 
-    <main class="w-full max-w-5xl space-y-6">
-        <section class="glass-card p-10 relative overflow-hidden">
-            <p class="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-4">Sovereign Reserve Asset</p>
-            <h2 id="balance-util" class="shimmer-text text-6xl font-black italic tracking-tighter mb-10">25.0M</h2>
-            <div class="flex gap-4">
-                <button onclick="alert('Accessing Vault...')" class="bg-white text-black px-6 py-3 rounded-xl font-black uppercase text-[10px]">Acquire DB</button>
-            </div>
-            <i data-lucide="gem" class="absolute -bottom-10 -right-10 w-64 h-64 text-white opacity-[0.02] -rotate-12"></i>
-        </section>
+        <button onclick="showAdmin()" class="text-[8px] text-zinc-800 uppercase tracking-widest">System Access</button>
+    </div>
 
-        <section class="glass-card p-6 flex items-center justify-between border-l-4 border-amber-500">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
-                    <i data-lucide="crown" class="text-black w-5 h-5"></i>
-                </div>
-                <div>
-                    <p class="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Executive Authority</p>
-                    <p class="text-xs font-black italic uppercase">H.E. Nsikak Akpan Warri</p>
-                </div>
-            </div>
-            <div class="px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[8px] text-emerald-500 font-bold uppercase">Verified</div>
-        </section>
-    </main>
-
-    <div id="command-center" class="fixed inset-0 bg-black/95 z-[100] hidden flex flex-col items-center justify-center p-6 backdrop-blur-xl">
-        <div class="glass-card w-full max-w-sm p-8 space-y-6 border-amber-500/50">
-            <h2 class="imperial-font text-xl text-amber-500 text-center">Imperial Command</h2>
-            <input type="password" id="founder-key" placeholder="Enter Key" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-amber-500 focus:outline-none">
-            <div id="admin-controls" class="hidden space-y-4">
-                <input type="number" id="new-balance" placeholder="New Total" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-center text-white">
-                <button onclick="updateReserve()" class="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase text-xs">Update Ledger</button>
-            </div>
-            <button onclick="authenticateFounder()" id="auth-btn" class="w-full border border-white/20 py-4 rounded-xl font-black uppercase text-xs">Verify Authority</button>
-            <button onclick="document.getElementById('command-center').classList.add('hidden')" class="w-full text-zinc-600 text-[10px] uppercase font-bold pt-4 text-center">Exit System</button>
+    <div id="admin-panel" class="fixed inset-0 bg-black/90 flex items-center justify-center p-6 hidden">
+        <div class="glass p-8 w-full max-w-sm text-center border-amber-600/50">
+            <h3 class="gold-text uppercase tracking-widest mb-6">Imperial Command</h3>
+            <input type="number" id="new-amount" class="w-full bg-black border border-white/10 p-4 rounded-xl mb-4 text-center text-xl font-bold" placeholder="35000000">
+            <button onclick="updateLedger()" class="w-full bg-amber-600 text-black font-black p-4 rounded-xl uppercase tracking-widest mb-4 active:scale-95 transition-all">Update Ledger</button>
+            <button onclick="hideAdmin()" class="text-[8px] text-zinc-500 uppercase">Exit System</button>
         </div>
     </div>
 
-    <nav class="fixed bottom-8 w-[92%] max-w-[400px] glass-card p-2 flex gap-1 z-50">
-        <button onclick="alert('Home Active')" class="flex-1 py-4 flex justify-center text-white bg-white/10 rounded-[1.5rem]"><i data-lucide="layout-grid"></i></button>
-        <button onclick="alert('Vault Locked')" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="landmark"></i></button>
-        <button onclick="revealCommandCenter()" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="shield-alert"></i></button>
-        <button onclick="alert('Biometrics Active')" class="flex-1 py-4 flex justify-center text-zinc-600"><i data-lucide="fingerprint"></i></button>
-    </nav>
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
     <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyCfopu75f08ioKJTBJgGmQu7LgJH2I4M8A",
-          authDomain: "nawi-empire.firebaseapp.com",
-          projectId: "nawi-empire",
-          storageBucket: "nawi-empire.firebasestorage.app",
-          messagingSenderId: "647688594230",
-          appId: "1:647688594230:web:ce034f0a595a342460875e"
+        // 1. Load the saved amount when the page opens
+        window.onload = function() {
+            const savedAmount = localStorage.getItem('nawi_reserve');
+            if (savedAmount) {
+                // Formats the number (e.g., 35000000 to 35.0M)
+                document.getElementById('display-reserve').innerText = (savedAmount / 1000000).toFixed(1) + "M";
+            }
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        db.ref('reserve/balance').on('value', (snapshot) => {
-            const val = snapshot.val() || 25000000;
-            document.getElementById('balance-util').innerText = (val / 1000000).toFixed(1) + "M";
-        });
+        function showAdmin() {
+            let pass = prompt("Enter Authority Key:");
+            if(pass === "NAWI-ALPHA-01") {
+                document.getElementById('admin-panel').classList.remove('hidden');
+            }
+        }
 
-        function revealCommandCenter() { document.getElementById('command-center').classList.remove('hidden'); }
-        function authenticateFounder() {
-            if(document.getElementById('founder-key').value === "NAWI-ALPHA-01") {
-                document.getElementById('admin-controls').classList.remove('hidden');
-                document.getElementById('auth-btn').classList.add('hidden');
-                document.getElementById('founder-key').classList.add('hidden');
-            } else { alert("Denied"); }
+        function hideAdmin() {
+            document.getElementById('admin-panel').classList.add('hidden');
         }
-        function updateReserve() {
-            const nb = document.getElementById('new-balance').value;
-            if(nb) { db.ref('reserve').set({ balance: parseInt(nb) }).then(() => { location.reload(); }); }
+
+        // 2. THE FIX: This makes the button save the data!
+        function updateLedger() {
+            const val = document.getElementById('new-amount').value;
+            if (val) {
+                // Saves to your phone's memory
+                localStorage.setItem('nawi_reserve', val);
+                // Updates the screen
+                document.getElementById('display-reserve').innerText = (val / 1000000).toFixed(1) + "M";
+                alert("Vault Updated, Excellency.");
+                hideAdmin();
+            } else {
+                alert("Enter an amount.");
+            }
         }
-        lucide.createIcons();
     </script>
 </body>
 </html>
+
