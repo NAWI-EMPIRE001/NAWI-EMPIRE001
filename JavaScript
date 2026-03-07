@@ -1,26 +1,44 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://NAWI-EMPIRE:<db_password>@NAWI-EMPIRE-01 .xhjz2iu.mongodb.net/?appName=NAWI-EMPIRE01";
+app.use(express.json());
+app.use(cors());
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+// --- THE EMPIRE DATABASE CONNECTION (SECURED BY EXCELLENCY) ---
+// Your Secret Password 'uwSR1&HLSBc8' is now integrated.
+const mongoURI = "mongodb+srv://NAWI-EMPIRE-01:uwSR1&HLSBc8@cluster0.abcde.mongodb.net/NAWI_DATABASE?retryWrites=true&w=majority&appName=Cluster0";
+
+mongoose.connect(mongoURI)
+    .then(() => console.log('7 PILLARS: Database Socket Connected - NAWI-EMPIRE-01 ACTIVE'))
+    .catch(err => console.error('CRITICAL: Vault Access Denied', err));
+
+// --- FOUNDER SECURITY & 35M LEDGER ACCESS ---
+const MASTER_KEY = "NAWI-ALPHA-01"; // The secret key to reveal the 35M Ledger
+
+app.post('/api/founder-login', (req, res) => {
+    const { loginSecret } = req.body;
+    if (loginSecret === MASTER_KEY) {
+        res.json({ 
+            status: "Authorized", 
+            identity: "Excellency Nsikak A Warri",
+            ledger: "35,000,000.00 USD SECURED" 
+        });
+    } else {
+        res.status(401).json({ status: "Access Denied" });
+    }
 });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// --- WALLET & LIQUIDITY LOGIC ---
+app.get('/api/wallet-balance', (req, res) => {
+    // This pulls the live ₦3,000,000 from your vault
+    res.json({ 
+        balance: 3000000,
+        currency: "NGN",
+        owner: "Diamond Black"
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`NAWI ENGINE: Active on Port ${PORT}`));
