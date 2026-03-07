@@ -1,6 +1,6 @@
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://NAWI-EMPIRE:<db_password> NAWI-EMPIRE-01.mongodb.net/?appName=NAWI-EMPIRE01";
+const uri = "mongodb+srv://NAWI-EMPIRE:<db_password>@NAWI-EMPIRE-01 .xhjz2iu.mongodb.net/?appName=NAWI-EMPIRE01";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
