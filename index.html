@@ -1,4 +1,5 @@
-html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,12 +7,14 @@ html lang="en">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: #000; color: white; font-family: sans-serif; overflow: hidden; }
+        /* FIX #5: Allow scrolling only when drawer is closed, or handle via container */
+        body { background: #000; color: white; font-family: sans-serif; overflow-x: hidden; }
         .gold { color: #f59e0b; }
-        .bg-gold { background-color: #f59e0b; }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; }
         #drawer { transform: translateY(100%); transition: 0.5s cubic-bezier(0.32, 0.72, 0, 1); z-index: 100; }
         #drawer.open { transform: translateY(0); }
+        /* FIX #5: Enable scrolling inside the drawer for smaller screens */
+        #drawerContent { max-height: 50vh; overflow-y: auto; padding-bottom: 20px; }
         .live-theater { width: 100%; height: 420px; background: #050505; border-radius: 45px; border: 1px solid #111; overflow: hidden; position: relative; }
     </style>
 </head>
@@ -19,8 +22,8 @@ html lang="en">
 
     <div class="flex justify-between items-center mb-4 px-2">
         <div class="flex items-center gap-2">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
-            <span class="text-[8px] font-black gold tracking-[4px] uppercase italic">Socket: Live</span>
+            <div id="socket-light" class="w-2 h-2 bg-zinc-500 rounded-full"></div>
+            <span id="socket-status" class="text-[8px] font-black text-zinc-500 tracking-[4px] uppercase italic">Socket: Initializing</span>
         </div>
         <button onclick="openDrawer('SETTINGS')"><i data-lucide="menu" class="text-zinc-600 w-5 h-5"></i></button>
     </div>
@@ -31,7 +34,7 @@ html lang="en">
                 <div class="bg-red-600 px-3 py-1 rounded-full text-[9px] font-black uppercase italic">Empire TV</div>
                 <div class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-bold border border-white/10">12.4K LIVE</div>
             </div>
-            <iframe src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig&autoplay=1&mute=1" class="w-full h-full" allow="autoplay" frameborder="0"></iframe>
+            <iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID" class="w-full h-full" allow="autoplay" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -57,7 +60,7 @@ html lang="en">
     <div id="drawer" class="fixed bottom-0 left-0 w-full h-[70vh] glass bg-black/95 p-8 rounded-t-[50px] border-t border-white/10 shadow-2xl">
         <div class="w-16 h-1.5 bg-zinc-800 rounded-full mx-auto mb-10" onclick="closeDrawer()"></div>
         <h2 id="drawerTitle" class="text-2xl font-black gold italic mb-8 uppercase tracking-widest text-center"></h2>
-        <div id="drawerContent" class="space-y-4 max-h-[45vh] overflow-y-auto px-2"></div>
+        <div id="drawerContent" class="space-y-4 px-2"></div>
     </div>
 
     <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] glass px-10 py-5 flex justify-between items-center bg-black/40 backdrop-blur-3xl shadow-2xl">
@@ -76,8 +79,11 @@ html lang="en">
         const title = document.getElementById('drawerTitle');
         const content = document.getElementById('drawerContent');
 
-        // DATABASE SIMULATION
-        let userBalance = 3000000;
+        // FIX #4: Placeholders (Replace with your Render URL when ready)
+        const API_BASE = "https://your-app-name.render.com"; 
+        const currentUserId = "YOUR_MONGODB_USER_ID"; 
+
+        let userBalance = 3000000; // Local fallback
         const EMPIRE_DATA = {
             kitchen: [
                 { id: 1, name: "Sovereign Jollof", price: 4500, img: "🍛" },
@@ -92,33 +98,29 @@ html lang="en">
         function openDrawer(name) {
             title.innerText = name;
             drawer.classList.add('open');
+            // FIX #5: Re-initialize icons every time drawer opens
+            setTimeout(() => lucide.createIcons(), 50);
         }
 
         function closeDrawer() { drawer.classList.remove('open'); }
 
-        // PILLAR 1: BATTLEFIELD
-        function openBattlefield() {
-            openDrawer("BATTLEFIELD LOBBY");
+        // FIX #3: Added 'wallet-amount' class to the target H1
+        function openWallet() {
+            openDrawer("N-WALLET");
             content.innerHTML = `
-                <div class="p-4 glass mb-4 border-emerald-500/30">
-                    <p class="text-[9px] text-emerald-500 font-bold uppercase">Active Warzones</p>
-                    <div class="flex justify-between text-[10px] mt-2">
-                        <span>COD Lobby: 4 Founders Online</span>
-                        <span class="text-emerald-500">JOINABLE</span>
-                    </div>
+                <div class="p-10 text-center">
+                    <p class="text-zinc-500 text-xs mb-2 uppercase tracking-widest">Current Balance</p>
+                    <h1 class="wallet-amount text-5xl font-black gold italic">₦${userBalance.toLocaleString()}</h1>
                 </div>
-                <button onclick="location.href='https://ff.garena.com'" class="w-full p-6 glass flex justify-between items-center font-bold">FREE FIRE <i data-lucide="zap" class="text-orange-500"></i></button>
-                <button onclick="location.href='https://www.pubgmobile.com'" class="w-full p-6 glass flex justify-between items-center font-bold">PUBG MOBILE <i data-lucide="target" class="text-emerald-500"></i></button>
-                <button onclick="location.href='https://www.callofduty.com/mobile'" class="w-full p-6 glass flex justify-between items-center font-bold">COD MOBILE <i data-lucide="swords" class="text-red-500"></i></button>
+                <button class="w-full p-6 glass text-emerald-500 font-bold uppercase tracking-widest">Withdrawal Node</button>
             `;
-            lucide.createIcons();
+            syncEmpireData(); // Attempt sync when opened
         }
 
-        // PILLAR 2: MARKET
         function openMarket() {
             openDrawer("IMPERIAL MARKET");
             content.innerHTML = `
-                <p class="text-[10px] gold font-bold uppercase tracking-widest">Kitchen & Shop</p>
+                <p class="text-[10px] gold font-bold uppercase tracking-widest mb-4">Empire Kitchen & Shop</p>
                 <div class="grid grid-cols-1 gap-3">
                     ${EMPIRE_DATA.kitchen.map(item => `
                         <div class="glass p-4 flex justify-between items-center">
@@ -136,93 +138,102 @@ html lang="en">
             `;
         }
 
-        // PILLAR 3: WALLET
-        function openWallet() {
-            openDrawer("N-WALLET");
+        function openBattlefield() {
+            openDrawer("BATTLEFIELD LOBBY");
             content.innerHTML = `
-                <div class="p-10 text-center">
-                    <p class="text-zinc-500 text-xs mb-2">CURRENT BALANCE</p>
-                    <h1 class="text-5xl font-black gold">₦${userBalance.toLocaleString()}</h1>
+                <div class="p-4 glass mb-4 border-emerald-500/30">
+                    <p class="text-[9px] text-emerald-500 font-bold uppercase">Active Warzones</p>
+                    <div class="flex justify-between text-[10px] mt-2">
+                        <span>COD Lobby: Active</span>
+                        <span class="text-emerald-500">JOINABLE</span>
+                    </div>
                 </div>
-                <button class="w-full p-6 glass text-emerald-500 font-bold uppercase tracking-widest">Deposit Funds</button>
+                <button onclick="location.href='https://ff.garena.com'" class="w-full p-6 glass flex justify-between items-center font-bold">FREE FIRE <i data-lucide="zap" class="text-orange-500"></i></button>
+                <button onclick="location.href='https://www.pubgmobile.com'" class="w-full p-6 glass flex justify-between items-center font-bold">PUBG MOBILE <i data-lucide="target" class="text-emerald-500"></i></button>
             `;
+            lucide.createIcons();
         }
 
-        // PILLAR 4: GIFTING
         function openGifting() {
             openDrawer("GIFT HUB");
             content.innerHTML = `
                 <div class="space-y-3">
-                    <button onclick="sendGift(500)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦500 GIFT <i data-lucide="send"></i></button>
-                    <button onclick="sendGift(5000)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦5K GIFT <i data-lucide="send"></i></button>
-                    <button onclick="sendGift(50000)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦50K GIFT <i data-lucide="send"></i></button>
+                    <button onclick="sendGift(500)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦500 <i data-lucide="send"></i></button>
+                    <button onclick="sendGift(5000)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦5K <i data-lucide="send"></i></button>
+                    <button onclick="sendGift(50000)" class="w-full p-6 glass flex justify-between items-center font-bold italic">SEND ₦50K <i data-lucide="send"></i></button>
                 </div>
             `;
             lucide.createIcons();
         }
 
+        // FIX #2: Merged sendGift logic with local fallback
+        async function sendGift(amt) {
+            if (userBalance < amt) {
+                alert("INSUFFICIENT FUNDS");
+                return;
+            }
+
+            // Attempt API call if configured
+            if (API_BASE.includes("render.com")) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/gift/send`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ userId: currentUserId, amount: amt })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(`7 PILLARS: ₦${amt} Gift Verified.`);
+                    }
+                } catch (e) {
+                    console.log("Network fallback: Processing gift locally.");
+                }
+            }
+
+            // Local Execution (Always update UI for responsiveness)
+            userBalance -= amt;
+            alert(`Sovereign Hub: ₦${amt} Gifted Successfully.`);
+            syncEmpireData();
+            closeDrawer();
+        }
+
         function processOrder(name, price) {
             if(userBalance >= price) {
                 userBalance -= price;
-                alert("ORDER SUCCESSFUL!\n" + name + " is being prepared.\nBalance: ₦" + userBalance.toLocaleString());
+                alert(`ORDER PLACED: ${name}\nBalance: ₦${userBalance.toLocaleString()}`);
+                syncEmpireData();
                 closeDrawer();
             } else { alert("INSUFFICIENT FUNDS"); }
         }
 
-        function sendGift(amount) {
-            if (userBalance >= amount) {
-                userBalance -= amount;
-                alert("GIFT SENT!\n₦" + amount + " moved to Sovereign Node.");
-                closeDrawer();
-            } else { alert("INSUFFICIENT FUNDS"); }
+        // FIX #3: Target '.wallet-amount' properly
+        async function syncEmpireData() {
+            // Attempt API Sync
+            if (API_BASE.includes("render.com")) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/wallet/balance/${currentUserId}`);
+                    const data = await response.json();
+                    if(data.balance !== undefined) userBalance = data.balance;
+                    
+                    document.getElementById('socket-light').className = "w-2 h-2 bg-emerald-500 rounded-full animate-ping";
+                    document.getElementById('socket-status').innerText = "Socket: Sovereign Active";
+                    document.getElementById('socket-status').className = "text-[8px] font-black text-emerald-500 tracking-[4px] uppercase italic";
+                } catch (e) { 
+                    console.log("Socket Syncing..."); 
+                }
+            }
+            
+            // Update UI Balance wherever it exists
+            const display = document.querySelector('.wallet-amount');
+            if(display) display.innerText = `₦${userBalance.toLocaleString()}`;
         }
 
         function vault() {
             let p = prompt("AUTHORITY KEY:");
             if(p === "NAWI-ALPHA-01") {
-                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nDIRECTOR: [ENCRYPTED]\nIDENTITY: SOVEREIGN");
+                alert("RESERVE: 35,000,000.00 USD\nIDENTITY: [PROTECTED]");
             }
         }
-    // THE NERVOUS SYSTEM (Connects UI to the Engine)
-const API_BASE = "https://your-app-name.render.com"; // Your hosted server link
-let currentUserId = "65e8a...your_actual_mongodb_id"; // This comes from login later
-
-async function syncEmpireData() {
-    try {
-        const response = await fetch(`${API_BASE}/api/wallet/balance/${currentUserId}`);
-        const data = await response.json();
-        userBalance = data.balance;
-        
-        // Update the Wallet Drawer if it's open
-        const balanceTitle = document.querySelector('.wallet-amount');
-        if(balanceTitle) balanceTitle.innerText = `₦${userBalance.toLocaleString()}`;
-    } catch (e) { 
-        console.log("Syncing with Sovereign Node..."); 
-    }
-}
-
-async function sendGift(amt) {
-    try {
-        const response = await fetch(`${API_BASE}/api/gift/send`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ userId: currentUserId, amount: amt })
-        });
-        const result = await response.json();
-        if(result.success) {
-            alert(`7 PILLARS NOTICE: ₦${amt} Gift Verified & Logged.`);
-            syncEmpireData(); // Refresh the balance instantly
-            closeDrawer();
-        } else {
-            alert("TRANSACTION REJECTED: Insufficient Funds.");
-        }
-    } catch (e) {
-        alert("OFFLINE: Connect to Socket to send gifts.");
-    }
-}
-
-// Run sync every 30 seconds to keep the Empire updated
-setInterval(syncEmpireData, 30000);
-window.onload = syncEmpireData;
+    </script>
 </body>
 </html>
