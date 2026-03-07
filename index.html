@@ -3,67 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7 PILLARS | NAWI EMPIRE</title>
+    <title>7 PILLARS | SOVEREIGN HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { background: #000; color: white; font-family: sans-serif; overflow: hidden; }
         .gold { color: #f59e0b; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; }
-        /* Professional Sliding Drawer */
-        #drawer { transform: translateY(100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; }
+        /* Professional Sliding Drawer Logic */
+        #drawer { transform: translateY(100%); transition: 0.5s cubic-bezier(0.32, 0.72, 0, 1); }
         #drawer.open { transform: translateY(0); }
-        .live-window { width: 100%; height: 400px; background: #050505; border-radius: 40px; border: 1px solid #1a1a1a; overflow: hidden; position: relative; }
+        .live-window { width: 100%; height: 420px; background: #050505; border-radius: 45px; border: 1px solid #111; overflow: hidden; position: relative; }
+        .btn-active:active { transform: scale(0.92); background: rgba(245, 158, 11, 0.1); }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-4 px-2">
         <div class="flex items-center gap-2">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
-            <span class="text-[8px] font-black gold tracking-[3px]">NODE ACTIVE</span>
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+            <span class="text-[8px] font-black gold tracking-[4px] uppercase">Socket: Connected</span>
         </div>
-        <i data-lucide="settings" class="text-zinc-600"></i>
+        <button onclick="openDrawer('SETTINGS')"><i data-lucide="settings" class="text-zinc-600 w-5 h-5"></i></button>
     </div>
 
-    <div class="live-window mb-8">
-        <div class="absolute top-6 left-6 z-10 bg-red-600 px-3 py-1 rounded-full text-[9px] font-black uppercase italic">Live Stream</div>
-        <iframe src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_UzQW7w" class="w-full h-full" allow="autoplay; encrypted-media"></iframe>
+    <div class="live-window mb-8 shadow-2xl">
+        <div class="absolute top-6 left-6 z-10 flex gap-2">
+            <div class="bg-red-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">Live</div>
+            <div class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-bold border border-white/10">12.4K WATCHING</div>
+        </div>
+        <iframe src="https://www.youtube.com/embed/live_stream?channel=UC7f5b8u0cMUM6S7VvD1f0rA" class="w-full h-full" allow="autoplay; encrypted-media" frameborder="0"></iframe>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-        <button onclick="openDrawer('BATTLEFIELD')" class="glass p-8 flex flex-col items-center gap-3 active:scale-95 transition">
+        <button onclick="openDrawer('BATTLEFIELD')" class="glass p-8 btn-active flex flex-col items-center gap-3">
             <div class="bg-red-500/10 p-4 rounded-2xl"><i data-lucide="swords" class="text-red-500 w-8 h-8"></i></div>
             <span class="text-[10px] font-black uppercase tracking-widest">Battlefield</span>
         </button>
-        <button onclick="openDrawer('MARKET')" class="glass p-8 flex flex-col items-center gap-3 active:scale-95 transition">
+        <button onclick="openDrawer('MARKET')" class="glass p-8 btn-active flex flex-col items-center gap-3">
             <div class="bg-blue-500/10 p-4 rounded-2xl"><i data-lucide="shopping-bag" class="text-blue-500 w-8 h-8"></i></div>
-            <span class="text-[10px] font-black uppercase tracking-widest">The Market</span>
+            <span class="text-[10px] font-black uppercase tracking-widest">Market</span>
         </button>
-        <button onclick="openDrawer('WALLET')" class="glass p-8 flex flex-col items-center gap-3 active:scale-95 transition">
+        <button onclick="openDrawer('WALLET')" class="glass p-8 btn-active flex flex-col items-center gap-3">
             <div class="bg-emerald-500/10 p-4 rounded-2xl"><i data-lucide="wallet" class="text-emerald-500 w-8 h-8"></i></div>
-            <span class="text-[10px] font-black uppercase tracking-widest">₦ Wallet</span>
+            <span class="text-[10px] font-black uppercase tracking-widest">N-Wallet</span>
         </button>
-        <button onclick="openDrawer('GIFT')" class="glass p-8 flex flex-col items-center gap-3 active:scale-95 transition">
+        <button onclick="openDrawer('GIFT')" class="glass p-8 btn-active flex flex-col items-center gap-3">
             <div class="bg-amber-500/10 p-4 rounded-2xl"><i data-lucide="gift" class="text-amber-500 w-8 h-8"></i></div>
             <span class="text-[10px] font-black uppercase tracking-widest">Gift Hub</span>
         </button>
     </div>
 
-    <div id="drawer" class="fixed bottom-0 left-0 w-full h-[60vh] glass bg-zinc-950/95 z-50 p-8 rounded-t-[50px] border-t border-white/10">
-        <div class="w-12 h-1 bg-zinc-800 rounded-full mx-auto mb-8" onclick="closeDrawer()"></div>
-        <h2 id="drawerTitle" class="text-xl font-black gold italic mb-6 uppercase tracking-widest text-center"></h2>
+    <div id="drawer" class="fixed bottom-0 left-0 w-full h-[65vh] glass bg-black/95 z-50 p-8 rounded-t-[50px] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+        <div class="w-16 h-1.5 bg-zinc-800 rounded-full mx-auto mb-10" onclick="closeDrawer()"></div>
+        <h2 id="drawerTitle" class="text-2xl font-black gold italic mb-8 uppercase tracking-widest text-center"></h2>
         
-        <div id="drawerContent" class="space-y-4">
+        <div id="drawerContent" class="space-y-4 max-h-[40vh] overflow-y-auto">
             </div>
     </div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass px-8 py-4 flex justify-between items-center bg-black/50">
-        <i data-lucide="home" class="gold"></i>
-        <i data-lucide="search" class="text-zinc-600"></i>
-        <div class="w-12 h-12 bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center font-black gold italic">7</div>
-        <i data-lucide="bell" class="text-zinc-600"></i>
-        <i data-lucide="user" class="text-zinc-600"></i>
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] glass px-10 py-5 flex justify-between items-center bg-black/40 backdrop-blur-3xl shadow-2xl">
+        <i data-lucide="home" class="gold w-6 h-6"></i>
+        <i data-lucide="search" class="text-zinc-600 w-6 h-6"></i>
+        <div onclick="vault()" class="w-14 h-14 bg-zinc-900 border-2 border-amber-600/30 rounded-full flex items-center justify-center -mt-10 shadow-2xl shadow-amber-600/20">
+            <span class="gold font-black text-2xl italic">7</span>
+        </div>
+        <i data-lucide="bell" class="text-zinc-600 w-6 h-6"></i>
+        <i data-lucide="user" class="text-zinc-600 w-6 h-6"></i>
     </div>
 
     <script>
@@ -78,26 +84,41 @@
             
             if(type === 'BATTLEFIELD') {
                 content.innerHTML = `
-                    <button onclick="location.href='https://www.callofduty.com/mobile'" class="w-full p-6 glass flex items-center gap-4"><i data-lucide="target" class="text-red-500"></i> CALL OF DUTY MOBILE</button>
-                    <button onclick="location.href='https://www.pubgmobile.com'" class="w-full p-6 glass flex items-center gap-4"><i data-lucide="crosshair" class="text-emerald-500"></i> PUBG MOBILE</button>
-                    <button onclick="location.href='https://ff.garena.com'" class="w-full p-6 glass flex items-center gap-4"><i data-lucide="flame" class="text-orange-500"></i> FREE FIRE</button>
+                    <button onclick="location.href='https://ff.garena.com'" class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">FREE FIRE</span><i data-lucide="flame" class="text-orange-500"></i></button>
+                    <button onclick="location.href='https://www.pubgmobile.com'" class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">PUBG MOBILE</span><i data-lucide="crosshair" class="text-emerald-500"></i></button>
+                    <button onclick="location.href='https://www.callofduty.com/mobile'" class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">COD MOBILE</span><i data-lucide="target" class="text-red-500"></i></button>
                 `;
-            }
-            if(type === 'MARKET') {
+            } else if(type === 'MARKET') {
                 content.innerHTML = `
-                    <button class="w-full p-6 glass flex items-center gap-4"><i data-lucide="utensils" class="text-orange-400"></i> EMPIRE KITCHEN (ORDER)</button>
-                    <button class="w-full p-6 glass flex items-center gap-4"><i data-lucide="shopping-cart" class="text-pink-400"></i> THE SHOP (MERCH)</button>
+                    <button class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">EMPIRE KITCHEN</span><i data-lucide="utensils" class="text-orange-400"></i></button>
+                    <button class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">THE SHOP</span><i data-lucide="shopping-cart" class="text-pink-400"></i></button>
+                    <button class="w-full p-6 glass flex justify-between items-center"><span class="font-bold">MARKETPLACE</span><i data-lucide="layers" class="text-blue-400"></i></button>
+                `;
+            } else if(type === 'WALLET') {
+                content.innerHTML = `
+                    <div class="p-10 text-center"><p class="text-zinc-500 text-xs mb-2">SOVEREIGN BALANCE</p><h1 class="text-5xl font-black gold">₦3.0M</h1></div>
+                    <button class="w-full p-6 glass text-emerald-500 font-bold">DEPOSIT FUNDS</button>
+                `;
+            } else if(type === 'GIFT') {
+                content.innerHTML = `
+                    <button onclick="alert('Sent ₦500')" class="w-full p-6 glass flex justify-between items-center"><span>SEND ₦500 GIFT</span><i data-lucide="send" class="w-4 h-4"></i></button>
+                    <button onclick="alert('Sent ₦5,000')" class="w-full p-6 glass flex justify-between items-center"><span>SEND ₦5K GIFT</span><i data-lucide="send" class="w-4 h-4"></i></button>
+                    <button onclick="alert('Sent ₦50,000')" class="w-full p-6 glass flex justify-between items-center"><span>SEND ₦50K GIFT</span><i data-lucide="send" class="w-4 h-4"></i></button>
                 `;
             }
-            if(type === 'WALLET') {
-                content.innerHTML = `<div class="p-8 text-center"><p class="text-zinc-400">Current Balance</p><h1 class="text-4xl font-black gold">₦3,000,000</h1></div>`;
-            }
-
+            
             drawer.classList.add('open');
             lucide.createIcons();
         }
 
         function closeDrawer() { drawer.classList.remove('open'); }
+
+        function vault() {
+            let p = prompt("AUTHORITY KEY:");
+            if(p === "NAWI-ALPHA-01") {
+                alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nDIRECTOR: ENCRYPTED\nSTATUS: TOTAL CONTROL");
+            }
+        }
     </script>
 </body>
-</html<
+</html>
