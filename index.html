@@ -182,11 +182,7 @@
             let p = prompt("AUTHORITY KEY:");
             if(p === "NAWI-ALPHA-01") {
                 alert("PRIVATE LEDGER: 35,000,000.00 USD\n\nDIRECTOR: [ENCRYPTED]\nIDENTITY: SOVEREIGN");
-            }
-        }
-    </script>
-</body>
-</html>// SYNC WALLET WITH BACKEND
+  SYNC WALLET WITH BACKEND
 async function syncWallet() {
     const response = await fetch('/api/wallet/balance');
     const data = await response.json();
