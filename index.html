@@ -1,42 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAWI EMPIRE | Official Platform</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <div class="status-bar">
-            <span id="socket-status">● SOCKET: ACTIVE</span>
-        </div>
-        <h1>NAWI EMPIRE</h1>
-    </header>
+<section id="mall-floors">
+    <div class="mall-card">
+        <h3>🍽️ NAWI KITCHEN</h3>
+        <p>Order Premium Meals - P2P Escrow Protected</p>
+        <button onclick="openKitchen()">ENTER KITCHEN</button>
+    </div>
 
-    <main class="mall-container">
-        <h2 class="gold-text">The Digital Mall</h2>
-        
-        <div class="service-grid">
-            <div class="service-card">
-                <h3>Elite Graphics</h3>
-                <p>3D Logos & Branding</p>
-                <button class="order-btn" onclick="order('Graphics')">Access Service</button>
-            </div>
+    <div class="mall-card">
+        <h3>🎮 EMPIRE GAMES</h3>
+        <p>Play & Multiply Your Credits</p>
+        <button onclick="openGames()">START PLAYING</button>
+    </div>
 
-            <div class="service-card">
-                <h3>Music Branding</h3>
-                <div class="audio-box">Preview Active</div>
-                <button class="order-btn" onclick="order('Music')">Listen & Commission</button>
-            </div>
-        </div>
-    </main>
+    <div class="mall-card highlighted">
+        <h3>💰 N-WALLET</h3>
+        <p>Current Liquidity: ₦3,000,000</p>
+        <button class="p2p-btn" onclick="p2pDeposit()">P2P DEPOSIT</button>
+    </div>
+</section>
 
-    <script>
-        function order(service) {
-            alert("Connecting to NAWI Secure Checkout for " + service + "...");
-            // This is where we will link your WhatsApp or payment gate later
-        }
-    </script>
-</body>
-</html>
+<script>
+function p2pDeposit() {
+    alert("Excellency, the P2P Gate is opening... Connecting to Peer...");
+}
+function openKitchen() {
+    alert("Kitchen Menu Loading from 35M Ledger...");
+}
+function openGames() {
+    alert("Gaming Arena Connecting to Database...");
+}
+</script>
