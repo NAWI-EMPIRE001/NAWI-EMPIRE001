@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAWI EMPIRE | Gaming Arena</title>
+    <style>
+        body { background: #0a0a0a; color: #ffd700; font-family: sans-serif; text-align: center; }
+        .arena-box { border: 2px solid #ffd700; margin: 20px; padding: 20px; border-radius: 15px; background: #1a1a1a; }
+        #multiplier { font-size: 4rem; font-weight: bold; margin: 20px 0; color: #00ff00; }
+        .btn-play { background: #ffd700; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        .btn-stop { background: #ff4500; color: #fff; padding: 15px 30px; border: none; font-weight: bold; border-radius: 5px; display: none; }
+        .status { color: #fff; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="arena-box">
+        <h2>🎮 EMPIRE MULTIPLIER</h2>
+        <p>Wallet Balance: <span id="balance">₦3,000,000</span></p>
+        
+        <div id="multiplier">1.00x</div>
+        
+        <button id="startBtn" class="btn-play" onclick="startGame()">PLACE BET (₦100)</button>
+        <button id="stopBtn" class="btn-stop" onclick="stopGame()">CASH OUT</button>
+        
+        <p class="status" id="gameStatus">Wait for the next round...</p>
+    </div>
+
+    <script>
+        let count = 1.00;
+        let gameActive = false;
+        let timer;
+
+        function startGame() {
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            document.getElementById('gameStatus').innerText = "Rising...";
+            gameActive = true;
+            count = 1.00;
+            
+            let crashPoint = (Math.random() * 5 + 1).toFixed(2); // Random crash between 1x and 6x
+
+            timer = setInterval(() => {
+                count += 0.01;
+                document.getElementById('multiplier').innerText = count.toFixed(2) + "x";
+                
+                if (count >= crashPoint) {
+                    clearInterval(timer);
+                    gameActive = false;
+                    document.getElementById('multiplier').style.color = "#ff0000";
+                    document.getElementById('gameStatus').innerText = "💥 CRASHED AT " + count.toFixed(2) + "x";
+                    resetGame();
+                }
+            }, 100);
+        }
+
+        function stopGame() {
+            if (gameActive) {
+                clearInterval(timer);
+                gameActive = false;
+                document.getElementById('multiplier').style.color = "#00ff00";
+                document.getElementById('gameStatus').innerText = "💰 YOU WON! CASHOUT AT " + count.toFixed(2) + "x";
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            setTimeout(() => {
+                document.getElementById('startBtn').style.display = 'inline-block';
+                document.getElementById('stopBtn').style.display = 'none';
+                document.getElementById('multiplier').style.color = "#00ff00";
+                document.getElementById('multiplier').innerText = "1.00x";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
