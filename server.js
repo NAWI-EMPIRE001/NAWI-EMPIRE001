@@ -1,26 +1,25 @@
+const mongoose = require('mongoose');
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://NAWI-EMPIRE:<db_password>@nawi-empire01.xhjz2iu.mongodb.net/?appName=NAWI-EMPIRE01";
+// This is your direct connection string with the password included
+const uri = "mongodb+srv://NAWI-EMPIRE:NAWI-EMPIRE01@nawi-empire01.xhjz2iu.mongodb.net/nawi_database?retryWrites=true&w=majority";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+// Connect to the NAWI-EMPIRE Database
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log("✅ NAWI-EMPIRE Database don connect successfully!");
+  console.log("Platform is now MOVING 🚀");
+})
+.catch((err) => {
+  console.error("❌ Still getting error:", err.message);
+  console.log("Check if your IP address is whitelisted for MongoDB Atlas.");
 });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// This part makes sure your connection doesn't drop
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // We are live!
+});
