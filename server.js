@@ -2,14 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Connect to the Vault using the link from Render's Environment
+// This connects to the variable you just saved in Render
 const dbURI = process.env.MONGODB_URI;
 
 mongoose.connect(dbURI)
-    .then(() => console.log("✅ NAWI EMPIRE VAULT: CONNECTED"))
-    .catch((err) => console.log("❌ DATABASE ERROR:", err));
+    .then(() => console.log("✅ NAWI EMPIRE: VAULT CONNECTED"))
+    .catch((err) => console.log("❌ CONNECTION ERROR:", err));
 
 app.use(express.static(__dirname));
 
@@ -17,7 +16,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Automatic system to find your pages (live, market, etc.)
+// Auto-finds pages like market.html or live.html
 app.get('*', (req, res) => {
     let page = req.params[0].replace('/', '');
     if (!page.includes('.')) page += '.html';
@@ -26,6 +25,4 @@ app.get('*', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`EMPIRE ENGINE ONLINE ON PORT ${PORT}`);
-});
+app.listen(process.env.PORT || 3000);
