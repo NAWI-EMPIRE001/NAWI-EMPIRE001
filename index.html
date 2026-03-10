@@ -2,53 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAWI EMPIRE</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 80px; }
-        .app-header { padding: 30px 20px; background: #111; border-bottom: 1px solid #ffd700; text-align: center; }
-        .app-header h1 { color: #ffd700; margin: 0; font-size: 22px; }
-        .wallet-card { background: linear-gradient(135, #ffd700, #b8860b); color: #000; margin: 20px; padding: 20px; border-radius: 15px; }
-        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 15px; }
-        .app-icon { background: #1a1a1a; border-radius: 12px; padding: 15px 5px; text-align: center; border: 1px solid #333; cursor: pointer; }
-        .app-icon i { font-size: 24px; display: block; margin-bottom: 5px; }
-        .app-icon span { font-size: 10px; color: #ccc; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; }
-        .nav-item { color: #888; font-size: 10px; text-align: center; text-decoration: none; }
+        /* The Secret Entrance - Invisible to everyone but you */
+        #ghost-trigger {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            z-index: 9999;
+            background: transparent;
+        }
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+        .pillar-btn {
+            padding: 20px;
+            border-radius: 12px;
+            border: none;
+            background: #1a1a1a;
+            color: gold;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
-<body>
+<body style="background: #000; color: #fff; font-family: sans-serif;">
 
-    <div class="app-header">
-        <h1>NAWI EMPIRE</h1>
-    </div>
+    <div id="ghost-trigger" onclick="ghostCheck()"></div>
 
-    <div class="wallet-card">
-        <small>REWARDS POINTS</small>
-        <h2>0.00 pts</h2>
-    </div>
+    <header style="text-align: center; padding: 20px;">
+        <h1 style="color: gold; letter-spacing: 2px;">NAWI EMPIRE</h1>
+        <p id="status-text">Welcome to the 7 Pillars</p>
+        <div id="admin-panel" style="display:none; border: 1px solid gold; padding: 10px; margin-top: 10px;">
+            <h3>CONTROL ROOM</h3>
+            <p>Vault Reserve: <span id="vault-amount" style="color:lime"></span> pts</p>
+        </div>
+    </header>
 
-    <div class="app-grid">
-        <div class="app-icon" onclick="goTo('live.html')"><i>🎥</i><span>Live</span></div>
-        <div class="app-icon" onclick="goTo('market.html')"><i>🛒</i><span>Market</span></div>
-        <div class="app-icon" onclick="goTo('ads.html')"><i>📈</i><span>Ads Tool</span></div>
-        <div class="app-icon" onclick="goTo('games.html')"><i>🎮</i><span>Games</span></div>
-        <div class="app-icon" onclick="goTo('kitchen.html')"><i>🍽️</i><span>Kitchen</span></div>
-        <div class="app-icon" onclick="goTo('design.html')"><i>🎨</i><span>Studio</span></div>
-    </div>
-
-    <div class="bottom-nav">
-        <a href="index.html" class="nav-item" style="color:#ffd700;">🏠<br>Home</a>
-        <a href="wallet.html" class="nav-item">💳<br>Wallet</a>
-        <a href="withdraw.html" class="nav-item">💸<br>Payout</a>
-    </div>
+    <main class="pillar-grid">
+        <button class="pillar-btn" onclick="location.href='ads.html'">📺 Ads Manager</button>
+        <button class="pillar-btn" onclick="location.href='live.html'">🎥 Live Stream</button>
+        <button class="pillar-btn" onclick="location.href='games.html'">🎮 Gaming Studio</button>
+        <button class="pillar-btn" onclick="location.href='market.html'">🛍️ Marketplace</button>
+        <button class="pillar-btn" onclick="location.href='kitchen.html'">🍳 Kitchen</button>
+        <button class="pillar-btn" onclick="location.href='music.html'">🎵 Music Promo</button>
+        <button class="pillar-btn" onclick="location.href='design.html'" style="grid-column: span 2;">🎨 Creative Studio</button>
+    </main>
 
     <script>
-        function goTo(page) {
-            console.log("Navigating to: " + page);
-            window.location.href = "./" + page;
+        let clickCount = 0;
+        function ghostCheck() {
+            clickCount++;
+            if (clickCount === 5) { // Secret: Only 5 taps unlocks the prompt
+                let pin = prompt("Enter Secret Key:");
+                verifyExcellency(pin);
+                clickCount = 0;
+            }
+        }
+
+        function verifyExcellency(pin) {
+            // This calls your server to check the MongoDB secret_key
+            fetch('/api/admin-auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ pin: pin })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    document.getElementById('vault-amount').innerText = data.vault.toLocaleString();
+                    document.getElementById('status-text').innerText = "Logged in as Ghost CEO";
+                } else {
+                    alert("Unauthorized Access Attempt Recorded.");
+                }
+            });
         }
     </script>
-
 </body>
 </html>
