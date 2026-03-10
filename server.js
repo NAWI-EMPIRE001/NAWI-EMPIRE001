@@ -1,18 +1,26 @@
-// This is the Database Connection Bridge
-const MONGO_API_URL = "YOUR_MONGODB_DATA_ENDPOINT"; 
 
-async function loadEmpireContent() {
-    try {
-        // This 'fetches' the videos and posts from your MongoDB
-        const response = await fetch(MONGO_API_URL + '/posts');
-        const data = await response.json();
-        
-        // This command tells the app to "Live-Render" the movies
-        renderVideos(data); 
-    } catch (error) {
-        console.log("Database Connection Error. Excellency, check your API Key.");
-    }
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://NAWI-EMPIRE:<db_password>@nawi-empire01.xhjz2iu.mongodb.net/?appName=NAWI-EMPIRE01";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
 }
-
-// Call the brain to wake up when the app opens
-window.onload = loadEmpireContent;
+run().catch(console.dir);
