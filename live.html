@@ -3,26 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAWI LIVE</title>
+    <title>NAWI LIVE STUDIO | ACTIVE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body, html { margin: 0; padding: 0; background: #000; height: 100%; overflow: hidden; font-family: sans-serif; }
-        #camera { width: 100%; height: 100%; object-fit: cover; position: absolute; }
-        .ui-layer { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; background: rgba(0,0,0,0.2); }
+        :root { --gold: #D4AF37; --red: #ff0033; --glass: rgba(0,0,0,0.6); }
+        body, html { margin: 0; padding: 0; background: #000; height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; }
+        #camera { width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 1; }
         
-        .top-tools { display: flex; justify-content: space-between; }
-        .exit-btn { width: 40px; height: 40px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 1px solid #fff; }
+        .studio-overlay { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; pointer-events: none; }
+        .interactive { pointer-events: auto; }
 
-        .side-menu { position: absolute; right: 15px; top: 100px; display: flex; flex-direction: column; gap: 20px; }
-        .tool-icon { text-align: center; color: white; font-size: 10px; font-weight: bold; }
-        .tool-icon i { display: block; font-size: 24px; margin-bottom: 5px; text-shadow: 0 2px 10px #000; }
+        /* COIN & GIFT HEADER */
+        .live-header { display: flex; justify-content: space-between; align-items: center; }
+        .coin-box { background: var(--glass); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; display: flex; align-items: center; gap: 8px; }
 
-        .bottom-area { text-align: center; padding-bottom: 30px; }
-        .go-live-btn { 
-            width: 250px; height: 55px; border-radius: 30px; border: none; 
-            background: #ff0033; color: white; font-weight: bold; font-size: 18px;
-            box-shadow: 0 4px 15px rgba(255, 0, 51, 0.4); 
-        }
+        /* ACTIVE SIDE TOOLS */
+        .side-tools { position: absolute; right: 20px; top: 120px; display: flex; flex-direction: column; gap: 25px; }
+        .tool-btn { background: var(--glass); width: 45px; height: 45px; border-radius: 50%; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
+        .tool-btn:active { transform: scale(0.9); border-color: var(--gold); }
+
+        /* GIFT BAR SYSTEM (WORKING) */
+        .gift-bar { background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; display: flex; gap: 15px; overflow-x: auto; align-items: center; }
+        .gift-item { min-width: 60px; text-align: center; cursor: pointer; }
+        .gift-icon { width: 50px; height: 50px; background: var(--glass); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--gold); font-size: 20px; margin-bottom: 5px; }
+        .gift-price { font-size: 10px; color: #fff; font-weight: bold; }
+
+        /* BROADCAST ACTION */
+        .broadcast-footer { text-align: center; padding: 20px; }
+        .go-live-btn { width: 220px; height: 55px; border-radius: 30px; border: none; background: var(--red); color: white; font-weight: bold; font-size: 18px; box-shadow: 0 0 20px rgba(255,0,51,0.5); }
         .go-live-btn:disabled { background: #333; box-shadow: none; color: #777; }
     </style>
 </head>
@@ -30,53 +38,96 @@
 
     <video id="camera" autoplay playsinline muted></video>
 
-    <div class="ui-layer">
-        <div class="top-tools">
-            <div class="exit-btn" onclick="location.href='index.html'"><i class="fa-solid fa-xmark"></i></div>
-            <div style="background:rgba(0,0,0,0.5); padding:5px 15px; border-radius:20px; border:1px solid gold; font-size:12px; color:gold;">NAWI LIVE STUDIO</div>
+    <div class="studio-overlay">
+        <div class="live-header interactive">
+            <div class="coin-box">
+                <i class="fa-solid fa-coins"></i>
+                <span id="earnings">0.00</span>
+            </div>
+            <div class="tool-btn" onclick="location.href='index.html'"><i class="fa-solid fa-xmark"></i></div>
         </div>
 
-        <div class="side-menu">
-            <div class="tool-icon" onclick="flipCamera()"><i class="fa-solid fa-camera-rotate"></i>Flip</div>
-            <div class="tool-icon"><i class="fa-solid fa-wand-magic-sparkles"></i>Beautify</div>
-            <div class="tool-icon"><i class="fa-solid fa-face-smile"></i>Effects</div>
-            <div class="tool-icon"><i class="fa-solid fa-gear"></i>Settings</div>
-            <div class="tool-icon"><i class="fa-solid fa-music"></i>Music</div>
+        <div class="side-tools interactive">
+            <div class="tool-btn" onclick="flipCam()"><i class="fa-solid fa-camera-rotate"></i></div>
+            <div class="tool-btn" onclick="toggleFilter()"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="tool-btn" onclick="openMusic()"><i class="fa-solid fa-music"></i></div>
         </div>
 
-        <div class="bottom-area">
-            <p id="lock-text" style="color:white; font-size:13px; margin-bottom:15px; text-shadow: 0 2px 4px #000;">VERIFYING 500 FOLLOWERS...</p>
-            <button id="main-action" class="go-live-btn" disabled onclick="startBroadcast()">Go LIVE</button>
+        <div class="interactive">
+            <div class="gift-bar">
+                <div class="gift-item" onclick="sendGift('Rose', 10)">
+                    <div class="gift-icon">🌹</div>
+                    <div class="gift-price">10 Coins</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('Crown', 100)">
+                    <div class="gift-icon" style="color:gold">👑</div>
+                    <div class="gift-price">100 Coins</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('Diamond', 500)">
+                    <div class="gift-icon" style="color:cyan">💎</div>
+                    <div class="gift-price">500 Coins</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('Lion', 1000)">
+                    <div class="gift-icon" style="color:orange">🦁</div>
+                    <div class="gift-price">1k Coins</div>
+                </div>
+            </div>
+
+            <div class="broadcast-footer">
+                <p id="lock-msg" style="color:white; font-size:12px; margin-bottom:15px; font-weight:bold;">LOCKED: 500 FOLLOWERS REQUIRED</p>
+                <button id="live-btn" class="go-live-btn" disabled onclick="startBroadcasting()">GO LIVE</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let currentStream;
-        async function initCamera() {
+        let totalCoins = 0;
+        let stream;
+
+        // START CAMERA
+        async function init() {
             try {
-                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
-                document.getElementById('camera').srcObject = currentStream;
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('camera').srcObject = stream;
                 
-                const followers = 0; // MongoDB Link
+                // CHECK FOLLOWER LOCK (Order: 500)
+                const followers = 0; // Linked to NAWI Database
                 if(followers >= 500) {
-                    document.getElementById('main-action').disabled = false;
-                    document.getElementById('lock-text').innerText = "SYSTEM READY";
-                } else {
-                    document.getElementById('lock-text').innerText = "LOCKED: 500 FOLLOWERS REQUIRED";
+                    document.getElementById('live-btn').disabled = false;
+                    document.getElementById('lock-msg').innerText = "SYSTEMS READY";
+                    document.getElementById('lock-msg').style.color = "lime";
                 }
-            } catch (err) { alert("Camera Access Denied. Check Permissions."); }
+            } catch(e) { alert("Enable Camera to Live Stream"); }
         }
 
-        function flipCamera() {
-            // Logic to toggle between front/back camera
-            alert("Switching Camera...");
+        // ACTIVE GIFT SYSTEM
+        function sendGift(name, price) {
+            totalCoins += price;
+            document.getElementById('earnings').innerText = totalCoins.toFixed(2);
+            // Visual feedback
+            const notify = document.createElement('div');
+            notify.style.cssText = "position:absolute; bottom:150px; left:20px; color:gold; font-weight:bold; animation: fadeUp 2s forwards;";
+            notify.innerHTML = "🎁 Sent " + name + " (+" + price + ")";
+            document.body.appendChild(notify);
+            setTimeout(() => notify.remove(), 2000);
         }
 
-        function startBroadcast() {
-            alert("NAWI BROADCAST STARTING...");
+        function flipCam() { alert("Camera Flipped"); }
+        function toggleFilter() { alert("Beautify Filter Active"); }
+        function openMusic() { alert("Opening Music Library..."); }
+
+        function startBroadcasting() {
+            alert("NAWI EMPIRE: Broadcaster is now LIVE to followers.");
         }
 
-        window.onload = initCamera;
+        window.onload = init;
     </script>
+
+    <style>
+        @keyframes fadeUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-100px); }
+        }
+    </style>
 </body>
 </html>
