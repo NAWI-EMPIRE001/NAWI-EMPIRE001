@@ -3,58 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAWI EMPIRE | MAIN</title>
+    <title>NAWI EMPIRE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --gold: #D4AF37; --white: #ffffff; --dark: #000000; }
         body, html { margin: 0; padding: 0; background: var(--dark); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-        /* TOP NAVIGATION: TIKTOK STYLE */
-        .top-nav { position: fixed; top: 0; width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
+        /* TOP NAVIGATION */
+        .top-nav { position: fixed; top: 0; width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .nav-tabs { display: flex; gap: 25px; font-weight: bold; font-size: 17px; }
         .nav-tabs span { color: rgba(255,255,255,0.6); cursor: pointer; }
         .nav-tabs .active { color: white; border-bottom: 2px solid white; padding-bottom: 5px; }
 
-        /* CONTENT VIEWPORT (VERTICAL SCROLL) */
+        /* MAIN FEED */
         .main-feed { height: 100vh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .video-post { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; background: #111; border-bottom: 1px solid #222; }
+        .video-post { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; background: #000; }
 
-        /* SIDE ACTIONS (FOLLOW, LIKE, COMMENT, SHARE) */
+        /* SIDE ACTIONS - Exact placement from screenshots */
         .side-actions { position: absolute; right: 12px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 10; }
-        .user-circle { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; background: #333; position: relative; margin-bottom: 10px; }
-        .follow-plus { position: absolute; bottom: -8px; left: 17px; background: #ff0050; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid white; }
         .action-item { text-align: center; }
-        .action-item i { font-size: 30px; display: block; margin-bottom: 4px; }
+        .action-item i { font-size: 32px; display: block; margin-bottom: 4px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
         .action-item span { font-size: 12px; font-weight: bold; }
 
-        /* CAPTION AREA */
+        /* CAPTION AREA - HIDDEN IDENTITY */
         .post-caption { position: absolute; left: 15px; bottom: 95px; max-width: 75%; z-index: 10; }
-        .post-caption h4 { margin: 0 0 8px 0; font-size: 16px; }
-        .post-caption p { margin: 0; font-size: 14px; line-height: 1.4; color: #efefef; }
+        .post-caption h4 { margin: 0 0 8px 0; font-size: 16px; color: var(--gold); }
+        .post-caption p { margin: 0; font-size: 14px; color: #fff; }
 
-        /* BOTTOM NAVIGATION BAR (Your Order) */
+        /* BOTTOM NAVIGATION - 5 Pillars Order */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 0.5px solid #222; z-index: 1000; }
-        .nav-item { color: #888; font-size: 10px; text-align: center; text-decoration: none; transition: 0.3s; }
+        .nav-item { color: #888; font-size: 10px; text-align: center; text-decoration: none; }
         .nav-item.active { color: white; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 4px; }
         
         /* THE PLUS BUTTON (+) */
-        .plus-button { width: 45px; height: 30px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: black; position: relative; cursor: pointer; }
+        .plus-button { width: 45px; height: 32px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: black; position: relative; cursor: pointer; }
         .plus-button::before { content: ''; position: absolute; left: -5px; width: 10px; height: 100%; background: #69C9D0; border-radius: 4px; z-index: -1; }
         .plus-button::after { content: ''; position: absolute; right: -5px; width: 10px; height: 100%; background: #EE1D52; border-radius: 4px; z-index: -1; }
 
-        /* STUDIO OVERLAY (FOR + CLICK) */
-        #studio-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .studio-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; text-align: center; }
-        .studio-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); text-decoration: none; color: white; }
-        .studio-box i { font-size: 40px; color: var(--gold); display: block; margin-bottom: 10px; }
+        /* OVERLAYS */
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div class="top-nav">
         <div class="nav-tabs">
-            <span>Following</span>
+            <span>Explore</span>
             <span class="active">For You</span>
         </div>
     </div>
@@ -62,29 +57,14 @@
     <div class="main-feed">
         <div class="video-post">
             <div class="side-actions">
-                <div class="user-circle">
-                    <div class="follow-plus"><i class="fa-solid fa-plus"></i></div>
-                </div>
-                <div class="action-item"><i class="fa-solid fa-heart"></i><span>60K</span></div>
-                <div class="action-item"><i class="fa-solid fa-comment-dots"></i><span>1.2K</span></div>
-                <div class="action-item"><i class="fa-solid fa-share"></i><span>400</span></div>
+                <div class="action-item"><i class="fa-solid fa-heart"></i><span>0</span></div>
+                <div class="action-item"><i class="fa-solid fa-comment-dots"></i><span>0</span></div>
+                <div class="action-item"><i class="fa-solid fa-bookmark"></i><span>0</span></div>
+                <div class="action-item"><i class="fa-solid fa-share"></i><span>0</span></div>
             </div>
             <div class="post-caption">
-                <h4>@Excellency_Nsikak</h4>
-                <p>Welcome to the NAWI Empire. Follow the rules to protect the platform. Content creators, share your brand! 💎 #7Pillars #DiamondBlack</p>
-            </div>
-        </div>
-
-        <div class="video-post" style="background: #0a0a0a;">
-             <div class="side-actions">
-                <div class="user-circle"></div>
-                <div class="action-item"><i class="fa-solid fa-heart"></i><span>12K</span></div>
-                <div class="action-item"><i class="fa-solid fa-comment-dots"></i><span>200</span></div>
-                <div class="action-item"><i class="fa-solid fa-share"></i><span>50</span></div>
-            </div>
-            <div class="post-caption">
-                <h4>@Content_Creator</h4>
-                <p>Follow for Follow back! Completing my 500 followers task today. 🚀 #NAWI #Growth</p>
+                <h4>@Founder</h4>
+                <p>Welcome to the platform. Follow the rules to protect the Empire. This is our order. [cite: 2026-03-05]</p>
             </div>
         </div>
     </div>
@@ -92,25 +72,23 @@
     <div class="bottom-nav">
         <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i>Home</a>
         <a href="discover.html" class="nav-item"><i class="fa-solid fa-compass"></i>Discover</a>
-        <div class="plus-button" onclick="toggleStudio()"><i class="fa-solid fa-plus"></i></div>
+        <div class="plus-button" onclick="openStudio()"><i class="fa-solid fa-plus"></i></div>
         <a href="inbox.html" class="nav-item"><i class="fa-solid fa-comment-dots"></i>Inbox</a>
         <a href="profile.html" class="nav-item"><i class="fa-solid fa-user"></i>Profile</a>
     </div>
 
-    <div id="studio-overlay">
-        <div onclick="toggleStudio()" style="position:absolute; top:40px; right:30px; font-size:35px;">&times;</div>
-        <h2 style="color:var(--gold); margin-bottom:40px;">NAWI STUDIO</h2>
-        <div class="studio-links">
-            <a href="live.html" class="studio-box"><i class="fa-solid fa-tower-broadcast"></i>LIVE STUDIO</a>
-            <a href="post.html" class="studio-box"><i class="fa-solid fa-cloud-arrow-up"></i>POST CONTENT</a>
+    <div id="overlay">
+        <div onclick="closeStudio()" style="position:absolute; top:40px; right:30px; font-size:35px;">&times;</div>
+        <h2 style="color:var(--gold)">NAWI STUDIO</h2>
+        <div style="display:flex; gap:20px; margin-top:50px;">
+            <a href="live.html" style="color:white; text-decoration:none; text-align:center;"><i class="fa-solid fa-tower-broadcast" style="font-size:40px; display:block;"></i>LIVE</a>
+            <a href="post.html" style="color:white; text-decoration:none; text-align:center;"><i class="fa-solid fa-plus-square" style="font-size:40px; display:block;"></i>POST</a>
         </div>
     </div>
 
     <script>
-        function toggleStudio() {
-            const studio = document.getElementById('studio-overlay');
-            studio.style.display = (studio.style.display === 'flex') ? 'none' : 'flex';
-        }
+        function openStudio() { document.getElementById('overlay').style.display = 'flex'; }
+        function closeStudio() { document.getElementById('overlay').style.display = 'none'; }
     </script>
 </body>
 </html>
