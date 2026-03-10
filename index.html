@@ -3,63 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAWI EMPIRE</title>
-    <link rel="stylesheet" href="style.css">
+    <title>NAWI EMPIRE | DASHBOARD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold: #D4AF37; --black: #050505; --glass: rgba(255, 255, 255, 0.05); }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* TOP NAV & THREE DOTS */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #111; }
+        .menu-dots { font-size: 24px; cursor: pointer; color: var(--gold); padding: 10px; }
+        
+        /* MONETIZATION SECTION (Moved from Live) */
+        .monetization-banner { margin: 20px; padding: 20px; background: linear-gradient(45deg, #111, #000); border-radius: 15px; border: 1px solid var(--gold); }
+        .progress-container { width: 100%; height: 8px; background: #222; border-radius: 4px; margin-top: 10px; }
+        .progress-bar { height: 100%; background: var(--gold); border-radius: 4px; width: 0%; transition: 1s; }
+
+        /* THE PILLAR GRID */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px 20px 20px; }
+        .app-card { 
+            background: var(--glass); border: 1px solid #222; border-radius: 18px; 
+            padding: 20px; text-align: center; text-decoration: none; color: white;
+        }
+        .app-card i { font-size: 30px; color: var(--gold); margin-bottom: 10px; display: block; }
+        .app-card span { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* SETTINGS DRAWER */
+        #drawer { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #000; z-index: 1000; transition: 0.4s; padding: 30px; border-right: 1px solid var(--gold); }
+        #drawer.open { left: 0; }
+        .drawer-item { display: flex; align-items: center; padding: 18px 0; border-bottom: 1px solid #111; color: #eee; text-decoration: none; font-size: 16px; }
+        .drawer-item i { margin-right: 20px; color: var(--gold); width: 25px; }
+    </style>
 </head>
 <body>
 
-    <div id="ghost-trigger" style="position:fixed; top:0; right:0; width:50px; height:50px; z-index:3000;"></div>
-
-    <div class="feed-wrapper" id="feed">
-        <div class="content-card">
-            <div class="content-overlay">
-                <h4>@Founder_Active</h4>
-                <p>Welcome to the New Empire. Content is King. 🚀</p>
-            </div>
-            <div class="side-actions">
-                <i class="fa-solid fa-heart"></i>
-                <i class="fa-solid fa-comment"></i>
-                <i class="fa-solid fa-share"></i>
-                <i class="fa-solid fa-gift" style="color:gold" onclick="alert('Send Gift to Creator')"></i>
-            </div>
-            <img src="https://via.placeholder.com/1080x1920/050505/D4AF37?text=Post+1" style="width:100%; height:100%; object-fit:cover;">
-        </div>
+    <div class="top-nav">
+        <div class="menu-dots" onclick="toggleMenu()"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+        <div style="color: var(--gold); font-weight: 900; letter-spacing: 2px;">NAWI EMPIRE</div>
+        <div style="width:40px"></div>
     </div>
 
-    <div id="drawer" class="pillars-drawer">
-        <h2 style="color:gold; margin-bottom:20px;">7 PILLARS</h2>
-        <a href="ads.html" class="pillar-item"><i class="fa-solid fa-rectangle-ad"></i> Ads Manager</a>
-        <a href="live.html" class="pillar-item"><i class="fa-solid fa-tower-broadcast"></i> Live Stream Studio</a>
-        <a href="games.html" class="pillar-item"><i class="fa-solid fa-gamepad"></i> Gaming Studio</a>
-        <a href="market.html" class="pillar-item"><i class="fa-solid fa-shop"></i> Marketplace</a>
-        <a href="kitchen.html" class="pillar-item"><i class="fa-solid fa-utensils"></i> Kitchen</a>
-        <a href="music.html" class="pillar-item"><i class="fa-solid fa-music"></i> Music Promotion</a>
-        <a href="design.html" class="pillar-item"><i class="fa-solid fa-palette"></i> Creative Studio</a>
-        <hr style="border:0.5px solid #333; margin:20px 0;">
-        <a href="privacy.html" class="pillar-item"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
-        <a href="settings.html" class="pillar-item"><i class="fa-solid fa-gear"></i> Settings</a>
+    <div id="drawer">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+            <h2 style="color:var(--gold); margin:0;">7 PILLARS</h2>
+            <i class="fa-solid fa-xmark" onclick="toggleMenu()" style="font-size:24px;"></i>
+        </div>
+        <a href="profile.html" class="drawer-item"><i class="fa-solid fa-circle-user"></i> My Profile</a>
+        <a href="privacy.html" class="drawer-item"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+        <a href="settings.html" class="drawer-item"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="verification.html" class="drawer-item"><i class="fa-solid fa-certificate"></i> Founder Verification</a>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-btn active"><i class="fa-solid fa-house"></i>Home</a>
-        <a href="social.html" class="nav-btn"><i class="fa-solid fa-compass"></i>Explore</a>
-        <div class="plus-btn" onclick="alert('Post Content')"><i class="fa-solid fa-plus"></i></div>
-        <a href="live.html" class="nav-btn"><i class="fa-solid fa-video"></i>Live</a>
-        <div class="nav-btn" onclick="document.getElementById('drawer').classList.toggle('open')">
-            <i class="fa-solid fa-bars"></i>Menu
+    <div class="monetization-banner">
+        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold;">
+            <span>LIVE MONETIZATION GOAL</span>
+            <span id="stat-val">0 / 500</span>
         </div>
-    </nav>
+        <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="live.html" class="app-card"><i class="fa-solid fa-tower-broadcast"></i><span>Live Stream</span></a>
+        <a href="ads.html" class="app-card"><i class="fa-solid fa-rectangle-ad"></i><span>Ads Manager</span></a>
+        <a href="games.html" class="app-card"><i class="fa-solid fa-gamepad"></i><span>Gaming Studio</span></a>
+        <a href="market.html" class="app-card"><i class="fa-solid fa-shop"></i><span>Marketplace</span></a>
+        <a href="kitchen.html" class="app-card"><i class="fa-solid fa-utensils"></i><span>Kitchen</span></a>
+        <a href="music.html" class="app-card"><i class="fa-solid fa-music"></i><span>Music Promo</span></a>
+        <a href="design.html" class="app-card" style="grid-column: span 2;"><i class="fa-solid fa-palette"></i><span>Creative Studio</span></a>
+    </div>
 
     <script>
-        // Ghost CEO logic - Long press 3 seconds on top right
-        let ghost = document.getElementById('ghost-trigger');
-        let timer;
-        ghost.onmousedown = function() { timer = setTimeout(() => { 
-            let pin = prompt("EXCELLENCY IDENTIFIED. ENTER KEY:");
-            if(pin === "1234") alert("Vault Unlocked: 35,000,000 pts");
-        }, 3000); };
-        ghost.onmouseup = function() { clearTimeout(timer); };
+        function toggleMenu() { document.getElementById('drawer').classList.toggle('open'); }
+
+        // Real Data Logic
+        window.onload = async () => {
+            const followers = 0; // Linked to MongoDB
+            document.getElementById('stat-val').innerText = followers + " / 500";
+            document.getElementById('bar').style.width = (followers/500 * 100) + "%";
+        };
     </script>
 </body>
 </html>
