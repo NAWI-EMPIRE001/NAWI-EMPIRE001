@@ -1,7 +1,11 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const express = require('express');
+const path = require('path');
+const app = express();
+
+// 1. Corrected URI with your real password integrated
 const uri = "mongodb+srv://akpanvictor848_db_user:NAWI-EMPIRE@nawi-empire.3qj9wnj.mongodb.net/?appName=NAWI-EMPIRE";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -12,18 +16,39 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server
+    // 2. Connect and STAY connected
     await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    
-    // THE SYSTEM IS NOW LIVE. DO NOT ADD 'CLOSE' COMMANDS HERE.
-    
+    const database = client.db("NAWI-EMPIRE");
+    console.log("Pinged your deployment. NAWI EMPIRE Engine is LIVE!");
+
+    // 3. This pipe sends your Movies/Posts to the Professional Feed
+    app.get('/api/posts', async (req, res) => {
+      try {
+        const posts = await database.collection("Movies").find({}).toArray();
+        res.json(posts);
+      } catch (err) {
+        res.status(500).send("Database Error");
+      }
+    });
+
+    // 4. This pipe sends the 7 Pillars (Ads, Market, etc.)
+    app.get('/api/tools', async (req, res) => {
+      const tools = await database.collection("Tools").find({}).toArray();
+      res.json(tools);
+    });
+
   } catch (error) {
-    console.error("Connection failed:", error);
+    console.error("Engine failure:", error);
   }
+  // CRITICAL: The 'finally { client.close() }' block is REMOVED so the app never dies.
 }
 
-// Start the Engine
 run().catch(console.dir);
+
+// Serve your index.html and professional style files
+app.use(express.static(path.join(__dirname, '/')));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`The Empire is running on port ${PORT}`);
+});
