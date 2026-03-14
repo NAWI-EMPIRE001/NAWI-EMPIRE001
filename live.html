@@ -59,15 +59,15 @@
                     <div class="gift-icon">🌹</div>
                     <div class="gift-price">10 Coins</div>
                 </div>
-                <div class="gift-item" onclick="sendGift('Crown', 100)">
+                <div class="gift-item" onclick="sendGift('Crown', 10)">
                     <div class="gift-icon" style="color:gold">👑</div>
                     <div class="gift-price">100 Coins</div>
                 </div>
-                <div class="gift-item" onclick="sendGift('Diamond', 500)">
+                <div class="gift-item" onclick="sendGift('coin', 20)">
                     <div class="gift-icon" style="color:cyan">💎</div>
                     <div class="gift-price">500 Coins</div>
                 </div>
-                <div class="gift-item" onclick="sendGift('Lion', 1000)">
+                <div class="gift-item" onclick="sendGift('Lion', 10)">
                     <div class="gift-icon" style="color:orange">🦁</div>
                     <div class="gift-price">1k Coins</div>
                 </div>
@@ -91,7 +91,7 @@
                 document.getElementById('camera').srcObject = stream;
                 
                 // CHECK FOLLOWER LOCK (Order: 500)
-                const followers = 0; // Linked to NAWI Database
+                const followers = 0; // Linked to NAWI-EMPIRE Database
                 if(followers >= 500) {
                     document.getElementById('live-btn').disabled = false;
                     document.getElementById('lock-msg').innerText = "SYSTEMS READY";
@@ -117,7 +117,7 @@
         function openMusic() { alert("Opening Music Library..."); }
 
         function startBroadcasting() {
-            alert("NAWI EMPIRE: Broadcaster is now LIVE to followers.");
+            alert("7 pillars: Broadcaster is now LIVE to followers.");
         }
 
         window.onload = init;
