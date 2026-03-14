@@ -32,14 +32,14 @@
     <main class="w-full max-w-md px-6 space-y-6">
         <div class="glass rounded-[3rem] p-8 relative overflow-hidden gold-glow border-amber-500/20">
             <div class="relative z-10">
-                <p class="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-2">Central Diamond Reserve</p>
-                <h2 id="balance-display" class="text-5xl font-black italic tracking-tighter mb-8">25,000,000</h2>
+                <p class="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-2">Central Coin Reserve 🪙</p>
+                <h2 id="balance-display" class="text-5xl font-black italic tracking-tighter mb-8">0</h2>
                 <div class="flex gap-3">
-                    <button class="flex-1 bg-white text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Acquire DB</button>
-                    <button class="flex-1 glass py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Stake 5%</button>
+                    <button class="flex-1 bg-white text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Acquire Coin</button>
+                    <button class="flex-1 glass py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Stake 0%</button>
                 </div>
             </div>
-            <i data-lucide="gem" class="absolute -bottom-10 -right-10 w-40 h-40 text-white opacity-5 rotate-12"></i>
+            <i data-lucide="coins" class="absolute -bottom-10 -right-10 w-40 h-40 text-white opacity-5 rotate-12"></i>
         </div>
 
         <div class="glass rounded-[2rem] p-6 flex items-center gap-4">
@@ -48,7 +48,7 @@
             </div>
             <div>
                 <p class="text-[7px] font-black text-zinc-500 uppercase">Verified Founder</p>
-                <p class="text-[10px] font-black uppercase italic" id="founder-name">7 PILLARS</p>
+                <p class="text-[10px] font-black uppercase italic">7 PILLARS</p>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
             </div>
             <div class="glass p-6 rounded-[2.5rem]">
                 <p class="text-xs font-bold leading-relaxed text-zinc-400 italic">
-                    "The NAWI Empire is online. We are moving from local nodes to global sovereignty. Welcome to the future of wealth."
+                    "The NAWI Empire is online. We are starting at zero. The age of Coins has begun. Follow the rules of this platform to protect the founders."
                 </p>
             </div>
         </div>
@@ -74,13 +74,8 @@
 
     <script>
         lucide.createIcons();
-        
-        // MONGODB CONNECTION LOGIC
-        // Excellency, paste your MongoDB URI into your Render Environment Variables, not here!
-        
         window.onload = () => {
-            document.getElementById('balance-display').innerText = (0000).toLocaleString();
-            console.log("System Initialized: 7 Pillars Protocol Active.");
+            document.getElementById('balance-display').innerText = "0";
         };
     </script>
 </body>
