@@ -1,26 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAWI | Ads Manager</title>
+    <title>NAWI-EMPIRE | Ads & Boost Manager</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        .card { background: #111; border: 1px solid #ffd700; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        .stat { font-size: 24px; color: #ffd700; font-weight: bold; }
-        button { background: #ffd700; color: #000; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; line-height: 1.6; }
+        .header-gold { color: #ffd700; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Stats Cards */
+        .card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 15px; margin-bottom: 20px; transition: 0.3s; }
+        .card:hover { border-color: #ffd700; }
+        .stat { font-size: 28px; color: #ffd700; font-weight: bold; }
+
+        /* The New Boost Tool */
+        #empire-ads-manager { border: 2px solid #ffd700; background: rgba(255, 215, 0, 0.05); padding: 25px; border-radius: 15px; text-align: center; }
+        .ad-stats { margin: 15px 0; font-size: 1.1em; color: #ccc; }
+        .ad-stats span { color: #ffd700; font-weight: bold; }
+
+        button.boost-btn { background: #ffd700; color: #000; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: 0.2s; }
+        button.boost-btn:hover { transform: scale(1.02); background: #fff; }
+
+        /* Market Feed Preview */
+        .market-preview { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
+        .item.boosted { background: #1a1a1a; border-left: 4px solid #ffd700; padding: 15px; border-radius: 8px; position: relative; }
+        .badge { background: #ffd700; color: #000; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 4px; position: absolute; top: 10px; right: 10px; }
+        
+        .back-link { display: block; text-align: center; margin-top: 30px; color: #888; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
-    <h1 style="color:#ffd700">📈 ADS MANAGER</h1>
+
+    <h1 class="header-gold">📈 Empire Ads Program</h1>
+
     <div class="card">
-        <p>Total Impressions</p>
-        <div class="stat">1.2M Views</div>
+        <p>Current Network Impressions</p>
+        <div class="stat">1.2M Views Across 7 Pillars</div>
     </div>
-    <div class="card">
-        <h3>Promote Your Brand</h3>
-        <p>Reach 50,000+ Empire Users</p>
-        <button onclick="alert('Ads Setup Loading...')">CREATE NEW AD</button>
+
+    <div id="empire-ads-manager">
+        <h3>🚀 Empire Boost Program</h3>
+        <p>Targeting: 50,000+ Active Citizens</p>
+        <div class="ad-stats">
+            Cost: <span>5 Coins 🪙</span> | Duration: <span>24 Hours</span>
+        </div>
+        <button class="boost-btn" onclick="boostMyListing()">
+            BOOST MY LISTING NOW
+        </button>
     </div>
-    <button style="background:none; color:#888;" onclick="location.href='index.html'">← Back</button>
+
+    <div class="market-preview">
+        <h4 style="color: #888;">Live Preview of Boosted Content:</h4>
+        <div id="market-feed">
+            <div class="item boosted">
+                <span class="badge">PROMOTED</span>
+                <h4 style="margin: 0;">Empire Creative Services</h4>
+                <p style="margin: 5px 0; color: #ccc;">Get your 7 Pillars branding here.</p>
+                <div style="color: #ffd700; font-weight: bold;">Price: 50 Coins</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← Return to Headquarters</a>
+
+    <script>
+        function boostMyListing() {
+            // This is where the platform takes ACTION
+            const confirmBoost = confirm("This will deduct 5 Coins 🪙 from your vault for a 24-hour boost. Proceed?");
+            if(confirmBoost) {
+                // Future: Add API call to node.js to deduct coins and update status
+                alert("Your listing is now being boosted to the top of the 7 Pillars!");
+            }
+        }
+    </script>
+
 </body>
 </html>
