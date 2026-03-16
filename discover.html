@@ -6,7 +6,7 @@
     <title>NAWI EMPIRE | DISCOVER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #D4AF37; --dark: #000; --glass: rgba(255, 255, 255, 0.05); --search-bg: #111; }
+        :root { --gold: #D4AF37; --dark: #000; --search-bg: #111; }
         body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
         
         /* SEARCH HEADER */
@@ -29,9 +29,9 @@
         .view-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .view-btn:hover { background: var(--gold); color: black; }
 
-        /* BOTTOM NAVIGATION */
+        /* BOTTOM NAVIGATION (MASTER NAV) */
         .master-nav { position: fixed; bottom: 0; width: 100%; background: #080808; border-top: 1px solid #111; display: flex; justify-content: space-around; padding: 15px 0; z-index: 1000; }
-        .nav-box { text-align: center; cursor: pointer; color: #555; text-decoration: none; }
+        .nav-box { text-align: center; cursor: pointer; color: #555; text-decoration: none; transition: 0.3s; }
         .nav-box p { font-size: 10px; margin: 5px 0 0; font-weight: bold; }
         .active-tab { color: var(--gold) !important; }
         .plus-btn { background: var(--gold); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -10px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
@@ -42,39 +42,28 @@
     <div class="search-header">
         <div class="search-input-wrapper">
             <i class="fa-solid fa-magnifying-glass" style="color: var(--gold);"></i>
-            <input type="text" placeholder="Search the 7 Pillars..." id="searchInput">
+            <input type="text" placeholder="Explore the Empire..." id="searchInput">
         </div>
     </div>
 
-    <div class="section-title">Trending in the Empire</div>
-
-    <div class="trend-item">
-        <div class="profile-info">
-            <div class="trend-avatar">7P</div>
-            <div class="name-stack">
-                <span class="username">7 Pillars Official</span>
-                <span class="subtitle">Platform Headquarters</span>
-            </div>
-        </div>
-        <button class="view-btn" onclick="window.location.href='app-grid.html'">VIEW</button>
-    </div>
+    <div class="section-title">Trending Brands & Studios</div>
 
     <div class="trend-item">
         <div class="profile-info">
             <div class="trend-avatar" style="background: var(--gold); color: black;">NS</div>
             <div class="name-stack">
                 <span class="username">NAWI-EMPIRE design studio</span>
-                <span class="subtitle">Design Studio Lead</span>
+                <span class="subtitle">Luxury Branding Lead</span>
             </div>
         </div>
-        <button class="view-btn" onclick="window.location.href='design.html'">VIEW</button>
+        <button class="view-btn" onclick="window.location.href='design.html'">HIRE</button>
     </div>
 
     <div class="trend-item">
         <div class="profile-info">
             <div class="trend-avatar">🛒</div>
             <div class="name-stack">
-                <span class="username">Premium Marketplace</span>
+                <span class="username">Empire Marketplace</span>
                 <span class="subtitle">Top Verified Ads</span>
             </div>
         </div>
@@ -102,6 +91,13 @@
             <p>Profile</p>
         </a>
     </nav>
+
+    <script>
+        // Simple search feedback for your users
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            console.log("Searching Empire for: " + this.value);
+        });
+    </script>
 
 </body>
 </html>
