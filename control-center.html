@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAWI-EMPIRE | Master Control Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold: #D4AF37; --black: #050505; --card: #111; --danger: #ff3b3b; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 40px; }
+
+        /* CEO Header */
+        .admin-header { padding: 40px 20px; background: linear-gradient(145deg, #1a1a1a, var(--black)); border-bottom: 1px solid var(--gold); }
+        .admin-header h1 { color: var(--gold); font-size: 22px; margin: 0; letter-spacing: 3px; font-weight: 900; }
+        .admin-status { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; text-align: center; }
+        .stat-card i { color: var(--gold); font-size: 20px; margin-bottom: 10px; }
+        .stat-value { display: block; font-size: 18px; font-weight: 900; color: #fff; }
+        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; margin-top: 5px; }
+
+        /* P2P Transaction Monitor */
+        .section-title { padding: 0 20px; font-size: 14px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
+        .transaction-list { margin: 15px 20px; background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid #222; }
+        .tx-item { padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .tx-info { display: flex; flex-direction: column; }
+        .tx-user { font-size: 13px; font-weight: bold; }
+        .tx-type { font-size: 10px; color: #888; }
+        .tx-amount { color: var(--gold); font-weight: 900; font-size: 14px; }
+
+        /* Control Buttons */
+        .control-btns { padding: 0 20px; display: grid; gap: 10px; }
+        .btn-action { background: #111; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .btn-action i { color: var(--gold); width: 20px; }
+        .btn-danger { color: var(--danger); border-color: var(--danger); }
+
+        /* P2P LOGIC DISPLAY */
+        .p2p-badge { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <h1>COMMAND CENTER</h1>
+        <div class="admin-status">NAWI-EMPIRE • 7 Pillars Authority Verified</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fa-solid fa-users"></i>
+            <span class="stat-value">1,240</span>
+            <span class="stat-label">Total Founders</span>
+        </div>
+        <div class="stat-card">
+            <i class="fa-solid fa-coins"></i>
+            <span class="stat-value">45.2K</span>
+            <span class="stat-label">Empire Coins</span>
+        </div>
+    </div>
+
+    <h2 class="section-title">Live P2P Monitor</h2>
+    <div class="transaction-list">
+        <div class="tx-item">
+            <div class="tx-info">
+                <span class="tx-user">User_882 <span class="p2p-badge">P2P</span></span>
+                <span class="tx-type">Logo Design Unlock</span>
+            </div>
+            <span class="tx-amount">-50 🪙</span>
+        </div>
+        <div class="tx-item">
+            <div class="tx-info">
+                <span class="tx-user">Success_Empire <span class="p2p-badge">P2P</span></span>
+                <span class="tx-type">Kitchen Masterclass</span>
+            </div>
+            <span class="tx-amount">+5 🪙</span>
+        </div>
+        <div class="tx-item">
+            <div class="tx-info">
+                <span class="tx-user">Artist_Vicky <span class="p2p-badge">P2P</span></span>
+                <span class="tx-type">Music Promotion Fee</span>
+            </div>
+            <span class="tx-amount">-10 🪙</span>
+        </div>
+    </div>
+
+    <h2 class="section-title">System Controls</h2>
+    <div class="control-btns">
+        <button class="btn-action" onclick="location.href='p2p-gateway.js'"><i class="fa-solid fa-key"></i> Edit P2P Rules</button>
+        <button class="btn-action" onclick="location.href='inbox.html'"><i class="fa-solid fa-message"></i> Review Empire Inbox</button>
+        <button class="btn-action btn-danger" onclick="alert('Platform Security Lockdown Initiated')"><i class="fa-solid fa-lock"></i> Platform Lockdown</button>
+    </div>
+
+</body>
+</html>
