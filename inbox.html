@@ -2,112 +2,120 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAWI EMPIRE | PROFESSIONAL INBOX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAWI-EMPIRE | INBOX</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --dark: #000; --glass: rgba(255, 255, 255, 0.03); --border: #1a1a1a; }
-        body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
+        :root { --gold: #D4AF37; --black: #050505; --card: #111; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
         
         /* HEADER */
-        .header { padding: 25px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #000; position: sticky; top: 0; z-index: 100; }
-        .header h2 { margin: 0; font-size: 18px; letter-spacing: 3px; color: var(--gold); font-weight: 900; }
+        .inbox-header { padding: 30px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .inbox-header h1 { font-size: 20px; letter-spacing: 3px; color: var(--gold); margin: 0; text-transform: uppercase; }
 
-        /* MESSAGE CATEGORIES */
-        .tabs { display: flex; padding: 15px; gap: 10px; overflow-x: auto; background: #050505; border-bottom: 1px solid var(--border); }
-        .tab-btn { background: var(--glass); border: 1px solid #222; color: #888; padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; font-weight: 700; cursor: pointer; }
-        .tab-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+        /* CATEGORY TABS - Now Clickable */
+        .tabs-container { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px; scrollbar-width: none; }
+        .tab { background: transparent; border: 1px solid #333; color: #888; padding: 8px 18px; border-radius: 20px; font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer; transition: 0.3s; }
+        .tab.active { background: var(--gold); color: black; border-color: var(--gold); }
 
-        /* MESSAGE LIST */
-        .message-list { padding: 15px; }
-        .message-item { background: var(--glass); border: 1px solid #111; padding: 18px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 15px; transition: 0.3s; position: relative; }
-        .message-item:active { transform: scale(0.98); border-color: var(--gold); }
-        .unread { border-left: 3px solid var(--gold); }
+        /* MESSAGE CARDS */
+        .message-list { padding: 0 15px; }
+        .msg-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; gap: 15px; align-items: flex-start; transition: 0.2s; cursor: pointer; }
+        .msg-card:active { transform: scale(0.97); border-color: var(--gold); }
         
-        .sender-icon { width: 45px; height: 45px; border-radius: 50%; background: #080808; border: 1px solid #222; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 18px; flex-shrink: 0; }
-        .message-info { flex: 1; }
-        .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .message-info h4 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
-        .message-info p { margin: 0; font-size: 12px; color: #888; line-height: 1.4; }
-        .time { font-size: 10px; color: #444; font-weight: bold; }
-        .category-tag { font-size: 9px; text-transform: uppercase; color: var(--gold); background: rgba(212, 175, 55, 0.1); padding: 2px 6px; border-radius: 4px; margin-top: 5px; display: inline-block; }
+        .msg-icon { width: 45px; height: 45px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gold); border: 1px solid #222; }
+        .msg-content { flex: 1; }
+        .msg-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .sender { font-weight: 800; font-size: 14px; }
+        .time { font-size: 10px; color: #555; }
+        .preview { font-size: 12px; color: #888; line-height: 1.4; margin-bottom: 10px; }
+        
+        .tag { font-size: 8px; font-weight: 900; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .tag-ann { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+        .tag-p2p { background: rgba(0, 255, 100, 0.1); color: #00ff64; }
+        .tag-biz { background: rgba(0, 150, 255, 0.1); color: #0096ff; }
 
-        /* COMPOSE BUTTON */
-        .fab-compose { position: fixed; bottom: 90px; right: 20px; background: var(--gold); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-size: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 99; }
-
-        /* BOTTOM NAVIGATION */
+        /* MASTER NAV */
         .master-nav { position: fixed; bottom: 0; width: 100%; background: #080808; border-top: 1px solid #111; display: flex; justify-content: space-around; padding: 15px 0; z-index: 1000; }
-        .nav-box { text-align: center; cursor: pointer; color: #555; text-decoration: none; }
-        .nav-box p { font-size: 10px; margin: 5px 0 0; font-weight: bold; }
-        .active-tab { color: var(--gold) !important; }
-        .plus-btn { background: var(--gold); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -10px; }
+        .nav-box { text-align: center; color: #555; text-decoration: none; font-size: 20px; }
+        .nav-box p { font-size: 9px; margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+        .nav-box.active { color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>INBOX</h2>
-        <i class="fa-solid fa-magnifying-glass" style="color: #444;"></i>
+    <div class="inbox-header">
+        <h1>INBOX</h1>
+        <i class="fa-solid fa-magnifying-glass" style="color:#555;"></i>
     </div>
 
-    <div class="tabs">
-        <div class="tab-btn active">All Messages</div>
-        <div class="tab-btn">Business</div>
-        <div class="tab-btn">Announcements</div>
-        <div class="tab-btn">P2P Alerts</div>
+    <div class="tabs-container">
+        <div class="tab active" onclick="filterInbox('all', this)">All Messages</div>
+        <div class="tab" onclick="filterInbox('biz', this)">Business</div>
+        <div class="tab" onclick="filterInbox('ann', this)">Announcements</div>
+        <div class="tab" onclick="filterInbox('p2p', this)">P2P Alerts</div>
     </div>
 
-    <div class="message-list">
-        <div class="message-item unread">
-            <div class="sender-icon"><i class="fa-solid fa-bullhorn"></i></div>
-            <div class="message-info">
-                <div class="message-header">
-                    <h4>Empire Authority</h4>
-                    <span class="time">2m ago</span>
-                </div>
-                <p>Attention Founders: The 7 Pillars Control Center is now live. Secure your access code.</p>
-                <span class="category-tag">Announcement</span>
+    <div class="message-list" id="inbox-list">
+        <div class="msg-card" data-cat="ann" onclick="openMessage('Empire Authority Update')">
+            <div class="msg-icon"><i class="fa-solid fa-bullhorn"></i></div>
+            <div class="msg-content">
+                <div class="msg-top"><span class="sender">Empire Authority</span><span class="time">2m ago</span></div>
+                <div class="preview">Attention Founders: The 7 Pillars Control Center is now live. Secure your access code.</div>
+                <span class="tag tag-ann">Announcement</span>
             </div>
         </div>
 
-        <div class="message-item">
-            <div class="sender-icon" style="border-color: #00ff00; color: #00ff00;"><i class="fa-solid fa-handshake"></i></div>
-            <div class="message-info">
-                <div class="message-header">
-                    <h4>P2P Gateway</h4>
-                    <span class="time">1h ago</span>
-                </div>
-                <p>Your payment of 20 🪙 for "Royal Jollof Rice" was successful.</p>
-                <span class="category-tag">P2P Alert</span>
+        <div class="msg-card" data-cat="p2p" onclick="openMessage('P2P Payment Success')">
+            <div class="msg-icon" style="color:#00ff64;"><i class="fa-solid fa-handshake"></i></div>
+            <div class="msg-content">
+                <div class="msg-top"><span class="sender">P2P Gateway</span><span class="time">1h ago</span></div>
+                <div class="preview">Your payment of 20 🪙 for "Royal Jollof Rice" was successful.</div>
+                <span class="tag tag-p2p">P2P Alert</span>
             </div>
         </div>
 
-        <div class="message-item">
-            <div class="sender-icon"><i class="fa-solid fa-briefcase"></i></div>
-            <div class="message-info">
-                <div class="message-header">
-                    <h4>Brand Request</h4>
-                    <span class="time">Yesterday</span>
-                </div>
-                <p>New request for a "Luxury 3D Logo" from Vicky Para. Please review in the studio.</p>
-                <span class="category-tag">Business</span>
+        <div class="msg-card" data-cat="biz" onclick="openMessage('New Brand Request')">
+            <div class="msg-icon" style="color:#0096ff;"><i class="fa-solid fa-briefcase"></i></div>
+            <div class="msg-content">
+                <div class="msg-top"><span class="sender">Brand Request</span><span class="time">Yesterday</span></div>
+                <div class="preview">New request for a "Luxury 3D Logo" from Vicky Para. Please review in the studio.</div>
+                <span class="tag tag-biz">Business</span>
             </div>
         </div>
-    </div>
-
-    <div class="fab-compose" onclick="alert('Open Business Message Creator')">
-        <i class="fa-solid fa-pen-nib"></i>
     </div>
 
     <nav class="master-nav">
-        <a href="index.html" class="nav-box"><i class="fa-solid fa-house" style="font-size: 20px;"></i><p>Home</p></a>
-        <a href="discover.html" class="nav-box"><i class="fa-solid fa-compass" style="font-size: 20px;"></i><p>Discover</p></a>
-        <div onclick="window.location.href='app-grid.html'" class="nav-box">
-            <div class="plus-btn"><i class="fa-solid fa-plus" style="font-size: 20px; color: black;"></i></div>
-        </div>
-        <a href="inbox.html" class="nav-box active-tab"><i class="fa-solid fa-message" style="font-size: 20px;"></i><p>Inbox</p></a>
-        <a href="profile.html" class="nav-box"><i class="fa-solid fa-user" style="font-size: 20px;"></i><p>Profile</p></a>
+        <a href="index.html" class="nav-box"><i class="fa-solid fa-house"></i><p>Home</p></a>
+        <a href="discover.html" class="nav-box"><i class="fa-solid fa-compass"></i><p>Explore</p></a>
+        <a href="index.html" class="nav-box"><div style="background:var(--gold); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-top:-10px; color:black;"><i class="fa-solid fa-plus"></i></div></a>
+        <a href="inbox.html" class="nav-box active"><i class="fa-solid fa-message"></i><p>Inbox</p></a>
+        <a href="profile.html" class="nav-box"><i class="fa-solid fa-user"></i><p>Profile</p></a>
     </nav>
 
+    <script>
+        // FUNCTION TO FILTER MESSAGES
+        function filterInbox(category, element) {
+            // Update Tab UI
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+
+            // Filter Cards
+            const cards = document.querySelectorAll('.msg-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-cat') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // FUNCTION TO OPEN MESSAGE
+        function openMessage(title) {
+            alert("Opening Secure Transmission: " + title + "\n\nThis would normally open the full message detail page.");
+        }
+    </script>
 </body>
 </html>
