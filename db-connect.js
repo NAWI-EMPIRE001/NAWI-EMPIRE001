@@ -1,12 +1,15 @@
 /**
  * NAWI-EMPIRE MONGODB GATEWAY
  * Authority: 7 Pillars Control Center
+ * Status: Updated with Secure Private Key
  */
 
 const MONGO_CONFIG = {
-    // You get this URL from your MongoDB Atlas 'App Services' -> 'HTTPS Endpoints'
+    // 🏛️ STEP 1: Paste the URL from the "Data API" section here
     endpoint: "YOUR_MONGODB_HTTPS_ENDPOINT_URL", 
-    apiKey: "YOUR_APP_SERVICES_API_KEY"
+    
+    // 🏛️ STEP 2: Your verified Private Key
+    apiKey: "8298c3ae0715"
 };
 
 async function pushToGlobalMarket(productData) {
@@ -19,13 +22,14 @@ async function pushToGlobalMarket(productData) {
             },
             body: JSON.stringify({
                 dataSource: "NAWI-EMPIRE001", // Your Cluster Name
-                database: "NAWI-EMPIRE",
-                collection: "Kitchen-menu",
+                database: "NAWI-EMPIRE",      // Your Database Name
+                collection: "Kitchen-meals",  // Updated to match your folder
                 document: productData
             })
         });
 
         if (response.ok) {
+            console.log("Success: Product pushed to NAWI-EMPIRE Global Market.");
             return { success: true };
         } else {
             const error = await response.json();
@@ -33,7 +37,7 @@ async function pushToGlobalMarket(productData) {
             return { success: false };
         }
     } catch (err) {
-        console.error("Connection Failed:", err);
+        console.error("Connection Failed: Check your internet or endpoint URL.", err);
         return { success: false };
     }
 }
