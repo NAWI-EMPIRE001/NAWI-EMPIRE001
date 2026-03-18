@@ -1,43 +1,47 @@
 /**
  * NAWI-EMPIRE MONGODB GATEWAY
  * Authority: 7 Pillars Control Center
- * Status: Updated with Secure Private Key
+ * Status: LEGACY CONNECTION (PERMANENT)
  */
 
-const MONGO_CONFIG = {
-    // 🏛️ STEP 1: Paste the URL from the "Data API" section here
-    endpoint: "YOUR_MONGODB_HTTPS_ENDPOINT_URL", 
-    
-    // 🏛️ STEP 2: Your verified Private Key
-    apiKey: "8298c3ae0715"
-};
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// 🔒 Your Secure Permanent Connection String
+const uri = "mongodb+srv://NAWIEMPIRE001:NAWI-EMPIRE01@nawi-empire001.zwidxex.mongodb.net/NAWI-EMPIRE?retryWrites=true&w=majority&appName=NAWI-EMPIRE001";
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 async function pushToGlobalMarket(productData) {
     try {
-        const response = await fetch(MONGO_CONFIG.endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'api-key': MONGO_CONFIG.apiKey
-            },
-            body: JSON.stringify({
-                dataSource: "NAWI-EMPIRE001", // Your Cluster Name
-                database: "NAWI-EMPIRE",      // Your Database Name
-                collection: "Kitchen-meals",  // Updated to match your folder
-                document: productData
-            })
-        });
+        await client.connect();
+        const database = client.db("NAWI-EMPIRE");
+        const collection = database.collection("Kitchen-meals");
 
-        if (response.ok) {
-            console.log("Success: Product pushed to NAWI-EMPIRE Global Market.");
-            return { success: true };
-        } else {
-            const error = await response.json();
-            console.error("Empire DB Error:", error);
-            return { success: false };
-        }
+        // Ensuring the product is marked for the Worldwide Market
+        const finalProduct = {
+            ...productData,
+            market: "Worldwide",
+            currency: "USD",
+            tier: "7 Pillars Elite",
+            last_updated: new Date().toISOString().split('T')[0]
+        };
+
+        const result = await collection.insertOne(finalProduct);
+        console.log("Success: Product pushed to NAWI-EMPIRE Global Market. ID:", result.insertedId);
+        return { success: true, id: result.insertedId };
+
     } catch (err) {
-        console.error("Connection Failed: Check your internet or endpoint URL.", err);
-        return { success: false };
+        console.error("Empire DB Connection Failed:", err);
+        return { success: false, error: err.message };
+    } finally {
+        await client.close();
     }
 }
+
+module.exports = { pushToGlobalMarket };
