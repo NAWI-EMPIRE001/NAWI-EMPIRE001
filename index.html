@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -139,6 +139,9 @@
     </div>
 
     <script>
+        // --- THE MASTER CONNECTION LINK ---
+        const API_URL = "https://nawi-empire1.onrender.com";
+
         // Global store for products
         let allEmpireProducts = [];
 
@@ -161,8 +164,8 @@
         async function displayEmpireProducts() {
             const productList = document.getElementById('product-display');
             try {
-                // Pointing to your live Render Engine
-                const response = await fetch('https://nawi-empire1.onrender.com/api/get-products');
+                // Fetching from your live Render URL
+                const response = await fetch(`${API_URL}/api/get-products`);
                 allEmpireProducts = await response.json();
                 renderFilteredProducts(allEmpireProducts);
             } catch (err) {
