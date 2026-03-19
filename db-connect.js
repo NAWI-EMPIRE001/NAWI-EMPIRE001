@@ -1,46 +1,57 @@
-/**
+ /**
  * NAWI-EMPIRE MONGODB GATEWAY
  * Authority: 7 Pillars Control Center
- * Status: LEGACY CONNECTION (PERMANENT)
+ * Status: ACTIVE SOVEREIGN CONNECTION
  */
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongoose = require('mongoose');
 
-// 🔒 Your Secure Permanent Connection String
-const uri = "mongodb+srv://NAWIEMPIRE001:NAWI-EMPIRE01@nawi-empire001.zwidxex.mongodb.net/NAWI-EMPIRE?retryWrites=true&w=majority&appName=NAWI-EMPIRE001";
-
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+// We use the Schema already defined in your system to ensure data integrity
+const kitchenSchema = new mongoose.Schema({
+    product_name: { type: String, required: true },
+    category: { type: String, default: "Kitchen Meal" },
+    price: String,
+    description: String,
+    market: { type: String, default: "Worldwide" },
+    currency: { type: String, default: "USD" },
+    tier: { type: String, default: "7 Pillars Elite" },
+    status: { type: String, default: "Available" },
+    last_updated: { type: String, default: () => new Date().toISOString().split('T')[0] }
 });
 
+// Link to the specific "Kitchen-meals" collection in your NAWI_DB
+const KitchenMeal = mongoose.model('KitchenMeal', kitchenSchema, 'Kitchen-meals');
+
+/**
+ * Pushes new assets directly to the Global Market
+ * Authority: NAWI-EMPIRE CEO
+ */
 async function pushToGlobalMarket(productData) {
     try {
-        await client.connect();
-        const database = client.db("NAWI-EMPIRE");
-        const collection = database.collection("Kitchen-meals");
+        // Check if we are already connected via server.js
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error("Vault Connection Offline. Ensure server.js is running.");
+        }
 
-        // Ensuring the product is marked for the Worldwide Market
-        const finalProduct = {
+        const finalProduct = new KitchenMeal({
             ...productData,
             market: "Worldwide",
             currency: "USD",
-            tier: "7 Pillars Elite",
-            last_updated: new Date().toISOString().split('T')[0]
+            tier: "7 Pillars Elite"
+        });
+
+        const result = await finalProduct.save();
+        console.log("✅ Success: Asset pushed to Kitchen-meals. ID:", result._id);
+        
+        return { 
+            success: true, 
+            id: result._id,
+            message: "Worldwide Asset Registered" 
         };
 
-        const result = await collection.insertOne(finalProduct);
-        console.log("Success: Product pushed to NAWI-EMPIRE Global Market. ID:", result.insertedId);
-        return { success: true, id: result.insertedId };
-
     } catch (err) {
-        console.error("Empire DB Connection Failed:", err);
+        console.error("❌ Empire DB Push Failed:", err.message);
         return { success: false, error: err.message };
-    } finally {
-        await client.close();
     }
 }
 
