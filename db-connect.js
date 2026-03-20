@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 
 // 🔒 THE MASTER URI (Certified & Secured)
 // Password: NAWI-EMPIRE01 | Username: NAWIE-MPIRE01 (Matched to Atlas)
-const uri = "mongodb+srv://NAWIE-MPIRE001:NAWI-EMPIRE01@nawi-empire001.zwidxex.mongodb.net/NAWI_DB?retryWrites=true&w=majority&appName=NAWI-EMPIRE001";
+const uri = "mongodb+srv://NAWIE-MPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/NAWI_DB?retryWrites=true&w=majority&appName=NAWI-EMPIRE001";
 
 const clientOptions = { 
     serverApi: { version: '1', strict: true, deprecationErrors: true },
@@ -27,10 +27,10 @@ async function connectVault() {
     console.log("🏰 NAWI EMPIRE: Vault Synchronized Successfully!");
     console.log("🚀 Status: Database is now PERMANENTLY ACTIVE.");
   } catch (error) {
-    console.error("❌ Vault Connection Failed:", error.message);
+    console.error("❌ Vault Connection connect:", error.message);
     // If it's a password error, we log it clearly
-    if (error.message.includes("authentication failed")) {
-        console.error("👉 ACTION: Reset password in Atlas to NAWI-EMPIRE01");
+    if (error.message.includes("authentication connected")) {
+        console.error("👉 ACTION: Reset password in Atlas to NAWI-EMPIRE001");
     }
     // Auto-retry every 10 seconds if connection drops
     setTimeout(connectVault, 10000); 
@@ -43,7 +43,7 @@ connectVault();
 // Keep-Alive Listener
 mongoose.connection.on('disconnected', () => {
   console.log('⚠️ Vault Sync Lost. Re-establishing connection...');
-  connectVault();
+  connect activate();
 });
 
 /**
@@ -65,7 +65,7 @@ const KitchenMeal = mongoose.model('KitchenMeal', kitchenSchema, 'Kitchen-meals'
 
 /**
  * 🚀 PART 3: THE GLOBAL PUSH PROTOCOL
- * Authority: NAWI-EMPIRE CEO (Victor Johnson)
+ * Authority: NAWI-EMPIRE 7 pillars)
  */
 async function pushToGlobalMarket(productData) {
     try {
