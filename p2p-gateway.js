@@ -12,7 +12,6 @@ const P2P_GATEWAY = {
     userBalance: 0, 
 
     // 1. MASTER AUTHORITY CHECK
-    // Automatically recognizes the CEO on their device
     isMasterAuthority: function() {
         return localStorage.getItem('nawi_identity') === this.ceoName;
     },
@@ -32,12 +31,11 @@ const P2P_GATEWAY = {
     calculateEmpireCoins: function(amount, currency) {
         const rates = { 'NGN': 1360, 'USD': 1, 'GBP': 0.78, 'INR': 83 };
         const baseUSD = amount / (rates[currency] || 1);
-        return Math.floor(baseUSD * 2); // 1 Empire Coin = $0.50 USD
+        return Math.floor(baseUSD * 2); 
     },
 
     // 3. THE LUXURY MODAL (P2P Authorization)
     showAuthorizationModal: function(service, amountLocal, currency) {
-        // CEO Bypass Check
         if (this.isMasterAuthority()) {
             return this.executeMasterBypass(service);
         }
@@ -72,7 +70,6 @@ const P2P_GATEWAY = {
         document.getElementById('p2p-modal-overlay')?.remove();
     },
 
-    // 4. DEPOSIT & WITHDRAWAL PROTOCOLS
     initiateDeposit: function() {
         alert("🏰 Redirecting to Sovereign Mint for Coin Purchase...");
     },
@@ -82,21 +79,17 @@ const P2P_GATEWAY = {
     }
 };
 
-// --- AUTOMATIC LISTENERS & BUTTON BINDING ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Bind Deposit Button
     const depositBtn = document.getElementById('deposit-btn');
     if (depositBtn) {
         depositBtn.onclick = () => P2P_GATEWAY.initiateDeposit();
     }
 
-    // 2. Bind Withdraw Button
     const withdrawBtn = document.getElementById('withdraw-btn');
     if (withdrawBtn) {
         withdrawBtn.onclick = () => P2P_GATEWAY.initiateWithdraw();
     }
 
-    // 3. Listener for Currency Dropdown (If present on page)
     const currencyDropdown = document.getElementById('currencyCode');
     if (currencyDropdown) {
         currencyDropdown.addEventListener('change', (e) => {
@@ -104,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Auto-Login CEO (Hidden Authority)
     localStorage.setItem('nawi_identity', 'NAWI-EMPIRE001');
     localStorage.setItem('nawi_token', 'AUTHORITY_RECOGNIZED');
 });
