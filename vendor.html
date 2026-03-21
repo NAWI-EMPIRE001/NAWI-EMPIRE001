@@ -2,181 +2,163 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAWI EMPIRE | VENDOR COMMAND</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAWI-EMPIRE | VENDOR COMMAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --gold: #d4af37;
-            --dark-bg: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
+        :root { --gold: #D4AF37; --black: #050505; --card: #111; --input: #1a1a1a; --glass: rgba(255, 255, 255, 0.05); }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 20px 20px 100px; }
+
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: var(--gold); font-size: 18px; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+        .header p { font-size: 9px; color: #555; margin-top: 5px; font-weight: 800; }
+
+        /* THE VAULT SUMMARY (From Code 1) */
+        .vault-card { background: linear-gradient(145deg, #1a1a1a, #0a0a0a); border: 1px solid var(--gold); border-radius: 20px; padding: 20px; margin-bottom: 25px; text-align: center; box-shadow: 0 10px 30px rgba(212,175,55,0.1); }
+        .vault-card h2 { font-size: 10px; color: #888; text-transform: uppercase; margin: 0; }
+        .vault-card .balance { font-size: 28px; font-weight: 900; color: #fff; margin: 10px 0; }
+        .vault-card .escrow-p { font-size: 10px; color: #00ff64; font-weight: bold; }
+
+        /* THE COMMAND BOX (Combined Upload Form) */
+        .command-box { background: var(--card); border: 1px solid #222; border-radius: 25px; padding: 25px; margin-bottom: 30px; }
+        .section-label { color: var(--gold); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: block; border-left: 3px solid var(--gold); padding-left: 10px; }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 10px; color: #777; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+        input, select, textarea { 
+            width: 100%; background: var(--input); border: 1px solid #333; color: white; 
+            padding: 15px; border-radius: 12px; font-size: 13px; box-sizing: border-box; outline: none;
+        }
+        input:focus, select:focus { border-color: var(--gold); }
+
+        .btn-deploy { 
+            background: var(--gold); color: #000; width: 100%; padding: 18px; border-radius: 15px; 
+            border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; 
+            font-size: 13px; letter-spacing: 1px; transition: 0.3s;
         }
 
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* ASSET LIST (From Code 1) */
+        .section-title { font-size: 12px; color: var(--gold); text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .product-item { background: var(--card); border-radius: 15px; padding: 15px; display: flex; align-items: center; margin-bottom: 10px; border: 1px solid #222; }
+        .product-info { flex-grow: 1; }
+        .product-info h3 { font-size: 13px; margin: 0; }
+        .product-info p { font-size: 10px; color: #555; }
+        .status-badge { font-size: 9px; padding: 4px 8px; border-radius: 5px; border: 1px solid var(--gold); color: var(--gold); }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: var(--gold);
-            letter-spacing: 4px;
-            font-size: 1.5rem;
-            margin: 0;
-        }
-
-        .command-box {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-            padding: 25px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: var(--gold);
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-
-        .btn-deploy {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #d4af37, #f4df4e);
-            border: none;
-            border-radius: 8px;
-            color: black;
-            font-weight: bold;
-            font-size: 1rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-deploy:active {
-            transform: scale(0.98);
-        }
-
-        #status {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
+        /* NAV */
+        .master-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #080808; border-top: 1px solid #111; display: flex; justify-content: space-around; padding: 15px 0; }
+        .nav-box { text-align: center; color: #555; text-decoration: none; font-size: 20px; }
+        .nav-box.active { color: var(--gold); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>NAWI EMPIRE</h1>
-        <p style="font-size: 0.7rem; color: #888;">OFFICIAL VENDOR GATEWAY</p>
+        <h1>Global Vendor Command</h1>
+        <p>NAWI EMPIRE | SOVEREIGN NODE 001</p>
+    </div>
+
+    <div class="vault-card">
+        <h2>Total Revenue (Held in P2P)</h2>
+        <div class="balance">₦ 0.00</div>
+        <p class="escrow-p"><i class="fa-solid fa-lock"></i> ESCROW PROTECTION ACTIVE</p>
     </div>
 
     <div class="command-box">
+        <span class="section-label">Deploy New Asset</span>
         <div class="input-group">
             <label>Asset Name</label>
-            <input type="text" id="p_name" placeholder="e.g. Empire King Meal">
+            <input type="text" id="p_name" placeholder="e.g. Empire Signature Hoodie">
         </div>
-
-        <div class="input-group">
-            <label>Price (USD)</label>
-            <input type="text" id="p_price" placeholder="50.00">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="input-group">
+                <label>Price (USD)</label>
+                <input type="number" id="p_price" placeholder="50.00" style="color: #00ff64; font-weight: bold;">
+            </div>
+            <div class="input-group">
+                <label>Pillar Category</label>
+                <select id="p_cat">
+                    <option value="Kitchen Meal">Kitchen Meal</option>
+                    <option value="Apparel">Apparel & Design</option>
+                    <option value="Accessories">Luxury Accessories</option>
+                    <option value="Gaming">Gaming Asset</option>
+                </select>
+            </div>
         </div>
-
-        <div class="input-group">
-            <label>Category</label>
-            <select id="p_cat">
-                <option value="Kitchen Meal">Kitchen Meal</option>
-                <option value="Digital Asset">Digital Asset</option>
-                <option value="Graphics Service">Graphics Service</option>
-            </select>
-        </div>
-
         <div class="input-group">
             <label>Sovereign Description</label>
-            <textarea id="p_desc" rows="3" placeholder="Describe the asset quality..."></textarea>
+            <textarea id="p_desc" rows="2" placeholder="Asset utility..."></textarea>
         </div>
-
         <button class="btn-deploy" onclick="deployToVault()">Deploy to Vault</button>
-        
-        <div id="status"></div>
+        <div id="status" style="margin-top: 10px; font-size: 10px; text-align: center;"></div>
     </div>
 
+    <span class="section-title">Your Deployed Assets</span>
+    <div id="productList">
+        <p style="text-align: center; color: #333; font-size: 11px;">Scanning Vault...</p>
+    </div>
+
+    <nav class="master-nav">
+        <a href="index.html" class="nav-box"><i class="fa-solid fa-house"></i></a>
+        <a href="vendor.html" class="nav-box active"><i class="fa-solid fa-briefcase"></i></a>
+        <a href="profile.html" class="nav-box"><i class="fa-solid fa-user-shield"></i></a>
+    </nav>
+
     <script>
+        const API_URL = "https://nawi-empire1.onrender.com";
+
+        // THE UPLOAD LOGIC (From Code 2)
         async function deployToVault() {
             const status = document.getElementById('status');
             const data = {
-                product_name: document.getElementById('p_name').value,
-                price: document.getElementById('p_price').value,
+                productName: document.getElementById('p_name').value,
+                priceLocal: document.getElementById('p_price').value,
                 category: document.getElementById('p_cat').value,
                 description: document.getElementById('p_desc').value,
-                tier: "7 Pillars Elite"
+                brandOwner: "NAWI-EMPIRE",
+                escrowStatus: "Held_by_Empire"
             };
 
-            if(!data.product_name || !data.price) {
+            if(!data.productName || !data.priceLocal) {
                 status.innerHTML = "❌ Error: Asset Name & Price Required";
                 return;
             }
 
-            status.innerHTML = "⏳ Synchronizing with Vault...";
+            status.innerHTML = "⏳ Synchronizing...";
 
             try {
-                const response = await fetch('https://nawi-empire1.onrender.com/api/add-product', {
+                const response = await fetch(`${API_URL}/api/add-product`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-
-                const result = await response.json();
-
-                if(result.success) {
-                    status.innerHTML = "🏰 <span style='color: #d4af37;'>SUCCESS: Asset Registered!</span>";
-                    // Clear inputs
-                    document.getElementById('p_name').value = '';
-                    document.getElementById('p_price').value = '';
-                    document.getElementById('p_desc').value = '';
-                } else {
-                    status.innerHTML = "❌ Vault Rejection: " + result.error;
+                if(response.ok) {
+                    status.innerHTML = "🏰 <span style='color: var(--gold);'>SUCCESS: ASSET REGISTERED!</span>";
+                    loadProducts(); // Refresh the list
                 }
-            } catch (err) {
-                status.innerHTML = "❌ Engine Offline. Check Render Logs.";
-            }
+            } catch (err) { status.innerHTML = "❌ Engine Offline."; }
         }
+
+        // THE DASHBOARD LIST LOGIC (From Code 1)
+        async function loadProducts() {
+            const list = document.getElementById('productList');
+            try {
+                const response = await fetch(`${API_URL}/api/get-my-products`);
+                const products = await response.json();
+                list.innerHTML = products.map(p => `
+                    <div class="product-item">
+                        <div class="product-info">
+                            <h3>${p.productName}</h3>
+                            <p>${p.category} | $${p.priceLocal}</p>
+                        </div>
+                        <div class="status-badge">${p.escrowStatus}</div>
+                    </div>
+                `).join('');
+            } catch (err) { list.innerHTML = "<p style='text-align:center;'>No assets found.</p>"; }
+        }
+
+        window.onload = loadProducts;
     </script>
 </body>
 </html>
+
