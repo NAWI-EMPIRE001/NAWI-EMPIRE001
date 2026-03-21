@@ -13,34 +13,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --glass: rgba(255, 255, 255, 0.05); --black: #080808; }
+        :root { --gold: #D4AF37; --glass: rgba(255, 255, 255, 0.05); --black: #080808; --green: #00ff64; }
         body { margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         /* --- Auth Gate --- */
-        #auth-gate { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #111 0%, #000 100%); padding: 20px; text-align: center; z-index: 3000; position: fixed; width: 100%; top: 0; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        #auth-gate { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #111 0%, #000 100%); padding: 20px; text-align: center; z-index: 3000; position: fixed; width: 100%; top: 0; transition: 0.8s; }
         .authority-card { background: rgba(255,255,255,0.03); border: 1px solid var(--gold); border-radius: 24px; padding: 40px 30px; max-width: 400px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 0 50px rgba(212, 175, 55, 0.1); }
         .order-text { font-size: 13px; line-height: 1.8; margin-bottom: 30px; color: #eee; border-left: 3px solid var(--gold); padding-left: 15px; text-align: left; font-style: italic; }
-        .gate-btn { background: var(--gold); color: black; border: none; padding: 20px; border-radius: 12px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        .gate-btn { background: var(--gold); color: black; border: none; padding: 20px; border-radius: 12px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
 
         #main-platform { display: none; padding-bottom: 100px; animation: fadeIn 1s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* --- Global Discovery --- */
+        /* --- Discovery --- */
         .top-search-container { padding: 25px 15px 15px; background: #000; position: sticky; top: 0; z-index: 1000; }
         .search-wrapper { background: var(--glass); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 14px 18px; }
         .search-wrapper input { background: none; border: none; color: white; width: 100%; font-size: 14px; outline: none; margin-left: 10px; }
 
         /* --- Product Cards --- */
         .feed-wrapper { padding: 15px; }
-        .product-card { background: #111; border: 1px solid #222; border-radius: 22px; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--gold); }
+        .product-card { background: #111; border: 1px solid #222; border-radius: 22px; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--gold); transition: 0.3s; }
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .global-badge { color: #00ff64; font-size: 9px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 5px; }
+        .global-badge { color: var(--green); font-size: 9px; font-weight: 900; letter-spacing: 1px; }
         .escrow-shield { color: var(--gold); font-size: 10px; font-weight: 900; }
-
         .product-card h3 { color: #fff; margin: 0; font-size: 17px; text-transform: uppercase; }
-        .product-card p { font-size: 12px; color: #888; margin: 8px 0; }
         .price-tag { font-size: 22px; font-weight: 900; color: var(--gold); display: block; margin-top: 10px; }
-        .buy-btn { background: var(--gold); color: black; width: 100%; border: none; padding: 15px; margin-top: 20px; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-size: 12px; cursor: pointer; }
+        .buy-btn { background: var(--gold); color: black; width: 100%; border: none; padding: 15px; margin-top: 20px; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
+
+        /* --- P2P WALLET SECTOR --- */
+        .wallet-sector { background: #111; border-radius: 25px; padding: 25px; margin: 10px 0 30px; border: 1px solid #222; }
+        .balance-amount { font-size: 32px; font-weight: 900; color: var(--gold); margin: 8px 0 20px; }
+        .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .wallet-btn { padding: 15px; border-radius: 12px; border: none; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-deposit { background: var(--green); color: black; }
+        .btn-withdraw { background: #222; color: #555; }
 
         /* --- Navigation --- */
         #dash-overlay { position: fixed; bottom: -110%; left: 0; width: 100%; height: 85vh; background: var(--black); z-index: 2500; border-top: 2px solid var(--gold); border-radius: 35px 35px 0 0; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 35px 20px; overflow-y: auto; }
@@ -52,7 +58,7 @@
         .tool-item span { font-size: 10px; font-weight: 900; text-transform: uppercase; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 18px 0 25px; border-top: 1px solid #111; z-index: 2000; }
-        .nav-btn { text-align: center; text-decoration: none; color: #444; flex: 1; }
+        .nav-btn { text-align: center; text-decoration: none; color: #444; flex: 1; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { color: var(--gold); }
         .nav-btn p { font-size: 9px; margin-top: 5px; font-weight: 900; text-transform: uppercase; }
         .plus-btn { background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -15px; color: black; font-size: 22px; cursor: pointer; border: 4px solid #000; }
@@ -63,9 +69,7 @@
     <div id="auth-gate">
         <div class="authority-card">
             <div style="color:var(--gold); font-weight:900; font-size:10px; margin-bottom:20px; letter-spacing:4px;">EMPIRE MANDATE</div>
-            <p class="order-text">
-                "This is my order and my authority to protect the founders and this platform... follow the rules of this platform."
-            </p>
+            <p class="order-text">"This is my order and my authority to protect the founders and this platform... follow the rules of this platform."</p>
             <button class="gate-btn" onclick="bypassGate()">Unlock Ecosystem</button>
         </div>
     </div>
@@ -86,22 +90,30 @@
             <a href="market.html" class="nav-btn"><i class="fa-solid fa-shop"></i><p>Market</p></a>
             <div class="plus-btn" onclick="toggleDash()"><i class="fa-solid fa-plus"></i></div>
             <a href="inbox.html" class="nav-btn"><i class="fa-solid fa-message"></i><p>Inbox</p></a>
-            <a href="profile.html" class="nav-btn"><i class="fa-solid fa-user-shield"></i><p>CEO</p></a>
+            <div class="nav-btn" onclick="openMasterCommand()"><i class="fa-solid fa-user-shield"></i><p>CEO</p></div>
         </nav>
     </div>
 
     <div id="dash-overlay">
         <div style="width: 40px; height: 4px; background: #333; border-radius: 10px; margin: 0 auto 25px;"></div>
         <h3 style="color:var(--gold); text-align:center; letter-spacing:4px; font-weight:900; font-size:13px; text-transform: uppercase;">Imperial Dashboard</h3>
+        
+        <div class="wallet-sector">
+            <span style="font-size:10px; color:#555; text-transform:uppercase; letter-spacing:2px; font-weight:900;">P2P Gateway Balance</span>
+            <div class="balance-amount">$0.00 <span style="font-size:12px; color:#555;">USD</span></div>
+            <div class="wallet-actions">
+                <button class="wallet-btn btn-deposit" onclick="alert('P2P Gateway Active: Please link a payment node.')"><i class="fa-solid fa-plus"></i> Deposit</button>
+                <button class="wallet-btn btn-withdraw" onclick="alert('Security Alert: Withdrawal locked until first trade verification.')"><i class="fa-solid fa-lock"></i> Withdraw</button>
+            </div>
+        </div>
+
         <div class="tool-grid">
             <a href="studio.html" class="tool-item"><i class="fa-solid fa-clapperboard"></i><span>Studio</span></a>
             <a href="gaming.html" class="tool-item"><i class="fa-solid fa-gamepad"></i><span>Gaming</span></a>
-            <a href="market.html" class="tool-item"><i class="fa-solid fa-shop"></i><span>Market</span></a>
             <a href="kitchen.html" class="tool-item"><i class="fa-solid fa-utensils"></i><span>Kitchen</span></a>
-            <a href="music.html" class="tool-item"><i class="fa-solid fa-music"></i><span>Music</span></a>
-            <a href="add-product.html" class="tool-item"><i class="fa-solid fa-plus-circle" style="color:#00ff64;"></i><span>Add Asset</span></a>
+            <a href="add-product.html" class="tool-item"><i class="fa-solid fa-plus-circle" style="color:var(--green);"></i><span>Add Asset</span></a>
         </div>
-        <p onclick="toggleDash()" style="text-align:center; color:#555; margin-top:40px; cursor:pointer; font-size:10px; font-weight:900; letter-spacing:3px; text-transform: uppercase;">Dismiss System</p>
+        <p onclick="toggleDash()" style="text-align:center; color:#555; margin-top:40px; cursor:pointer; font-size:10px; font-weight:900; letter-spacing:3px;">DISMISS SYSTEM</p>
     </div>
 
     <script>
@@ -109,6 +121,15 @@
         let allEmpireProducts = [];
 
         function toggleDash() { document.getElementById('dash-overlay').classList.toggle('active'); }
+
+        // CEO MASTER COMMAND PROFILE
+        function openMasterCommand() {
+            if(localStorage.getItem('nawi_token') === 'FOUNDER_VERIFIED') {
+                window.location.href = "profile.html"; 
+            } else {
+                alert("Unauthorized. Verification Required.");
+            }
+        }
         
         function bypassGate() {
             document.getElementById('auth-gate').style.opacity = '0';
@@ -122,13 +143,13 @@
 
         async function loadGlobalMarket() {
             const displayArea = document.getElementById('product-display');
-            displayArea.innerHTML = '<p style="text-align:center; color:var(--gold);">SYNCHRONIZING...</p>';
+            displayArea.innerHTML = '<p style="text-align:center; color:var(--gold); padding:40px;">SYNCHRONIZING...</p>';
             try {
                 const response = await fetch(`${API_URL}/api/get-products`);
                 allEmpireProducts = await response.json();
                 renderMarket(allEmpireProducts);
             } catch (err) {
-                displayArea.innerHTML = `<p style="text-align:center; color:#555;">VAULT SYNC INTERRUPTED</p>`;
+                displayArea.innerHTML = `<p style="text-align:center; color:#555; padding:40px;">VAULT SYNC INTERRUPTED</p>`;
             }
         }
 
@@ -147,7 +168,7 @@
                             <span class="escrow-shield">🛡️ ESCROW ACTIVE</span>
                         </div>
                         <h3>${item.product_name}</h3>
-                        <p>${item.category || 'Professional Asset'} | SOVEREIGN GRADE</p>
+                        <p style="font-size:12px; color:#888;">${item.category || 'Professional Asset'} | SOVEREIGN GRADE</p>
                         <span class="price-tag">$${parseFloat(item.price).toFixed(2)}</span>
                         <button class="buy-btn" onclick="alert('P2P Gateway Initiated...')">Acquire Asset</button>
                     </div>
