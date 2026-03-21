@@ -16,49 +16,46 @@
         :root { --gold: #D4AF37; --glass: rgba(255, 255, 255, 0.05); --black: #080808; }
         body { margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
-        /* --- Universal Auth Gate --- */
+        /* --- Auth Gate --- */
         #auth-gate { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #111 0%, #000 100%); padding: 20px; text-align: center; z-index: 3000; position: fixed; width: 100%; top: 0; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .authority-card { background: rgba(255,255,255,0.03); border: 1px solid var(--gold); border-radius: 24px; padding: 40px 30px; max-width: 400px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 0 50px rgba(212, 175, 55, 0.1); }
         .order-text { font-size: 13px; line-height: 1.8; margin-bottom: 30px; color: #eee; border-left: 3px solid var(--gold); padding-left: 15px; text-align: left; font-style: italic; }
-        .gate-input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 12px; color: white; text-align: center; outline: none; box-sizing: border-box; }
         .gate-btn { background: var(--gold); color: black; border: none; padding: 20px; border-radius: 12px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
 
         #main-platform { display: none; padding-bottom: 100px; animation: fadeIn 1s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* --- Responsive Search Bar --- */
-        .top-search-container { padding: 25px 15px 15px; background: #000; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: center; }
-        .search-wrapper { background: var(--glass); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 14px 18px; max-width: 800px; width: 100%; }
+        /* --- Global Discovery --- */
+        .top-search-container { padding: 25px 15px 15px; background: #000; position: sticky; top: 0; z-index: 1000; }
+        .search-wrapper { background: var(--glass); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 14px 18px; }
         .search-wrapper input { background: none; border: none; color: white; width: 100%; font-size: 14px; outline: none; margin-left: 10px; }
 
-        /* --- Global Grid System (Desktop & Mobile) --- */
-        .feed-wrapper { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .product-card { background: #111; border: 1px solid #222; border-radius: 22px; padding: 25px; position: relative; border-left: 4px solid var(--gold); display: flex; flex-direction: column; justify-content: space-between; }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* --- Product Cards --- */
+        .feed-wrapper { padding: 15px; }
+        .product-card { background: #111; border: 1px solid #222; border-radius: 22px; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--gold); }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .global-badge { color: #00ff64; font-size: 9px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 5px; }
-        .escrow-shield { color: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
+        .escrow-shield { color: var(--gold); font-size: 10px; font-weight: 900; }
 
-        .product-card h3 { color: #fff; margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
-        .product-card p { font-size: 12px; color: #888; margin: 12px 0; line-height: 1.5; }
-        .price-tag { font-size: 24px; font-weight: 900; color: var(--gold); margin-top: 10px; }
-        .buy-btn { background: var(--gold); color: black; width: 100%; border: none; padding: 16px; margin-top: 20px; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .buy-btn:hover { background: #fff; }
+        .product-card h3 { color: #fff; margin: 0; font-size: 17px; text-transform: uppercase; }
+        .product-card p { font-size: 12px; color: #888; margin: 8px 0; }
+        .price-tag { font-size: 22px; font-weight: 900; color: var(--gold); display: block; margin-top: 10px; }
+        .buy-btn { background: var(--gold); color: black; width: 100%; border: none; padding: 15px; margin-top: 20px; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-size: 12px; cursor: pointer; }
 
-        /* --- Dashboard Overlay --- */
-        #dash-overlay { position: fixed; bottom: -110%; left: 0; width: 100%; height: 85vh; background: var(--black); z-index: 2500; border-top: 2px solid var(--gold); border-radius: 35px 35px 0 0; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 35px 20px; box-sizing: border-box; overflow-y: auto; }
-        #dash-overlay.active { bottom: 0; box-shadow: 0 -20px 50px rgba(0,0,0,0.8); }
+        /* --- Navigation --- */
+        #dash-overlay { position: fixed; bottom: -110%; left: 0; width: 100%; height: 85vh; background: var(--black); z-index: 2500; border-top: 2px solid var(--gold); border-radius: 35px 35px 0 0; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 35px 20px; overflow-y: auto; }
+        #dash-overlay.active { bottom: 0; }
         
-        .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
-        .tool-item { background: var(--glass); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #1a1a1a; text-decoration: none; color: white; transition: 0.3s; }
-        .tool-item i { color: var(--gold); font-size: 24px; margin-bottom: 10px; display: block; }
+        .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 25px; }
+        .tool-item { background: var(--glass); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #1a1a1a; text-decoration: none; color: white; }
+        .tool-item i { color: var(--gold); font-size: 22px; margin-bottom: 10px; display: block; }
         .tool-item span { font-size: 10px; font-weight: 900; text-transform: uppercase; }
 
-        /* --- Navigation Bar --- */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #111; z-index: 2000; }
-        .nav-btn { text-align: center; text-decoration: none; color: #444; flex: 1; transition: 0.3s; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 18px 0 25px; border-top: 1px solid #111; z-index: 2000; }
+        .nav-btn { text-align: center; text-decoration: none; color: #444; flex: 1; }
         .nav-btn.active { color: var(--gold); }
         .nav-btn p { font-size: 9px; margin-top: 5px; font-weight: 900; text-transform: uppercase; }
-        .plus-btn { background: var(--gold); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -25px; color: black; font-size: 24px; cursor: pointer; border: 5px solid #000; }
+        .plus-btn { background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -15px; color: black; font-size: 22px; cursor: pointer; border: 4px solid #000; }
     </style>
 </head>
 <body>
@@ -69,9 +66,7 @@
             <p class="order-text">
                 "This is my order and my authority to protect the founders and this platform... follow the rules of this platform."
             </p>
-            <input type="password" id="gate-pass" class="gate-input" placeholder="Access Key">
             <button class="gate-btn" onclick="bypassGate()">Unlock Ecosystem</button>
-            <p style="font-size:9px; color:#444; margin-top:25px; letter-spacing:1px; text-transform: uppercase;">Identity: NAWI-EMPIRE Protocol</p>
         </div>
     </div>
 
@@ -104,7 +99,7 @@
             <a href="market.html" class="tool-item"><i class="fa-solid fa-shop"></i><span>Market</span></a>
             <a href="kitchen.html" class="tool-item"><i class="fa-solid fa-utensils"></i><span>Kitchen</span></a>
             <a href="music.html" class="tool-item"><i class="fa-solid fa-music"></i><span>Music</span></a>
-            <a href="vendor.html" class="tool-item"><i class="fa-solid fa-plus-circle" style="color:#00ff64;"></i><span>Add Asset</span></a>
+            <a href="add-product.html" class="tool-item"><i class="fa-solid fa-plus-circle" style="color:#00ff64;"></i><span>Add Asset</span></a>
         </div>
         <p onclick="toggleDash()" style="text-align:center; color:#555; margin-top:40px; cursor:pointer; font-size:10px; font-weight:900; letter-spacing:3px; text-transform: uppercase;">Dismiss System</p>
     </div>
@@ -116,68 +111,53 @@
         function toggleDash() { document.getElementById('dash-overlay').classList.toggle('active'); }
         
         function bypassGate() {
-            const pass = document.getElementById('gate-pass').value;
-            if(pass === "NAWI-EMPIRE001") { // CEO Authorization
-                document.getElementById('auth-gate').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('auth-gate').style.display = 'none';
-                    document.getElementById('main-platform').style.display = 'block';
-                    localStorage.setItem('nawi_token', 'FOUNDER_VERIFIED');
-                    loadGlobalMarket(); 
-                }, 800);
-            } else {
-                alert("Incorrect Authorization Key.");
-            }
+            document.getElementById('auth-gate').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('auth-gate').style.display = 'none';
+                document.getElementById('main-platform').style.display = 'block';
+                localStorage.setItem('nawi_token', 'FOUNDER_VERIFIED');
+                loadGlobalMarket(); 
+            }, 800);
         }
 
         async function loadGlobalMarket() {
             const displayArea = document.getElementById('product-display');
-            displayArea.innerHTML = `<p style="text-align:center; color:var(--gold); width:100%; grid-column: 1/-1;">Synchronizing with Empire Vault...</p>`;
-            
+            displayArea.innerHTML = '<p style="text-align:center; color:var(--gold);">SYNCHRONIZING...</p>';
             try {
                 const response = await fetch(`${API_URL}/api/get-products`);
                 allEmpireProducts = await response.json();
                 renderMarket(allEmpireProducts);
             } catch (err) {
-                displayArea.innerHTML = `<p style="text-align:center; color:#555; width:100%; grid-column: 1/-1;">VAULT OFFLINE. RE-SYNCING...</p>`;
+                displayArea.innerHTML = `<p style="text-align:center; color:#555;">VAULT SYNC INTERRUPTED</p>`;
             }
         }
 
         function renderMarket(products) {
             const displayArea = document.getElementById('product-display');
             displayArea.innerHTML = ''; 
-
             if(products.length === 0) {
-                displayArea.innerHTML = `<p style="text-align:center; padding:60px 20px; color:#444; grid-column: 1/-1;">THE VAULT IS CURRENTLY EMPTY.</p>`;
+                displayArea.innerHTML = `<p style="text-align:center; padding:60px 20px; color:#444;">THE VAULT IS EMPTY.</p>`;
                 return;
             }
-
             products.forEach(item => {
-                const card = `
+                displayArea.insertAdjacentHTML('beforeend', `
                     <div class="product-card">
                         <div class="card-meta">
                             <span class="global-badge">🌍 GLOBAL ACTIVE</span>
                             <span class="escrow-shield">🛡️ ESCROW ACTIVE</span>
                         </div>
                         <h3>${item.product_name}</h3>
-                        <p>${item.description || 'Professional Grade Sovereign Asset.'}</p>
-                        <div>
-                            <span class="price-tag">$${parseFloat(item.price).toFixed(2)}</span>
-                            <button class="buy-btn" onclick="alert('P2P Gateway Initiated for ${item.product_name}')">Acquire Asset</button>
-                        </div>
+                        <p>${item.category || 'Professional Asset'} | SOVEREIGN GRADE</p>
+                        <span class="price-tag">$${parseFloat(item.price).toFixed(2)}</span>
+                        <button class="buy-btn" onclick="alert('P2P Gateway Initiated...')">Acquire Asset</button>
                     </div>
-                `;
-                displayArea.insertAdjacentHTML('beforeend', card);
+                `);
             });
         }
 
         document.getElementById('global-search').addEventListener('input', (e) => {
             const search = e.target.value.toLowerCase().trim();
-            const filtered = allEmpireProducts.filter(p => 
-                p.product_name.toLowerCase().includes(search) || 
-                (p.category && p.category.toLowerCase().includes(search))
-            );
-            renderMarket(filtered);
+            renderMarket(allEmpireProducts.filter(p => p.product_name.toLowerCase().includes(search)));
         });
 
         window.onload = function() {
