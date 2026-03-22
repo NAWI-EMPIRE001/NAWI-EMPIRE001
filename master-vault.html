@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAWI-EMPIRE | MASTER APPROVAL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold: #D4AF37; --black: #050505; --red: #ff4b4b; --green: #00ff64; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; }
+        
+        .vault-header { text-align: center; padding: 30px 0; border-bottom: 1px solid #222; margin-bottom: 20px; }
+        .vault-header h1 { font-size: 12px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
+
+        .request-card { 
+            background: #111; border: 1px solid #222; border-radius: 20px; 
+            padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--gold);
+        }
+        .user-info b { font-size: 16px; color: #fff; display: block; }
+        .user-info span { font-size: 10px; color: #555; text-transform: uppercase; }
+
+        .amount-display { font-size: 24px; font-weight: 900; color: var(--gold); margin: 15px 0; }
+        
+        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-approve { background: var(--green); color: black; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        .btn-reject { background: #222; color: var(--red); border: 1px solid var(--red); padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="vault-header">
+        <h1>PENDING WITHDRAWAL AUTHORIZATIONS</h1>
+        <p style="font-size: 10px; color: #444;">FOUNDER ID: NAWI-EMPIRE001</p>
+    </div>
+
+    <div id="requests-container">
+        <p style="text-align:center; color:#333; font-size:12px;">Syncing with Global Ledger...</p>
+    </div>
+
+    <script>
+        const API_URL = "https://nawi-empire1.onrender.com";
+
+        async function loadRequests() {
+            try {
+                const res = await fetch(`${API_URL}/api/get-withdrawals`);
+                const requests = await res.json();
+                renderRequests(requests);
+            } catch (err) {
+                document.getElementById('requests-container').innerHTML = "<p style='color:red'>Vault Connection Failed.</p>";
+            }
+        }
+
+        function renderRequests(list) {
+            const container = document.getElementById('requests-container');
+            container.innerHTML = '';
+
+            if(list.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#555;'>No pending transfers found.</p>";
+                return;
+            }
+
+            list.forEach(req => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="request-card" id="req-${req._id}">
+                        <div class="user-info">
+                            <span>Recipient Name</span>
+                            <b>${req.fullName}</b>
+                        </div>
+                        <div style="margin-top:10px;">
+                            <span>Wallet / Account</span>
+                            <p style="font-size:11px; color:#aaa; margin:5px 0;">${req.accountDetails}</p>
+                        </div>
+                        <div class="amount-display">${req.amount} 🪙</div>
+                        <div class="action-row">
+                            <button class="btn-reject" onclick="updateStatus('${req._id}', 'REJECTED')">REJECT</button>
+                            <button class="btn-approve" onclick="updateStatus('${req._id}', 'APPROVED')">APPROVE & PAY</button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        async function updateStatus(id, status) {
+            const confirmAction = confirm(`Are you sure you want to ${status} this transfer?`);
+            if(!confirmAction) return;
+
+            try {
+                await fetch(`${API_URL}/api/update-withdrawal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status })
+                });
+                document.getElementById(`req-${id}`).style.opacity = '0.3';
+                alert("Empire Ledger Updated.");
+            } catch (err) {
+                alert("Update Failed.");
+            }
+        }
+
+        window.onload = loadRequests;
+    </script>
+</body>
+</html>
