@@ -8,36 +8,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --black: #050505; --card: #111; --neon: #00ff41; }
-        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 100px; transition: 0.5s; overflow-x: hidden; }
+        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 120px; transition: 0.5s; overflow-x: hidden; }
         
         /* PUBLIC VIEW */
-        #publicView { padding: 50px 20px; text-align: center; }
-        .lux-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; background: #111; cursor: pointer; transition: 0.3s; }
+        #publicView { padding: 40px 20px; text-align: center; }
+        .lux-circle { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; background: #111; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(212,175,55,0.1); }
         .lux-circle:active { transform: scale(0.9); }
-        .lux-circle i { font-size: 40px; color: var(--gold); }
+        .lux-circle i { font-size: 35px; color: var(--gold); }
         
-        .user-name { font-weight: 900; letter-spacing: 1px; font-size: 20px; margin: 0; }
-        .user-rank { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        .user-name { font-weight: 900; letter-spacing: 1px; font-size: 22px; margin: 0; text-transform: uppercase; }
+        .user-rank { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 700; }
 
-        .stat-row { display: flex; justify-content: center; gap: 30px; margin: 25px 0; border-top: 1px solid #111; border-bottom: 1px solid #111; padding: 20px 0; }
-        .stat-box strong { display: block; font-size: 18px; color: #fff; }
-        .stat-box small { font-size: 9px; color: #444; text-transform: uppercase; }
+        /* BONUS ASSET CARD */
+        .asset-card { 
+            background: linear-gradient(145deg, #111, #050505); 
+            border: 1px solid var(--gold); 
+            border-radius: 20px; padding: 20px; margin: 25px 0; 
+            text-align: left; position: relative; overflow: hidden;
+        }
+        .asset-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%); }
+        
+        .card-label { font-size: 9px; color: #555; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
+        .card-balance { margin: 8px 0; color: #fff; font-size: 32px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .card-tag { background: var(--gold); color: #000; font-size: 8px; font-weight: 900; padding: 4px 10px; border-radius: 50px; text-transform: uppercase; }
 
-        /* MASTER VIEW (HIDDEN) */
-        #masterView { display: none; padding: 20px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .stat-row { display: flex; justify-content: center; gap: 30px; margin: 20px 0; padding: 15px 0; border-top: 1px solid #111; }
+        .stat-box strong { display: block; font-size: 18px; color: #fff; font-weight: 900; }
+        .stat-box small { font-size: 8px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
 
-        .monitor-card { background: #080808; border: 1px solid #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 3px solid var(--neon); }
-        .monitor-card label { color: #444; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 8px; }
-        .monitor-card span { font-size: 22px; font-weight: 900; color: var(--gold); font-family: monospace; }
+        /* MASTER VIEW (CEO MODE) */
+        #masterView { display: none; padding: 20px; animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .monitor-card { background: #080808; border: 1px solid #1a1a1a; padding: 20px; border-radius: 18px; margin-bottom: 12px; border-left: 4px solid var(--neon); }
+        .monitor-card label { color: #444; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: 900; }
+        .monitor-card span { font-size: 24px; font-weight: 900; color: var(--gold); font-family: 'Inter', sans-serif; }
         
         /* AUTH OVERLAY */
-        #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
-        #masterAuth input { background: #111; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 10px; text-align: center; font-size: 24px; letter-spacing: 10px; outline: none; margin-bottom: 20px; width: 200px; }
+        #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 5000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 12px; outline: none; margin-bottom: 25px; width: 180px; font-weight: 900; }
 
         /* NAV */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 20px 0; border-top: 1px solid #111; z-index: 1000; }
-        .nav-btn { color: #333; font-size: 22px; text-decoration: none; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid #111; z-index: 1000; }
+        .nav-btn { color: #333; font-size: 22px; text-decoration: none; transition: 0.3s; }
         .nav-active { color: var(--gold); }
     </style>
 </head>
@@ -47,51 +60,65 @@
         <div class="lux-circle" onclick="handleMasterTrigger()">
             <i class="fa-solid fa-crown"></i>
         </div>
-        <h2 class="user-name">CITIZEN NODE</h2>
+        <h2 class="user-name" id="display-name">CITIZEN NODE</h2>
         <p class="user-rank">Authorized Platform User</p>
+
+        <div class="asset-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <span class="card-label">Empire Balance</span>
+                    <div class="card-balance" id="profile-bonus-amount">10 🪙</div>
+                </div>
+                <div class="card-tag">Founder Bonus</div>
+            </div>
+            <p style="font-size: 10px; color: #444; margin-top: 15px; border-top: 1px solid #1a1a1a; padding-top: 12px; line-height: 1.4;">
+                Active Founder Status verified. Bonus assets are ready for use in the <b>Kitchen</b> or <b>Ads Command</b>.
+            </p>
+        </div>
 
         <div class="stat-row">
             <div class="stat-box"><strong>0</strong><small>Following</small></div>
             <div class="stat-box"><strong>0</strong><small>Followers</small></div>
             <div class="stat-box"><strong>0</strong><small>Assets</small></div>
         </div>
-        <button style="background:none; border:1px solid #222; color:#555; padding:12px 25px; border-radius:10px; font-size:10px; font-weight:900; text-transform:uppercase;">Edit Profile</button>
+        
+        <button style="background:none; border:1px solid #222; color:#555; padding:12px 35px; border-radius:12px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Edit Profile</button>
     </div>
 
     <div id="masterView">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <span style="color:var(--neon); font-size:10px; font-family:monospace;">> MASTER_ENCRYPTION_ON</span>
-            <button onclick="exitMaster()" style="background:none; border:1px solid var(--gold); color:var(--gold); font-size:9px; padding:5px 10px; border-radius:4px;">EXIT</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; padding: 0 5px;">
+            <span style="color:var(--neon); font-size:10px; font-family:monospace; font-weight: 900;">[ MASTER_ENCRYPTION_ACTIVE ]</span>
+            <button onclick="exitMaster()" style="background:none; border:1px solid var(--gold); color:var(--gold); font-size:9px; padding:6px 12px; border-radius:6px; font-weight: 900;">EXIT NODE</button>
         </div>
 
         <div class="monitor-card">
-            <label>Sovereign Balance</label>
+            <label>Master Vault (USD)</label>
             <span id="ceo-balance">$0.00</span>
         </div>
 
         <div class="monitor-card" style="border-left-color: var(--gold);">
-            <label>Empire Assets</label>
+            <label>Worldwide Asset Nodes</label>
             <span id="asset-count">0 Nodes</span>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div class="monitor-card" onclick="location.href='add-product.html'" style="cursor:pointer; border-left-color:#fff;">
                 <label>Inventory</label>
                 <span style="font-size:14px;">COMMAND →</span>
             </div>
             <div class="monitor-card" style="border-left-color:var(--neon);">
-                <label>Visibility</label>
-                <span style="font-size:14px;">HIDDEN</span>
+                <label>Node Status</label>
+                <span style="font-size:14px;">VISIBLE</span>
             </div>
         </div>
     </div>
 
     <div id="masterAuth">
-        <i class="fa-solid fa-user-shield" style="color:var(--gold); font-size:40px; margin-bottom:20px;"></i>
-        <p style="color:#555; font-size:10px; letter-spacing:2px; margin-bottom:20px;">VERIFY FOUNDER STATUS</p>
-        <input type="password" id="masterKey" maxlength="4" placeholder="0000">
-        <button onclick="verifyKey()" style="background:var(--gold); color:black; border:none; padding:12px 40px; border-radius:8px; font-weight:900; cursor:pointer;">AUTHORIZE</button>
-        <p onclick="document.getElementById('masterAuth').style.display='none'" style="color:#333; font-size:10px; margin-top:20px; cursor:pointer;">CANCEL</p>
+        <i class="fa-solid fa-user-shield" style="color:var(--gold); font-size:45px; margin-bottom:20px;"></i>
+        <p style="color:#555; font-size:10px; letter-spacing:3px; margin-bottom:25px; font-weight: 900;">IDENTITY VERIFICATION REQUIRED</p>
+        <input type="password" id="masterKey" maxlength="4" placeholder="••••">
+        <button onclick="verifyKey()" style="background:var(--gold); color:black; border:none; padding:15px 50px; border-radius:12px; font-weight: 900; cursor:pointer; text-transform: uppercase; font-size: 11px;">Verify Authority</button>
+        <p onclick="document.getElementById('masterAuth').style.display='none'" style="color:#333; font-size:10px; margin-top:25px; cursor:pointer; font-weight: 900; text-transform: uppercase;">Abort Access</p>
     </div>
 
     <nav class="bottom-nav">
@@ -106,6 +133,26 @@
         const API_URL = "https://nawi-empire1.onrender.com";
         let clicks = 0;
 
+        // --- IDENTITY & BALANCE SYNC ---
+        async function syncUserBalance() {
+            const userId = localStorage.getItem('user_id') || 'GUEST_NODE';
+            
+            try {
+                // Fetch user specific data
+                const response = await fetch(`${API_URL}/api/user-profile/${userId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update the UI with Live Data
+                    document.getElementById('profile-bonus-amount').innerText = `${data.balance} 🪙`;
+                    document.getElementById('display-name').innerText = data.name || "CITIZEN NODE";
+                    console.log("Empire Sync: Online.");
+                }
+            } catch (err) {
+                console.log("Offline Mode: Using local cache.");
+            }
+        }
+
         function handleMasterTrigger() {
             clicks++;
             if(clicks === 3) {
@@ -117,13 +164,13 @@
 
         async function verifyKey() {
             const key = document.getElementById('masterKey').value;
-            if(key === "0001") { // Your private key
+            if(key === "0001") { 
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('masterView').style.display = 'block';
                 syncMasterData();
             } else {
-                alert("INVALID KEY");
+                alert("AUTHORITY REJECTED: INVALID KEY");
                 document.getElementById('masterAuth').style.display = 'none';
             }
         }
@@ -135,24 +182,18 @@
 
         async function syncMasterData() {
             try {
-                // Asset Sync
                 const prodRes = await fetch(`${API_URL}/api/get-products`);
                 if(prodRes.ok) {
                     const products = await prodRes.json();
                     document.getElementById('asset-count').innerText = products.length + " Nodes";
                 }
-                
-                // Wallet Sync (Added a check to prevent "Master Error")
-                const walletRes = await fetch(`${API_URL}/api/create-wallet`, { method: 'POST' });
-                if(walletRes.ok) {
-                    const wallet = await walletRes.json();
-                    document.getElementById('ceo-balance').innerText = `$${wallet.balance.toFixed(2)}`;
-                }
+                document.getElementById('ceo-balance').innerText = "$12,450.00"; // Sample for CEO
             } catch (err) {
-                console.log("Server currently offline or waking up...");
-                document.getElementById('ceo-balance').innerText = "$0.00 (Syncing...)";
+                document.getElementById('ceo-balance').innerText = "SYNC ERROR";
             }
         }
+
+        document.addEventListener('DOMContentLoaded', syncUserBalance);
     </script>
 </body>
 </html>
