@@ -22,16 +22,16 @@
         #main-platform { display: none; padding-bottom: 100px; animation: fadeIn 1s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* --- Search --- */
+        /* --- Search & Top UI --- */
         .top-search-container { padding: 25px 15px 15px; background: #000; position: sticky; top: 0; z-index: 1000; }
         .search-wrapper { background: var(--glass); border: 1px solid #222; border-radius: 15px; display: flex; align-items: center; padding: 14px 18px; }
         .search-wrapper input { background: none; border: none; color: white; width: 100%; font-size: 14px; outline: none; margin-left: 10px; }
 
-        /* --- Sections --- */
+        /* --- Content Layout --- */
         .view-section { display: none; padding: 15px; }
         .active-view { display: block; }
 
-        /* --- Cards --- */
+        /* --- Professional Cards --- */
         .product-card { background: #111; border: 1px solid #222; border-radius: 22px; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--gold); }
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .global-badge { color: var(--green); font-size: 9px; font-weight: 900; letter-spacing: 1px; }
@@ -40,15 +40,21 @@
         .price-tag { font-size: 22px; font-weight: 900; color: var(--gold); display: block; margin-top: 10px; }
         .buy-btn { background: var(--gold); color: black; width: 100%; border: none; padding: 15px; margin-top: 20px; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
 
-        /* --- Navigation --- */
+        /* --- 7 PILLARS DASHBOARD --- */
+        #dash-overlay { position: fixed; bottom: -110%; left: 0; width: 100%; height: 85vh; background: var(--black); z-index: 2500; border-top: 2px solid var(--gold); border-radius: 35px 35px 0 0; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 35px 20px; overflow-y: auto; }
+        #dash-overlay.active { bottom: 0; }
+        .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 25px; }
+        .tool-item { background: var(--glass); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #1a1a1a; text-decoration: none; color: white; }
+        .tool-item i { color: var(--gold); font-size: 22px; margin-bottom: 10px; display: block; }
+        .tool-item span { font-size: 10px; font-weight: 900; text-transform: uppercase; }
+
+        /* --- Bottom Navigation --- */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 18px 0 25px; border-top: 1px solid #111; z-index: 2000; }
         .nav-btn { text-align: center; text-decoration: none; color: #444; flex: 1; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { color: var(--gold); }
         .nav-btn p { font-size: 9px; margin-top: 5px; font-weight: 900; text-transform: uppercase; }
-        .plus-btn { background: var(--gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -15px; color: black; font-size: 22px; cursor: pointer; border: 4px solid #000; }
-
-        /* --- CEO Tools (Hidden by default) --- */
-        #ceo-controls { display: none; }
+        
+        .seven-pillars-btn { background: var(--gold); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -20px; color: black; font-size: 28px; font-weight: 900; cursor: pointer; border: 4px solid #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
     </style>
 </head>
 <body>
@@ -65,14 +71,14 @@
         <div class="top-search-container">
             <div class="search-wrapper">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="global-search" placeholder="Discover anything in the world...">
+                <input type="text" id="global-search" placeholder="Search the Global Vault...">
             </div>
         </div>
 
         <div id="home-view" class="view-section active-view">
-            <div style="padding: 20px; text-align: center; border: 1px dashed #333; border-radius: 15px; margin-bottom: 20px;">
-                <h4 style="color: var(--gold); margin: 0;">GLOBAL BROADCAST</h4>
-                <p style="font-size: 11px; color: #777;">System stable. Welcome to the Empire Home.</p>
+            <div style="padding: 15px; background: var(--glass); border-radius: 15px; margin-bottom: 20px; border-left: 2px solid var(--gold);">
+                <h4 style="color: var(--gold); margin: 0; font-size: 12px;">GLOBAL BROADCAST</h4>
+                <p id="system-status" style="font-size: 10px; color: #777; margin-top: 5px;">Synchronizing Master Feed...</p>
             </div>
             <div id="home-feed"></div>
         </div>
@@ -83,63 +89,60 @@
         </div>
 
         <div id="ceo-view" class="view-section">
-            <div id="ceo-controls">
+            <div id="ceo-controls" style="display:none;">
                 <h2 style="color:var(--gold); text-align:center;">MASTER COMMAND CENTER</h2>
-                <div style="background: #111; padding: 20px; border-radius: 15px; border: 1px solid var(--gold);">
-                    <p style="font-size: 12px; text-align: center;">FOUNDER IDENTITY: VERIFIED</p>
+                <div style="background: #111; padding: 25px; border-radius: 15px; border: 1px solid var(--gold); text-align:center;">
+                    <p style="font-size: 12px; margin-bottom: 20px;">FOUNDER IDENTITY: VERIFIED</p>
                     <button class="buy-btn" onclick="window.location.href='add-product.html'">DEPLOY NEW ASSET</button>
                 </div>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-btn active" onclick="showSection('home')"><i class="fa-solid fa-house"></i><p>Home</p></div>
-            <div class="nav-btn" onclick="showSection('market')"><i class="fa-solid fa-shop"></i><p>Market</p></div>
-            <div class="plus-btn" onclick="alert('Quick Action Menu: Add Asset Enabled.')"><i class="fa-solid fa-plus"></i></div>
-            <div class="nav-btn" onclick="showSection('inbox')"><i class="fa-solid fa-message"></i><p>Inbox</p></div>
-            <div class="nav-btn" onclick="showSection('ceo')"><i class="fa-solid fa-user-shield"></i><p>CEO</p></div>
+            <div class="nav-btn active" onclick="showSection('home', this)"><i class="fa-solid fa-house"></i><p>Home</p></div>
+            <div class="nav-btn" onclick="showSection('market', this)"><i class="fa-solid fa-shop"></i><p>Market</p></div>
+            
+            <div class="seven-pillars-btn" onclick="toggleDash()">7</div>
+            
+            <div class="nav-btn" onclick="showSection('inbox', this)"><i class="fa-solid fa-message"></i><p>Inbox</p></div>
+            <div class="nav-btn" onclick="showSection('ceo', this)"><i class="fa-solid fa-user-shield"></i><p>CEO</p></div>
         </nav>
+    </div>
+
+    <div id="dash-overlay">
+        <div style="width: 40px; height: 4px; background: #333; border-radius: 10px; margin: 0 auto 25px;"></div>
+        <h3 style="color:var(--gold); text-align:center; letter-spacing:4px; font-weight:900; font-size:11px;">7 PILLARS STUDIOS</h3>
+        <div class="tool-grid">
+            <a href="live-stream.html" class="tool-item"><i class="fa-solid fa-tower-broadcast"></i><span>Live Stream</span></a>
+            <a href="gaming.html" class="tool-item"><i class="fa-solid fa-gamepad"></i><span>Gaming</span></a>
+            <a href="kitchen.html" class="tool-item"><i class="fa-solid fa-utensils"></i><span>Kitchen Meal</span></a>
+            <a href="apparel.html" class="tool-item"><i class="fa-solid fa-shirt"></i><span>Apparel</span></a>
+            <a href="studio.html" class="tool-item"><i class="fa-solid fa-music"></i><span>Music Production</span></a>
+            <a href="ads.html" class="tool-item"><i class="fa-solid fa-rectangle-ad"></i><span>Ads Program</span></a>
+        </div>
+        <p onclick="toggleDash()" style="text-align:center; color:#555; margin-top:40px; cursor:pointer; font-size:9px; font-weight:900; letter-spacing:3px;">CLOSE SYSTEM</p>
     </div>
 
     <script>
         const API_URL = "https://nawi-empire1.onrender.com";
         let allProducts = [];
 
-        // 👑 FOUNDER AUTHENTICATION CHECK
+        function toggleDash() { document.getElementById('dash-overlay').classList.toggle('active'); }
+
+        function showSection(target, btn) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`${target}-view`).classList.add('active-view');
+            btn.classList.add('active');
+            if(target === 'ceo') verifyEmpireAuthority();
+        }
+
         function verifyEmpireAuthority() {
-            const token = localStorage.getItem('token'); // Checks for your login token
-            const ceoSection = document.getElementById('ceo-controls');
-            
-            if (token === 'FOUNDER_001') {
-                if(ceoSection) ceoSection.style.display = 'block';
-                console.log("🏰 Authority Confirmed: Master Command Active.");
+            if (localStorage.getItem('nawi_token') === 'FOUNDER_VERIFIED') {
+                document.getElementById('ceo-controls').style.display = 'block';
             } else {
-                if(ceoSection) ceoSection.style.display = 'none';
+                document.getElementById('ceo-controls').style.display = 'none';
             }
-        }
-
-        // 🗺️ NAVIGATION REARRANGEMENT
-        function showSection(target) {
-            const sections = ['home', 'market', 'inbox', 'ceo'];
-            sections.forEach(s => {
-                const el = document.getElementById(`${s}-view`);
-                if(el) el.classList.remove('active-view');
-                
-                // Update nav icon color
-                const btns = document.querySelectorAll('.nav-btn');
-                btns.forEach(b => b.classList.remove('active'));
-            });
-            
-            const activeEl = document.getElementById(`${target}-view`);
-            if(activeEl) activeEl.classList.add('active-view');
-            event.currentTarget.classList.add('active');
-        }
-
-        // 🛡️ P2P GATEWAY LOGIC
-        function openMarketplaceMenu(productId) {
-            console.log("Initiating Gateway for Asset:", productId);
-            alert("P2P Gateway Initiated... Connecting to Escrow.");
-            // Logic for trade redirection can go here
         }
 
         function bypassGate() {
@@ -147,66 +150,63 @@
             setTimeout(() => {
                 document.getElementById('auth-gate').style.display = 'none';
                 document.getElementById('main-platform').style.display = 'block';
-                loadVaultData(); 
+                localStorage.setItem('nawi_token', 'FOUNDER_VERIFIED');
+                loadVaultData();
             }, 800);
         }
 
         async function loadVaultData() {
-            const grid = document.getElementById('market-grid');
-            grid.innerHTML = '<p style="text-align:center; color:var(--gold);">SYNCING VAULT...</p>';
             try {
-                const response = await fetch(`${API_URL}/api/get-products`);
-                allProducts = await response.json();
+                const res = await fetch(`${API_URL}/api/get-products`);
+                allProducts = await res.json();
                 renderUI(allProducts);
+                document.getElementById('system-status').innerText = "System Stable. Worldwide Assets Online.";
             } catch (err) {
-                grid.innerHTML = '<p style="text-align:center; color:red;">SYNC INTERRUPTED</p>';
+                document.getElementById('system-status').innerText = "Vault Sync Offline.";
             }
         }
 
         function renderUI(items) {
             const grid = document.getElementById('market-grid');
             const feed = document.getElementById('home-feed');
-            grid.innerHTML = '';
-            feed.innerHTML = '';
+            grid.innerHTML = ''; feed.innerHTML = '';
 
             items.forEach(item => {
                 const card = `
                     <div class="product-card">
                         <div class="card-meta">
                             <span class="global-badge">🌍 GLOBAL ACTIVE</span>
-                            <span class="escrow-shield">🛡️ ESCROW ACTIVE</span>
+                            <span class="escrow-shield">🛡️ ESCROW</span>
                         </div>
                         <h3>${item.product_name}</h3>
                         <p style="font-size:12px; color:#888;">${item.category || 'Asset'} | SOVEREIGN GRADE</p>
                         <span class="price-tag">$${parseFloat(item.price).toFixed(2)}</span>
-                        <button class="buy-btn" onclick="openMarketplaceMenu('${item._id}')">Acquire Asset</button>
+                        <button class="buy-btn" onclick="alert('P2P Gateway Connecting...')">Acquire Asset</button>
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', card);
                 
-                // On Home screen, we show a simplified version (Social Feed)
                 feed.insertAdjacentHTML('beforeend', `
-                    <p style="font-size:11px; color:#555; border-bottom:1px solid #111; padding-bottom:10px;">
-                        <i class="fa-solid fa-circle-check" style="color:var(--green)"></i> 
-                        New Asset Deployed: <b>${item.product_name}</b> available in Marketplace.
-                    </p>
+                    <div style="background:#111; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #222;">
+                        <span style="color:var(--green); font-size:9px; font-weight:900;">NEW DEPLOYMENT</span>
+                        <p style="margin:5px 0; font-size:13px;"><b>${item.product_name}</b> is now live for P2P trading.</p>
+                        <span style="color:#555; font-size:10px;">Category: ${item.category || 'Assets'}</span>
+                    </div>
                 `);
             });
         }
 
-        window.onload = function() {
-            verifyEmpireAuthority();
-            // If already verified, skip gate
-            if(localStorage.getItem('token') === 'FOUNDER_001') {
-                bypassGate();
-            }
-        };
-
-        // Search Filter
+        // Global Search Logic
         document.getElementById('global-search').addEventListener('input', (e) => {
             const s = e.target.value.toLowerCase();
             renderUI(allProducts.filter(p => p.product_name.toLowerCase().includes(s)));
         });
+
+        window.onload = function() {
+            if(localStorage.getItem('nawi_token') === 'FOUNDER_VERIFIED') {
+                bypassGate();
+            }
+        };
     </script>
 </body>
 </html>
