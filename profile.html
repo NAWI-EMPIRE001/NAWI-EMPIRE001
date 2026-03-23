@@ -11,7 +11,7 @@
         body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 120px; transition: 0.5s; overflow-x: hidden; }
         
         /* PUBLIC VIEW */
-        #publicView { padding: 40px 20px; text-align: center; }
+        #publicView { padding: 40px 20px; text-align: center; transition: 0.5s; }
         .lux-circle { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; background: #111; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(212,175,55,0.1); }
         .lux-circle:active { transform: scale(0.9); }
         .lux-circle i { font-size: 35px; color: var(--gold); }
@@ -19,42 +19,74 @@
         .user-name { font-weight: 900; letter-spacing: 1px; font-size: 22px; margin: 0; text-transform: uppercase; }
         .user-rank { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 700; }
 
-        /* BONUS ASSET CARD */
-        .asset-card { 
-            background: linear-gradient(145deg, #111, #050505); 
-            border: 1px solid var(--gold); 
-            border-radius: 20px; padding: 20px; margin: 25px 0; 
-            text-align: left; position: relative; overflow: hidden;
-        }
-        .asset-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%); }
-        
+        /* ASSET CARD */
+        .asset-card { background: linear-gradient(145deg, #111, #050505); border: 1px solid var(--gold); border-radius: 20px; padding: 20px; margin: 25px 0; text-align: left; position: relative; overflow: hidden; }
         .card-label { font-size: 9px; color: #555; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
         .card-balance { margin: 8px 0; color: #fff; font-size: 32px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
         .card-tag { background: var(--gold); color: #000; font-size: 8px; font-weight: 900; padding: 4px 10px; border-radius: 50px; text-transform: uppercase; }
 
         .stat-row { display: flex; justify-content: center; gap: 30px; margin: 20px 0; padding: 15px 0; border-top: 1px solid #111; }
         .stat-box strong { display: block; font-size: 18px; color: #fff; font-weight: 900; }
-        .stat-box small { font-size: 8px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-box small { font-size: 8px; color: #444; text-transform: uppercase; }
 
-        /* MASTER VIEW (CEO MODE) */
+        /* SETTINGS DRAWER */
+        #settingsDrawer { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #050505; z-index: 6000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--gold); padding: 30px 20px; overflow-y: auto; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+        .monitor-card { background: #080808; border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
+        .monitor-card label { color: #444; font-size: 8px; text-transform: uppercase; display: block; margin-bottom: 5px; font-weight: 900; }
+
+        /* MASTER VIEW & AUTH */
         #masterView { display: none; padding: 20px; animation: fadeIn 0.6s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .monitor-card { background: #080808; border: 1px solid #1a1a1a; padding: 20px; border-radius: 18px; margin-bottom: 12px; border-left: 4px solid var(--neon); }
-        .monitor-card label { color: #444; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: 900; }
-        .monitor-card span { font-size: 24px; font-weight: 900; color: var(--gold); font-family: 'Inter', sans-serif; }
-        
-        /* AUTH OVERLAY */
-        #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 5000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 12px; outline: none; margin-bottom: 25px; width: 180px; font-weight: 900; }
+        #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 7000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 12px; outline: none; margin-bottom: 25px; width: 180px; }
 
         /* NAV */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid #111; z-index: 1000; }
-        .nav-btn { color: #333; font-size: 22px; text-decoration: none; transition: 0.3s; }
+        .nav-btn { color: #333; font-size: 22px; text-decoration: none; }
         .nav-active { color: var(--gold); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <div id="settingsDrawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <span style="color: var(--gold); font-weight: 900; letter-spacing: 2px; font-size: 11px;">EMPIRE SETTINGS</span>
+            <i class="fa-solid fa-xmark" onclick="toggleSettings()" style="color: #444; font-size: 20px;"></i>
+        </div>
+
+        <div id="verification-section" style="margin-bottom: 30px; padding: 15px; background: #080808; border: 1px solid #1a1a1a; border-radius: 12px;">
+            <label style="color: var(--gold); font-size: 8px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Identity Vault</label>
+            <div id="verify-status-box" style="margin-top: 10px;">
+                <p style="font-size: 9px; color: #666; line-height: 1.4;">To unlock your <b>10 🪙 Founder Bonus</b>, upload a photo holding a paper with "NAWI-EMPIRE" and today's date.</p>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <input type="file" id="id-upload" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('id-upload').click()" style="flex: 1; background: none; border: 1px solid #222; color: #eee; padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 900;">SELECT</button>
+                    <button onclick="submitVerification()" style="flex: 1; background: var(--gold); border: none; color: #000; padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 900;">SUBMIT</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="monitor-card">
+            <label>P2P Settlement Account</label>
+            <p style="font-size: 9px; color: #555; margin-bottom: 10px;">Name must match Sovereign ID.</p>
+            <button onclick="setupP2P()" style="background: var(--gold); border: none; padding: 8px; border-radius: 6px; font-weight: 900; font-size: 9px; width: 100%;">CONFIGURE WALLET</button>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <label style="color: #444; font-size: 8px; text-transform: uppercase; font-weight: 900;">Imperial Law</label>
+            <div style="margin-top: 15px; border-bottom: 1px solid #111; padding-bottom: 10px;">
+                <p style="color: var(--gold); font-size: 10px; font-weight: 900; margin: 0;">01. IDENTITY INTEGRITY</p>
+                <p style="color: #555; font-size: 9px;">Real names only. Mismatches freeze transactions.</p>
+            </div>
+            <div style="margin-top: 10px; border-bottom: 1px solid #111; padding-bottom: 10px;">
+                <p style="color: var(--gold); font-size: 10px; font-weight: 900; margin: 0;">02. NO SCAM TOLERANCE</p>
+                <p style="color: #555; font-size: 9px;">Cheating results in immediate asset loss.</p>
+            </div>
+        </div>
+
+        <button onclick="logout()" style="margin-top: 40px; background: none; border: 1px solid #222; color: #444; padding: 12px; width: 100%; border-radius: 10px; font-size: 9px; font-weight: 900;">TERMINATE SESSION</button>
+    </div>
 
     <div id="publicView">
         <div class="lux-circle" onclick="handleMasterTrigger()">
@@ -64,15 +96,15 @@
         <p class="user-rank">Authorized Platform User</p>
 
         <div class="asset-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="display: flex; justify-content: space-between;">
                 <div>
                     <span class="card-label">Empire Balance</span>
-                    <div class="card-balance" id="profile-bonus-amount">10 🪙</div>
+                    <div class="card-balance" id="profile-bonus-amount">0 🪙</div>
                 </div>
-                <div class="card-tag">Founder Bonus</div>
+                <div class="card-tag" id="bonus-tag">Pending Verify</div>
             </div>
-            <p style="font-size: 10px; color: #444; margin-top: 15px; border-top: 1px solid #1a1a1a; padding-top: 12px; line-height: 1.4;">
-                Active Founder Status verified. Bonus assets are ready for use in the <b>Kitchen</b> or <b>Ads Command</b>.
+            <p style="font-size: 10px; color: #444; margin-top: 12px; border-top: 1px solid #1a1a1a; padding-top: 10px;">
+                Complete Human Verification in settings to unlock your 10 🪙 bonus.
             </p>
         </div>
 
@@ -82,43 +114,23 @@
             <div class="stat-box"><strong>0</strong><small>Assets</small></div>
         </div>
         
-        <button style="background:none; border:1px solid #222; color:#555; padding:12px 35px; border-radius:12px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Edit Profile</button>
+        <button onclick="toggleSettings()" style="background:none; border:1px solid #222; color:#555; padding:12px 35px; border-radius:12px; font-size:10px; font-weight:900; text-transform:uppercase;">Settings & Privacy</button>
     </div>
 
     <div id="masterView">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; padding: 0 5px;">
-            <span style="color:var(--neon); font-size:10px; font-family:monospace; font-weight: 900;">[ MASTER_ENCRYPTION_ACTIVE ]</span>
-            <button onclick="exitMaster()" style="background:none; border:1px solid var(--gold); color:var(--gold); font-size:9px; padding:6px 12px; border-radius:6px; font-weight: 900;">EXIT NODE</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="color:var(--neon); font-size:9px;">[ MASTER_ENCRYPTION_ON ]</span>
+            <button onclick="exitMaster()" style="background:none; border:1px solid var(--gold); color:var(--gold); font-size:8px; padding:5px 10px; border-radius:4px;">EXIT</button>
         </div>
-
-        <div class="monitor-card">
-            <label>Master Vault (USD)</label>
-            <span id="ceo-balance">$0.00</span>
-        </div>
-
-        <div class="monitor-card" style="border-left-color: var(--gold);">
-            <label>Worldwide Asset Nodes</label>
-            <span id="asset-count">0 Nodes</span>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-            <div class="monitor-card" onclick="location.href='add-product.html'" style="cursor:pointer; border-left-color:#fff;">
-                <label>Inventory</label>
-                <span style="font-size:14px;">COMMAND →</span>
-            </div>
-            <div class="monitor-card" style="border-left-color:var(--neon);">
-                <label>Node Status</label>
-                <span style="font-size:14px;">VISIBLE</span>
-            </div>
-        </div>
+        <div class="monitor-card" style="border-left-color: var(--neon);"><label>Vault (USD)</label><span id="ceo-balance" style="font-size:20px; font-weight:900;">$0.00</span></div>
+        <div class="monitor-card"><label>Global Nodes</label><span id="asset-count" style="font-size:20px; font-weight:900;">0 Nodes</span></div>
     </div>
 
     <div id="masterAuth">
-        <i class="fa-solid fa-user-shield" style="color:var(--gold); font-size:45px; margin-bottom:20px;"></i>
-        <p style="color:#555; font-size:10px; letter-spacing:3px; margin-bottom:25px; font-weight: 900;">IDENTITY VERIFICATION REQUIRED</p>
+        <i class="fa-solid fa-user-shield" style="color:var(--gold); font-size:40px; margin-bottom:20px;"></i>
         <input type="password" id="masterKey" maxlength="4" placeholder="••••">
-        <button onclick="verifyKey()" style="background:var(--gold); color:black; border:none; padding:15px 50px; border-radius:12px; font-weight: 900; cursor:pointer; text-transform: uppercase; font-size: 11px;">Verify Authority</button>
-        <p onclick="document.getElementById('masterAuth').style.display='none'" style="color:#333; font-size:10px; margin-top:25px; cursor:pointer; font-weight: 900; text-transform: uppercase;">Abort Access</p>
+        <button onclick="verifyKey()" style="background:var(--gold); border:none; padding:12px 40px; border-radius:8px; font-weight:900;">AUTHORIZE</button>
+        <p onclick="document.getElementById('masterAuth').style.display='none'" style="color:#333; font-size:10px; margin-top:20px;">CANCEL</p>
     </div>
 
     <nav class="bottom-nav">
@@ -133,46 +145,66 @@
         const API_URL = "https://nawi-empire1.onrender.com";
         let clicks = 0;
 
+        // --- DRAWER CONTROLS ---
+        function toggleSettings() {
+            const drawer = document.getElementById('settingsDrawer');
+            drawer.style.left = (drawer.style.left === "0px") ? "-100%" : "0px";
+        }
+
         // --- IDENTITY & BALANCE SYNC ---
         async function syncUserBalance() {
-            const userId = localStorage.getItem('user_id') || 'GUEST_NODE';
-            
+            const userId = localStorage.getItem('user_id') || 'GUEST';
             try {
-                // Fetch user specific data
                 const response = await fetch(`${API_URL}/api/user-profile/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // Update the UI with Live Data
+                    // Force Banishment Check
+                    if(data.status === "TERMINATED") window.location.href = "banished.html";
+
                     document.getElementById('profile-bonus-amount').innerText = `${data.balance} 🪙`;
                     document.getElementById('display-name').innerText = data.name || "CITIZEN NODE";
-                    console.log("Empire Sync: Online.");
+                    if(data.isVerified) {
+                        document.getElementById('bonus-tag').innerText = "Founder Bonus";
+                        document.getElementById('bonus-tag').style.background = "var(--gold)";
+                    }
                 }
-            } catch (err) {
-                console.log("Offline Mode: Using local cache.");
-            }
+            } catch (err) { console.log("Sync Offline."); }
         }
 
+        // --- HUMAN VERIFICATION SUBMISSION ---
+        async function submitVerification() {
+            const fileInput = document.getElementById('id-upload');
+            if(!fileInput.files[0]) return alert("Select a photo first.");
+            
+            // Logic to send file to server...
+            alert("✨ ID Submitted. The Founder will verify your human status shortly.");
+        }
+
+        // --- REPORTING LOGIC ---
+        async function reportSovereignViolation(suspectId, reason) {
+            const reportData = { reporter: localStorage.getItem('user_id'), suspect: suspectId, reason, timestamp: new Date() };
+            await fetch(`${API_URL}/api/submit-report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reportData)
+            });
+        }
+
+        // --- MASTER TRIGGERS ---
         function handleMasterTrigger() {
             clicks++;
-            if(clicks === 3) {
-                document.getElementById('masterAuth').style.display = 'flex';
-                clicks = 0;
-            }
+            if(clicks === 3) { document.getElementById('masterAuth').style.display = 'flex'; clicks = 0; }
             setTimeout(() => { clicks = 0; }, 2000);
         }
 
-        async function verifyKey() {
-            const key = document.getElementById('masterKey').value;
-            if(key === "0001") { 
+        function verifyKey() {
+            if(document.getElementById('masterKey').value === "0001") {
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('masterView').style.display = 'block';
                 syncMasterData();
-            } else {
-                alert("AUTHORITY REJECTED: INVALID KEY");
-                document.getElementById('masterAuth').style.display = 'none';
-            }
+            } else { alert("INVALID AUTHORITY"); }
         }
 
         function exitMaster() {
@@ -182,18 +214,16 @@
 
         async function syncMasterData() {
             try {
-                const prodRes = await fetch(`${API_URL}/api/get-products`);
-                if(prodRes.ok) {
-                    const products = await prodRes.json();
+                const res = await fetch(`${API_URL}/api/get-products`);
+                if(res.ok) {
+                    const products = await res.json();
                     document.getElementById('asset-count').innerText = products.length + " Nodes";
                 }
-                document.getElementById('ceo-balance').innerText = "$12,450.00"; // Sample for CEO
-            } catch (err) {
-                document.getElementById('ceo-balance').innerText = "SYNC ERROR";
-            }
+            } catch (err) { }
         }
 
         document.addEventListener('DOMContentLoaded', syncUserBalance);
     </script>
 </body>
 </html>
+
