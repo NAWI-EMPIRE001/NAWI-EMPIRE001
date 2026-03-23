@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const MASTER_KEY = "SOVEREIGN_001_ALPHA_OMEGA";
+            const ALLOWED_DEVICE = "Tecno-Spark-30C-EMPIRE";
+
+            const localKey = localStorage.getItem('NAWI_MASTER_TOKEN');
+            const localDevice = localStorage.getItem('NAWI_DEVICE_SIG');
+
+            if (localKey !== MASTER_KEY || localDevice !== ALLOWED_DEVICE) {
+                document.documentElement.innerHTML = ""; 
+                window.location.href = "https://nawi-empire1.onrender.com/404"; 
+                setInterval(() => { debugger; }, 100); 
+            } else {
+                // Wash the URL to hide the ghost filename from the address bar
+                window.history.replaceState(null, "", "/portal-access-verified");
+            }
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SOVEREIGN PORTAL | NAWI-EMPIRE001</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --gold: #D4AF37; --black: #050505; --dark: #0a0a0a; --alert: #ff3b3b; }
+        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; }
+
+        /* HEADER */
+        .master-header { padding: 30px 20px; text-align: left; border-bottom: 1px solid #111; }
+        .master-header h1 { font-size: 24px; font-weight: 900; font-style: italic; margin: 0; letter-spacing: 2px; }
+        .node-active { color: #0f0; font-size: 10px; letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
+
+        /* CENTRAL COIN RESERVE */
+        .reserve-card { background: linear-gradient(145deg, #0d0d0d, #050505); margin: 20px; padding: 30px; border-radius: 25px; border: 1px solid #1a1a1a; position: relative; }
+        .reserve-label { font-size: 9px; color: #555; letter-spacing: 2px; text-transform: uppercase; }
+        .reserve-amount { font-size: 48px; font-weight: 900; margin: 15px 0; }
+        .btn-acquire { background: #111; border: 1px solid #222; color: white; padding: 12px 25px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+
+        /* MASTER PROFILE CONTROL BOX */
+        .control-box { background: var(--dark); margin: 20px; padding: 25px; border-radius: 25px; border: 1px solid #1a1a1a; }
+        .control-title { font-size: 10px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .master-identity { display: flex; align-items: center; gap: 15px; padding: 15px; background: #000; border-radius: 15px; border-left: 3px solid var(--gold); }
+        .master-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; background: #111; }
+        .master-name { font-size: 14px; font-weight: 900; letter-spacing: 1px; }
+
+        /* EMERGENCY OVERRIDE */
+        .emergency-box { margin: 20px; padding: 20px; border: 1px solid var(--alert); border-radius: 25px; background: rgba(255,0,0,0.05); }
+        .emergency-btn { width: 100%; background: var(--alert); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-size: 11px; cursor: pointer; }
+
+        /* PILLAR OVERLAY MENU */
+        .pillar-menu { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: flex-end; }
+        .pillar-menu.active { bottom: 0; }
+        .menu-content { width: 100%; background: #0a0a0a; border-top: 2px solid var(--gold); border-radius: 30px 30px 0 0; padding: 40px 20px; text-align: center; }
+        .pillar-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .pillar-item { background: #111; border: 1px solid #1a1a1a; padding: 20px 10px; border-radius: 20px; cursor: pointer; }
+        .pillar-item i { font-size: 24px; color: #eee; display: block; margin-bottom: 10px; }
+        .pillar-item span { font-size: 8px; font-weight: 900; color: #888; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(5,5,5,0.95); display: flex; justify-content: space-around; align-items: center; padding: 20px 0; border-top: 1px solid #111; z-index: 1000; }
+        .nav-icon { color: #444; font-size: 20px; text-decoration: none; }
+        .pillar-circle { width: 65px; height: 65px; background: #000; border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -40px; box-shadow: 0 0 20px rgba(212,175,55,0.2); cursor: pointer; position: relative; }
+        .pillar-circle::after { content: "7"; position: absolute; top: -5px; right: -5px; background: var(--gold); color: black; font-size: 10px; font-weight: 900; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <div class="master-header">
+        <h1>NAWI EMPIRE</h1>
+        <div class="node-active">● NODE ACTIVE: 001</div>
+    </div>
+
+    <div class="reserve-card">
+        <div class="reserve-label">Central Coin Reserve <i class="fa-solid fa-circle" style="color:var(--gold); font-size:8px;"></i></div>
+        <div class="reserve-amount">0</div>
+        <button class="btn-acquire">ACQUIRE ASSETS</button>
+    </div>
+
+    <div class="control-box">
+        <div class="control-title"><i class="fa-solid fa-table-cells-large"></i> Master Profile Control</div>
+        <div class="master-identity">
+            <div class="master-avatar"><i class="fa-solid fa-user-shield" style="color:var(--gold);"></i></div>
+            <div>
+                <div class="master-name">NAWI-EMPIRE001</div>
+                <div style="font-size: 8px; color: #444; margin-top: 3px;">Official Sovereign Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="emergency-box">
+        <p style="color: var(--alert); font-size: 10px; font-weight: 900; letter-spacing: 2px; text-align: center;">EMERGENCY OVERRIDE</p>
+        <button class="emergency-btn" onclick="triggerLockdown()">LOCK ALL NODES</button>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-icon"><i class="fa-solid fa-house"></i></a>
+        <a href="library.html" class="nav-icon"><i class="fa-solid fa-book-open"></i></a>
+        <div class="pillar-circle" onclick="togglePillarMenu()">
+            <i class="fa-solid fa-crown"></i>
+        </div>
+        <a href="palette.html" class="nav-icon"><i class="fa-solid fa-palette"></i></a>
+        <a href="logout.html" class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+
+    <div id="pillar-overlay" class="pillar-menu">
+        <div class="menu-content">
+            <h3 style="color:var(--gold); font-size:12px; letter-spacing:3px; margin-bottom:25px;">IMPERIAL SYSTEMS</h3>
+            <div class="pillar-grid">
+                <div class="pillar-item" onclick="window.location.href='live.html'"><i class="fa-solid fa-video"></i><span>LIVE</span></div>
+                <div class="pillar-item" onclick="window.location.href='ads.html'"><i class="fa-solid fa-chart-line"></i><span>ADS TOOL</span></div>
+                <div class="pillar-item" onclick="window.location.href='games.html'"><i class="fa-solid fa-gamepad"></i><span>GAMES</span></div>
+                <div class="pillar-item" onclick="window.location.href='kitchen.html'"><i class="fa-solid fa-utensils"></i><span>KITCHEN</span></div>
+                <div class="pillar-item" onclick="window.location.href='music.html'"><i class="fa-solid fa-music"></i><span>MUSIC</span></div>
+                <div class="pillar-item" onclick="closePillarMenu()" style="border-color:#333;"><i class="fa-solid fa-xmark"></i><span>CLOSE</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePillarMenu() { document.getElementById('pillar-overlay').classList.add('active'); }
+        function closePillarMenu() { document.getElementById('pillar-overlay').classList.remove('active'); }
+
+        async function triggerLockdown() {
+            const pin = prompt("CONFIRM MASTER PIN TO LOCK EMPIRE:");
+            if (pin === "7777") {
+                const res = await fetch('/api/admin/self-destruct', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ masterPin: pin, action: "LOCK_ALL" })
+                });
+                const data = await res.json();
+                if(data.success) alert("⚠️ EMPIRE SECURED. ALL NODES RESTRICTED.");
+            } else if(pin) {
+                alert("ACCESS DENIED: INCORRECT AUTHORITY PIN");
+            }
+        }
+    </script>
+</body>
+</html>
