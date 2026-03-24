@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const Meal = require('./models/Meal'); // Importing the Master Schema
+const Meal = require('./models/Meal'); 
 
-// --- 🛡️ MASTER CONNECTION CONFIGURATION ---
-const MONGO_URI = "mongodb+srv://akpanvictor848:vickypara848@nawi-empire01.7588n.mongodb.net/NAWI_VAULT?retryWrites=true&w=majority";
+// 🛡️ MASTER CONNECTION CONFIGURATION
+// Credentials updated with Password: NAWI-EMPIRE001
+const MONGO_URI = "mongodb+srv://akpanvictor848:NAWI-EMPIRE001@nawi-empire01.7588n.mongodb.net/NAWI_VAULT?retryWrites=true&w=majority";
 
 const clientOptions = { 
     serverApi: { version: '1', strict: true, deprecationErrors: true } 
@@ -10,7 +11,6 @@ const clientOptions = {
 
 /**
  * Establishes a permanent link to the NAWI-EMPIRE Vault.
- * Includes auto-reconnect logic to ensure 100% uptime.
  */
 async function connectVault() {
     try {
@@ -19,8 +19,9 @@ async function connectVault() {
         await mongoose.connect(MONGO_URI, clientOptions);
         console.log("🏰 NAWI EMPIRE: Vault Synchronized & Locked Open!");
     } catch (error) {
+        // Log the failure for Render logs
         console.error("⚠️ VAULT SYNC FAILURE:", error.message);
-        // If connection fails, retry every 5 seconds
+        // Automatic reconnection attempt every 5 seconds
         setTimeout(connectVault, 5000); 
     }
 }
@@ -32,7 +33,7 @@ connectVault();
 
 /**
  * Pushes a new asset to the Global Market Audit.
- * Every entry starts as 'PENDING_AUDIT' for Founder (001) approval.
+ * Every entry starts as 'PENDING_AUDIT' for Founder approval.
  */
 async function pushToGlobalMarket(mealData) {
     try {
@@ -69,6 +70,6 @@ async function pushToGlobalMarket(mealData) {
 // --- 📤 MASTER EXPORTS ---
 module.exports = {
     mongoose,
-    KitchenMeal: Meal, // Exporting as KitchenMeal to stay compatible with server.js
+    KitchenMeal: Meal, 
     pushToGlobalMarket
 };
