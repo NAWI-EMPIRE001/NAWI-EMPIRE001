@@ -6,58 +6,63 @@
     <title>NAWI EMPIRE | Official Sovereign Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;900&display=swap');
+        
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .imperial-font { font-family: 'Syncopate', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .gold-glow { box-shadow: 0 0 30px rgba(245, 158, 11, 0.15); }
 
-        /* Combined App Grid Styles */
-        .app-grid {
+        /* UPGRADED 7 PILLARS GRID STYLES */
+        .pillar-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 10px;
+            gap: 12px;
+            padding: 5px;
             width: 100%;
         }
 
-        .app-icon {
+        .pillar-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #111;
-            border: 1px solid #333;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
             border-radius: 20px;
-            padding: 20px 10px;
-            transition: all 0.3s ease;
+            padding: 22px 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            text-align: center;
         }
 
-        .app-icon:active {
-            border-color: #ffd700;
-            transform: scale(0.95);
-            background: #1a1a1a;
+        .pillar-item:active {
+            border-color: #f59e0b;
+            transform: scale(0.92);
+            background: #111;
         }
 
-        .app-icon i.emoji {
-            font-style: normal;
-            font-size: 28px;
-            margin-bottom: 8px;
+        .pillar-item i {
+            font-size: 24px;
+            color: #f59e0b; /* Golden Amber */
+            margin-bottom: 10px;
         }
 
-        .app-icon span {
-            color: #fff;
-            font-size: 10px;
+        .pillar-item span {
+            color: #888;
+            font-size: 9px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
-        .app-icon.promo {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.05);
+        /* Highlight for the primary Ads Tool */
+        .promo-pillar {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: linear-gradient(145deg, #0a0a0a, #1a150a);
         }
     </style>
 </head>
@@ -95,13 +100,41 @@
                 <h3 class="text-[8px] font-black uppercase tracking-widest text-zinc-500">Empire Systems</h3>
             </div>
             
-            <div class="app-grid">
-                <div class="app-icon" onclick="window.location.href='live.html'"><i class="emoji">🎥</i><span>Live</span></div>
-                <div class="app-icon" onclick="window.location.href='market.html'"><i class="emoji">🛒</i><span>Market</span></div>
-                <div class="app-icon promo" onclick="window.location.href='ads.html'"><i class="emoji">📈</i><span>Ads Tool</span></div>
-                <div class="app-icon" onclick="window.location.href='games.html'"><i class="emoji">🎮</i><span>Games</span></div>
-                <div class="app-icon" onclick="window.location.href='kitchen.html'"><i class="emoji">🍽️</i><span>Kitchen</span></div>
-                <div class="app-icon" onclick="window.location.href='music.html'"><i class="emoji">🎵</i><span>Music</span></div>
+            <div class="pillar-grid">
+                <div class="pillar-item" onclick="window.location.href='market.html'">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Market</span>
+                </div>
+
+                <div class="pillar-item" onclick="window.location.href='studio.html'">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <span>Studio</span>
+                </div>
+
+                <div class="pillar-item promo-pillar" onclick="window.location.href='ads.html'">
+                    <i class="fa-solid fa-rectangle-ad"></i>
+                    <span>Ads Manager</span>
+                </div>
+
+                <div class="pillar-item" onclick="window.location.href='kitchen.html'">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span>Kitchen</span>
+                </div>
+
+                <div class="pillar-item" onclick="window.location.href='games.html'">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span>Games</span>
+                </div>
+
+                <div class="pillar-item" onclick="window.location.href='music.html'">
+                    <i class="fa-solid fa-music"></i>
+                    <span>Music</span>
+                </div>
+
+                <div class="pillar-item" onclick="window.location.href='stickers.html'">
+                    <i class="fa-solid fa-face-smile"></i>
+                    <span>Stickers</span>
+                </div>
             </div>
         </div>
 
@@ -127,7 +160,6 @@
         lucide.createIcons();
         
         window.onload = () => {
-            // Check if logged in
             const auth = localStorage.getItem('nawi_token');
             if (!auth) {
                 window.location.href = 'index.html';
