@@ -5,28 +5,23 @@
         // --- 🛡️ AUTHORITY & DEVICE HANDSHAKE ---
         (function() {
             const MASTER_KEY = "SOVEREIGN_001_ALPHA_OMEGA";
-            const ALLOWED_DEVICE = "Tecno-Spark-30C-EMPIRE"; // Specialized for your Spark 30C
-
             const localKey = localStorage.getItem('NAWI_MASTER_TOKEN');
-            const localDevice = localStorage.getItem('NAWI_DEVICE_SIG');
-
-            // If the key is missing or device signature is wrong, redirect to 404
             if (localKey !== MASTER_KEY) {
                 document.documentElement.innerHTML = ""; 
                 window.location.href = "https://nawi-empire1.onrender.com/404"; 
                 setInterval(() => { debugger; }, 100); 
             } else {
-                window.history.replaceState(null, "", "/portal-access-verified");
+                window.history.replaceState(null, "", "/vault-access-verified");
             }
         })();
     </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOVEREIGN VAULT | NAWI-EMPIRE001</title>
+    <title>SOVEREIGN VAULT | NAWI EMPIRE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;700;900&display=swap');
@@ -35,23 +30,28 @@
             --gold: #D4AF37; 
             --black: #050505; 
             --dark: #0a0a0a; 
-            --alert: #ff3b3b; 
-            --success: #00ff88; 
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(212, 175, 55, 0.15);
+            --success: #00ff88;
+            --alert: #ff3b3b;
         }
         
         body { 
-            margin: 0; background: var(--black); color: white; 
-            font-family: 'Inter', sans-serif; padding-bottom: 120px; 
-            overflow-x: hidden; 
+            background: var(--black); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 100px;
+            overflow-x: hidden;
         }
 
         .imperial-font { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
 
-        /* Scanning Animation */
+        /* --- 🛡️ VAULT ANIMATIONS --- */
         @keyframes vaultPulse {
-            0% { border-color: rgba(212, 175, 55, 0.1); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
+            0% { border-color: var(--border); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
             50% { border-color: rgba(212, 175, 55, 0.6); box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
-            100% { border-color: rgba(212, 175, 55, 0.1); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
+            100% { border-color: var(--border); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
         }
 
         .reserve-card { 
@@ -59,141 +59,176 @@
             border: 1px solid var(--gold);
             animation: vaultPulse 3s infinite;
             border-radius: 35px;
-            text-align: center;
         }
 
-        .log-entry { 
-            background: var(--dark); border-left: 2px solid #222; 
-            padding: 15px; margin-bottom: 10px; border-radius: 0 15px 15px 0;
-            border: 1px solid #1a1a1a;
+        .withdrawal-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 35px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
         }
 
-        .control-box { 
-            background: var(--dark); border-radius: 25px; 
-            border: 1px solid #1a1a1a; padding: 25px;
+        .input-group {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
         }
 
-        .stealth-btn { 
-            width: 100%; background: transparent; border: 1px solid var(--success); 
-            color: var(--success); padding: 12px; border-radius: 12px; 
-            font-weight: 900; text-transform: uppercase; font-size: 10px; 
-            cursor: pointer; letter-spacing: 1px; transition: 0.3s; 
-        }
-        .stealth-btn:active { background: var(--success); color: black; }
+        .input-group:focus-within { border-color: var(--gold); }
 
-        .emergency-btn { 
-            width: 100%; background: var(--alert); color: white; border: none; 
-            padding: 15px; border-radius: 12px; font-weight: 900; 
-            text-transform: uppercase; font-size: 11px; cursor: pointer; 
+        /* --- ⚡ PIN PAD --- */
+        .pin-grid { display: grid; grid-template-cols: repeat(3, 1fr); gap: 10px; }
+        .pin-btn {
+            background: var(--glass); border: 1px solid #111; height: 50px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; transition: 0.2s;
+        }
+        .pin-btn:active { background: var(--gold); color: black; }
+
+        /* --- 🔔 STATUS BAR --- */
+        #status-msg {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--gold); color: black; padding: 10px 25px;
+            border-radius: 50px; font-size: 10px; font-weight: 900;
+            text-transform: uppercase; display: none; z-index: 9999;
         }
 
-        .nav-item { color: #444; font-size: 20px; transition: 0.3s; }
-        .nav-item:active { color: var(--gold); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
+    <div id="status-msg">Verifying Node...</div>
+
     <div class="p-6">
-        <div class="flex justify-between items-center mb-10 mt-4">
+        <header class="flex justify-between items-center mb-8 mt-2">
             <div>
-                <p class="text-[8px] font-black text-amber-500 uppercase tracking-[0.3em]">Imperial Reserve</p>
-                <h1 class="imperial-font text-xs uppercase">NAWI-EMPIRE001</h1>
+                <p class="text-[8px] font-black text-amber-500 uppercase tracking-[0.3em]">Empire Vault</p>
+                <h1 class="imperial-font text-[10px] uppercase">Node 001 Access</h1>
             </div>
-            <div class="text-green-500 text-[8px] font-black uppercase tracking-tighter">● Node 001 Active</div>
-        </div>
+            <i class="fa-solid fa-shield-halved text-amber-500 text-xl"></i>
+        </header>
 
-        <div class="reserve-card p-10 mb-8">
-            <p class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-4">Master Empire Balance</p>
-            <div class="flex items-center justify-center gap-3 mb-6">
-                <span id="master-balance" class="text-5xl font-black tracking-tighter">35.000</span>
-                <span class="text-amber-500 font-black text-sm tracking-widest">m $EMPR</span>
-            </div>
-            <button class="bg-[#111] border border-zinc-800 text-white font-black text-[10px] uppercase py-3 px-8 rounded-xl tracking-widest" onclick="alert('Withdrawal Protocol Locked: Manual CEO Approval Required')">
-                Acquire Assets
-            </button>
-        </div>
-
-        <div class="control-box mb-8">
-            <div class="text-[10px] color-amber-500 font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-table-cells-large text-amber-500"></i> Master Profile Control
-            </div>
-            <div class="flex items-center gap-4 bg-black p-4 rounded-2xl border-l-4 border-amber-500 mb-6">
-                <div class="w-12 h-12 rounded-full border-2 border-amber-500 flex items-center justify-center bg-zinc-900">
-                    <i class="fa-solid fa-user-shield text-amber-500"></i>
+        <div id="view-overview" class="tab-content active">
+            <div class="reserve-card p-8 mb-8 text-center">
+                <p class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-4">Total Reserve Balance</p>
+                <div class="flex items-center justify-center gap-3 mb-6">
+                    <span id="master-balance" class="text-4xl font-black tracking-tighter">35,000</span>
+                    <span class="text-amber-500 font-black text-xs tracking-widest">$EMPR</span>
                 </div>
-                <div>
-                    <div class="text-xs font-black uppercase">NAWI-EMPIRE001</div>
-                    <div class="text-[8px] text-zinc-600 uppercase">Sovereign Authority</div>
+                <button onclick="switchTab('view-withdraw')" class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95">
+                    Initialize Withdrawal
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-2 px-2">Sovereign Protocol</h3>
+                <div class="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-user-secret text-amber-500"></i>
+                        <span class="text-[10px] font-black uppercase">Identity Masking</span>
+                    </div>
+                    <span class="text-[8px] text-green-500 font-bold uppercase">Active</span>
+                </div>
+                
+                <div class="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-link text-zinc-600"></i>
+                        <span class="text-[10px] font-black uppercase">DB Handshake</span>
+                    </div>
+                    <span class="text-[8px] text-zinc-600 font-bold uppercase">Render Cloud</span>
                 </div>
             </div>
-            <button class="stealth-btn" onclick="executePrivateDisbursement()">Authorize Stealth Payout</button>
-        </div>
 
-        <h3 class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-6 px-2">System Access Logs</h3>
-        
-        <div class="log-entry">
-            <div class="flex justify-between items-center">
-                <span class="text-[10px] font-bold text-green-500 uppercase">Database Sync</span>
-                <span class="text-[8px] text-zinc-600">Verified</span>
+            <div class="mt-10 border border-red-900/20 bg-red-950/5 p-6 rounded-[30px]">
+                <button class="w-full bg-red-600 text-white py-4 rounded-xl font-black text-[10px] uppercase" onclick="triggerLockdown()">Emergency Lockdown</button>
             </div>
-            <p class="text-[11px] text-zinc-400 mt-1 italic">Handshake successful with Render Cluster.</p>
         </div>
 
-        <div class="log-entry">
-            <div class="flex justify-between items-center">
-                <span class="text-[10px] font-bold text-amber-500 uppercase">Identity Mask</span>
-                <span class="text-[8px] text-zinc-600">Active</span>
-            </div>
-            <p class="text-[11px] text-zinc-400 mt-1 italic">CEO identity hidden from public marketplace nodes.</p>
-        </div>
-
-        <div class="log-entry">
-            <div class="flex justify-between items-center">
-                <span class="text-[10px] font-bold text-zinc-400 uppercase">Security Decree</span>
-                <span class="text-[8px] text-zinc-600">Locked</span>
-            </div>
-            <p class="text-[11px] text-zinc-400 mt-1 italic">"Protect the founders... follow the rules."</p>
-        </div>
-
-        <div class="mt-10 border border-red-900/30 bg-red-950/10 p-6 rounded-[30px] mb-12">
-            <p class="text-red-500 text-[9px] font-black uppercase text-center tracking-[0.3em] mb-4">Emergency Override</p>
-            <button class="emergency-btn" onclick="triggerLockdown()">Lock All Nodes</button>
-        </div>
-
-        <div class="text-center mb-10">
-            <button onclick="window.location.href='index.html'" class="text-[10px] font-black text-zinc-700 uppercase tracking-widest border-b border-zinc-900 pb-2">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Return to Command
+        <div id="view-withdraw" class="tab-content">
+            <button onclick="switchTab('view-overview')" class="text-zinc-600 text-[10px] font-black uppercase mb-6">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back to Vault
             </button>
+
+            <div class="withdrawal-card">
+                <div class="text-center mb-6">
+                    <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">P2P Disbursement</p>
+                    <span class="text-2xl font-black text-amber-500">1,500 <span class="text-xs">🪙</span></span>
+                </div>
+
+                <div class="input-group">
+                    <label class="text-[8px] font-black text-zinc-600 uppercase block mb-1">Disburse Amount</label>
+                    <input type="number" id="withdrawAmount" placeholder="0.00" class="bg-transparent border-none outline-none text-xl font-bold w-full text-white">
+                </div>
+
+                <div class="input-group">
+                    <label class="text-[8px] font-black text-zinc-600 uppercase block mb-1">Peer Destination Address</label>
+                    <input type="text" placeholder="Empire-ID / Bank-Link" class="bg-transparent border-none outline-none text-xs w-full text-zinc-400">
+                </div>
+
+                <button onclick="processP2P()" class="w-full bg-amber-500 text-black py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] active:scale-95">
+                    Confirm P2P Sync
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <p class="text-center text-[8px] font-black text-zinc-600 uppercase mb-4 tracking-tighter">Enter Authorization Key</p>
+                <div class="pin-grid">
+                    <div class="pin-btn">1</div><div class="pin-btn">2</div><div class="pin-btn">3</div>
+                    <div class="pin-btn">4</div><div class="pin-btn">5</div><div class="pin-btn">6</div>
+                    <div class="pin-btn">7</div><div class="pin-btn">8</div><div class="pin-btn">9</div>
+                    <div></div><div class="pin-btn">0</div><div class="pin-btn text-amber-500"><i class="fa-solid fa-delete-left"></i></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full bg-black/95 border-t border-zinc-900 flex justify-around items-center p-6 z-50">
-        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
-        <a href="studio.html" class="nav-item"><i class="fa-solid fa-compass-drafting"></i></a>
+    <nav class="fixed bottom-0 w-full bg-black/95 border-t border-zinc-900 flex justify-around items-center p-6 z-50 h-[85px]">
+        <a href="index.html" class="nav-item text-zinc-600"><i class="fa-solid fa-house"></i></a>
+        <a href="studio.html" class="nav-item text-zinc-600"><i class="fa-solid fa-palette"></i></a>
         <div class="w-14 h-14 bg-black border-2 border-amber-500 rounded-full flex items-center justify-center mt-[-45px] shadow-[0_0_20px_rgba(212,175,55,0.2)]">
             <i class="fa-solid fa-crown text-amber-500 text-xl"></i>
         </div>
-        <a href="kitchen.html" class="nav-item"><i class="fa-solid fa-utensils"></i></a>
-        <a href="logout.html" class="nav-item"><i class="fa-solid fa-right-from-bracket text-red-900"></i></a>
+        <a href="kitchen.html" class="nav-item text-zinc-600"><i class="fa-solid fa-utensils"></i></a>
+        <a href="sys-log-cache-82.html" class="nav-item text-amber-500"><i class="fa-solid fa-shield-halved"></i></a>
     </nav>
 
     <script>
-        // --- LOGIC: DISBURSEMENT ---
-        function executePrivateDisbursement() {
-            const auth = confirm("CEO IDENTITY CONFIRMED. Authorize $20,000 disbursement to External Node (GP-V-01)?");
-            if (auth) {
-                document.getElementById('master-balance').innerText = "34.980";
-                alert("TRANSACTION COMPLETED. $20k allocated. System trace cleared.");
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function showMsg(text) {
+            const bar = document.getElementById('status-msg');
+            bar.innerText = text;
+            bar.style.display = "block";
+            setTimeout(() => { bar.style.display = "none"; }, 4000);
+        }
+
+        function processP2P() {
+            const amt = document.getElementById('withdrawAmount').value;
+            if(!amt || amt <= 0) {
+                showMsg('Enter Valid Amount');
+            } else {
+                showMsg('Syncing Peer Node...');
+                setTimeout(() => {
+                    showMsg('✅ P2P Transaction Logged');
+                    document.getElementById('withdrawAmount').value = "";
+                }, 3000);
             }
         }
 
-        // --- LOGIC: LOCKDOWN ---
-        async function triggerLockdown() {
-            const pin = prompt("CONFIRM MASTER PIN TO LOCK EMPIRE:");
+        function triggerLockdown() {
+            const pin = prompt("CONFIRM MASTER PIN:");
             if (pin === "7777") {
-                alert("⚠️ EMPIRE SECURED. ALL NODES RESTRICTED.");
-            } else if(pin) {
-                alert("ACCESS DENIED: INCORRECT AUTHORITY PIN");
+                showMsg("⚠️ EMPIRE SECURED. ALL NODES LOCKED.");
+            } else {
+                showMsg("ACCESS DENIED");
             }
         }
     </script>
