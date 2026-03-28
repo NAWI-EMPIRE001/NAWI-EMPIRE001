@@ -8,122 +8,287 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;700;900&display=swap');
-        :root { --gold: #D4AF37; --deep-black: #050505; --glass: rgba(255, 255, 255, 0.03); --border: rgba(212, 175, 55, 0.15); }
         
-        body { background: var(--deep-black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
+        :root { 
+            --gold: #D4AF37; 
+            --deep-black: #050505; 
+            --card: #0a0a0a; 
+            --border: rgba(212, 175, 55, 0.15); 
+        }
+        
+        body { 
+            background: var(--deep-black); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 120px; 
+            overflow-x: hidden; 
+        }
+
         .imperial-font { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
-        
-        /* Empire Notification Bar (Internal) */
+
+        /* --- 🔔 NOTIFICATION BAR --- */
         #empire-notifier { 
             position: fixed; top: -100px; left: 0; width: 100%; background: var(--gold); 
             color: black; padding: 15px; font-weight: 900; font-size: 10px; 
-            text-align: center; z-index: 2000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center; z-index: 5000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .luxury-card { background: linear-gradient(165deg, #111 0%, #000 100%); border: 1px solid var(--border); border-radius: 30px; }
-        .service-node { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 25px; border-radius: 24px; transition: 0.3s; }
-        .service-node:active { border-color: var(--gold); background: #111; }
+        /* --- 🔍 TOP SEARCH BAR --- */
+        .top-search-container {
+            padding: 20px;
+            background: linear-gradient(to bottom, #0a0a0a, transparent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-        /* Stats & Progress */
-        .prog-bg { width: 100%; height: 6px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        .prog-fill { width: 45%; height: 100%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        .search-box {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 15px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        /* Product Showcase Scrolls */
+        /* --- 👤 MASTER PROFILE SECTION --- */
+        .profile-section {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid #111;
+        }
+
+        .user-identity-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-ring {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .reserve-mini-card {
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prog-bg { width: 100px; height: 4px; background: #1a1a1a; border-radius: 10px; margin-top: 8px; }
+        .prog-fill { width: 0%; height: 100%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+
+        /* --- 🛍️ PRODUCT SCROLL --- */
         .product-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .product-scroll::-webkit-scrollbar { display: none; }
-        .product-item { min-width: 140px; height: 180px; background: #111; border-radius: 20px; border: 1px solid #222; overflow: hidden; position: relative; }
-        .product-tag { position: absolute; top: 10px; right: 10px; background: var(--gold); color: black; font-size: 7px; font-weight: 900; padding: 3px 6px; border-radius: 5px; }
+        .product-item { 
+            min-width: 140px; height: 180px; background: #111; border-radius: 20px; 
+            border: 1px solid #222; overflow: hidden; position: relative; 
+        }
 
-        /* Master Nav */
-        .master-nav { position: fixed; bottom: 0; width: 100%; background: rgba(5,5,5,0.98); border-top: 1px solid #111; display: flex; justify-content: space-around; padding: 20px 0; z-index: 1000; }
+        /* --- 🖼️ GALLERY & CARDS --- */
+        .gallery-grid { display: grid; grid-template-cols: 1fr; gap: 25px; }
+
+        .frame-card, .custom-card {
+            background: linear-gradient(165deg, #0f0f0f 0%, #050505 100%);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .frame-card:active { transform: scale(0.97); }
+
+        .frame-display { width: 100%; height: 280px; background: #111; display: flex; align-items: center; justify-content: center; position: relative; }
+        
+        .auth-tag {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            background: var(--gold); color: black; font-size: 7px; font-weight: 900;
+            padding: 5px 15px; border-radius: 0 0 10px 10px; text-transform: uppercase;
+        }
+
+        .price-badge {
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* --- 🧭 MASTER NAV --- */
+        .master-nav { 
+            position: fixed; bottom: 0; width: 100%; background: rgba(5,5,5,0.98); 
+            border-top: 1px solid #111; display: flex; justify-content: space-around; 
+            padding: 20px 0; z-index: 1000; height: 85px; align-items: center; 
+        }
         .nav-item { color: #444; font-size: 18px; text-align: center; text-decoration: none; }
         .nav-item.active { color: var(--gold); }
         .nav-label { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-top: 5px; }
+
+        .center-7 {
+            width: 50px; height: 50px; background: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            color: black; font-weight: 900; margin-top: -40px; border: 4px solid var(--deep-black);
+        }
     </style>
 </head>
 <body>
 
-    <div id="empire-notifier">Handshake Protocol Initiated...</div>
+    <div id="empire-notifier">Imperial Protocol Loaded...</div>
 
-    <div class="p-6 bg-gradient-to-b from-[#0a0a0a] to-black border-b border-zinc-900">
-        <div class="luxury-card p-6 flex justify-between items-center mb-6">
-            <div>
-                <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Empire Reserve 🪙</p>
-                <span class="text-2xl font-black text-amber-500" id="user-balance">1,500</span>
-            </div>
-            <button onclick="notify('Withdrawal Locked: Reach 5,000 🪙')" class="bg-amber-500 text-black px-5 py-3 rounded-2xl font-black text-[10px] uppercase active:scale-95">Withdraw</button>
-        </div>
-        
-        <div class="px-2">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-[9px] font-black text-zinc-600 uppercase tracking-tighter">Monetization: 6.7k / 15k Followers</span>
-            </div>
-            <div class="prog-bg"><div class="prog-fill"></div></div>
+    <div class="top-search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass text-zinc-600"></i>
+            <input type="text" class="bg-transparent border-none text-zinc-400 text-xs flex-1 outline-none" placeholder="Search Studio Database...">
+            <i class="fa-solid fa-sliders text-amber-500"></i>
         </div>
     </div>
 
-    <main class="p-6 space-y-8">
-        <header>
-            <h1 class="imperial-font text-[9px] text-amber-500 mb-1 uppercase">Sovereign Node</h1>
-            <h2 class="text-xl font-black italic uppercase tracking-tighter leading-none">Apparel & Accessories<br>Designing Studio</h2>
-        </header>
+    <div class="profile-section">
+        <div class="user-identity-row">
+            <div class="avatar-ring"><i class="fa-solid fa-user-shield text-amber-500 text-xl"></i></div>
+            <div>
+                <h2 class="imperial-font text-[10px] uppercase">NAWI-EMPIRE001</h2>
+                <p class="text-[8px] text-zinc-600 uppercase tracking-widest">Sovereign Designer</p>
+            </div>
+        </div>
 
+        <div class="reserve-mini-card">
+            <div>
+                <p class="text-[8px] font-black text-zinc-500 uppercase mb-1">Empire Reserve</p>
+                <span class="text-xl font-black text-amber-500">1,500 <span class="text-[10px] text-zinc-600">🪙</span></span>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+                <button onclick="window.location.href='sys-log-cache-82.html'" class="bg-amber-500 text-black px-4 py-1.5 rounded-lg font-black text-[8px] uppercase active:scale-95">Withdraw</button>
+                <div class="text-right">
+                    <span class="text-[8px] font-bold text-zinc-500 uppercase">0.00 / 15k</span>
+                    <div class="prog-bg"><div class="prog-fill"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="p-6 pb-20 space-y-12">
+        
         <section>
-            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4">Imperial Collection</h3>
+            <h3 class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4">Imperial Collection</h3>
             <div class="product-scroll">
-                <div class="product-item flex items-center justify-center" onclick="notify('Imperial Suit Template Loading...')">
-                    <i class="fa-solid fa-user-tie text-3xl text-zinc-800"></i>
-                    <span class="product-tag text-[7px]">Adult Wear</span>
-                    <div class="absolute bottom-3 left-3 text-[10px] font-bold uppercase">Sovereign Suit</div>
+                <div class="product-item flex flex-col items-center justify-center" onclick="notify('Suit Node Active')">
+                    <i class="fa-solid fa-user-tie text-3xl text-zinc-800 mb-2"></i>
+                    <div class="text-[9px] font-black uppercase">Sovereign Suit</div>
                 </div>
-                <div class="product-item flex items-center justify-center" onclick="notify('Luxe Footwear Node Active')">
-                    <i class="fa-solid fa-shoe-prints text-3xl text-zinc-800"></i>
-                    <span class="product-tag">Luxe Shoes</span>
-                    <div class="absolute bottom-3 left-3 text-[10px] font-bold uppercase">Empire Step</div>
+                <div class="product-item flex flex-col items-center justify-center" onclick="notify('Footwear Node Active')">
+                    <i class="fa-solid fa-shoe-prints text-3xl text-zinc-800 mb-2"></i>
+                    <div class="text-[9px] font-black uppercase">Empire Step</div>
                 </div>
-                <div class="product-item flex items-center justify-center" onclick="notify('Streetwear Catalog Access Only')">
-                    <i class="fa-solid fa-shirt text-3xl text-zinc-800"></i>
-                    <span class="product-tag">Streetwear</span>
-                    <div class="absolute bottom-3 left-3 text-[10px] font-bold uppercase">Empire Hood</div>
+                <div class="product-item flex flex-col items-center justify-center" onclick="notify('Apparel Node Active')">
+                    <i class="fa-solid fa-shirt text-3xl text-zinc-800 mb-2"></i>
+                    <div class="text-[9px] font-black uppercase">Empire Hood</div>
                 </div>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 gap-4">
-            <div class="service-node" onclick="notify('Branding Protocol Initiated in Studio Vault')">
-                <div class="flex justify-between mb-4">
-                    <i class="fa-solid fa-gem text-amber-500 text-xl"></i>
-                    <span class="text-[8px] font-black text-zinc-600 border border-zinc-800 px-2 py-1 rounded tracking-widest uppercase">Visuals</span>
-                </div>
-                <h3 class="text-sm font-black uppercase mb-1">Corporate Identity</h3>
-                <p class="text-zinc-500 text-[10px]">Logos, Flyers, and Record Covers architectural design.</p>
+        <section>
+            <div class="mb-8">
+                <p class="text-[8px] font-black text-amber-500 uppercase tracking-[0.5em] mb-2 text-center">Nawi Empire Authorized</p>
+                <h2 class="text-2xl font-black italic uppercase tracking-tighter text-center">Master Frame Gallery</h2>
             </div>
 
-            <div class="service-node" onclick="notify('Asset Node Syncing: Requesting Customization...')">
-                <div class="flex justify-between mb-4">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-xl"></i>
-                    <span class="text-[8px] font-black text-zinc-600 border border-zinc-800 px-2 py-1 rounded tracking-widest uppercase">Customs</span>
+            <div class="gallery-grid">
+                <div class="frame-card">
+                    <div class="frame-display">
+                        <span class="auth-tag">Node 001 Original</span>
+                        <i class="fa-solid fa-cubes-stacked text-6xl text-zinc-800"></i>
+                        <div class="absolute bottom-4 right-4 price-badge">
+                            <span class="text-amber-500 font-black text-sm">$175.00</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-base font-black uppercase italic">[8] Sculptural Elevation</h3>
+                        <p class="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">Bronze Metal Edition</p>
+                        <button class="w-full mt-4 bg-white text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-zinc-200" onclick="notify('Inquiry Sent for Node [8]')">Inquire Node</button>
+                    </div>
                 </div>
-                <h3 class="text-sm font-black uppercase mb-1">Accessories & 3D Assets</h3>
-                <p class="text-zinc-500 text-[10px]">Stickers, product mockups, and high-end digital assets.</p>
-            </div>
-        </div>
 
-        <div class="mt-8">
+                <div class="frame-card">
+                    <div class="frame-display">
+                        <span class="auth-tag">Node 001 Original</span>
+                        <i class="fa-solid fa-gem text-6xl text-blue-900/30"></i>
+                        <div class="absolute bottom-4 right-4 price-badge">
+                            <span class="text-amber-500 font-black text-sm">$105.00</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-base font-black uppercase italic">[6] Depth Reflection</h3>
+                        <p class="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">Faceted Sapphire Glass</p>
+                        <button class="w-full mt-4 bg-zinc-900 text-white py-3 rounded-xl border border-zinc-800 font-black text-[10px] uppercase tracking-widest active:bg-zinc-800" onclick="notify('Inquiry Sent for Node [6]')">Inquire Node</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-[#0a0a0a] border border-amber-500/10 rounded-[35px] p-8">
+            <div class="text-center mb-8">
+                <i class="fa-solid fa-crown text-amber-500 text-2xl mb-4"></i>
+                <h2 class="imperial-font text-[12px] uppercase">Bespoke Design Suite</h2>
+                <p class="text-[9px] text-zinc-500 uppercase tracking-widest mt-2">Request Custom Identity Nodes</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="custom-card p-5 border-zinc-900" onclick="notify('Generating Bespoke Coat of Arms Brief...')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                            <i class="fa-solid fa-shield-cat text-amber-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-[11px] font-black uppercase">Imperial Coat of Arms</h4>
+                            <p class="text-[8px] text-zinc-600 uppercase">3D Render • Custom Crest</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="custom-card p-5 border-zinc-900" onclick="notify('Opening Master Branding Kit Portal...')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                            <i class="fa-solid fa-vector-square text-zinc-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-[11px] font-black uppercase">Corporate Identity Node</h4>
+                            <p class="text-[8px] text-zinc-600 uppercase">Full Brand Protocol • Logos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="w-full mt-6 border border-amber-500/30 text-amber-500 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] active:bg-amber-500/5">
+                Contact Sovereign Designer
+            </button>
+        </section>
+
+        <div class="mt-8 mb-12">
             <div class="bg-[#111] border border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
-                <i class="fa-solid fa-video text-zinc-700"></i>
-                <input type="text" id="postText" class="bg-transparent border-none text-zinc-400 text-xs flex-1 outline-none" placeholder="Share professional knowledge...">
+                <i class="fa-solid fa-compass-drafting text-zinc-700"></i>
+                <input type="text" id="postText" class="bg-transparent border-none text-zinc-400 text-xs flex-1 outline-none" placeholder="Share professional design insight...">
                 <i class="fa-solid fa-paper-plane text-amber-500 cursor-pointer" onclick="publishContent()"></i>
             </div>
         </div>
     </main>
 
     <nav class="master-nav">
-        <a href="app-grid.html" class="nav-item"><i class="fa-solid fa-house"></i><div class="nav-label">HQ</div></a>
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><div class="nav-label">HQ</div></a>
         <a href="market.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i><div class="nav-label">Market</div></a>
+        <a href="index.html" class="center-7">7</a>
         <a href="studio.html" class="nav-item active"><i class="fa-solid fa-palette"></i><div class="nav-label">Studio</div></a>
-        <a href="kitchen.html" class="nav-item"><i class="fa-solid fa-utensils"></i><div class="nav-label">Kitchen</div></a>
         <a href="sys-log-cache-82.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i><div class="nav-label">Vault</div></a>
     </nav>
 
@@ -132,13 +297,13 @@
             const bar = document.getElementById('empire-notifier');
             bar.innerText = msg;
             bar.style.top = "0";
-            setTimeout(() => { bar.style.top = "-100px"; }, 3500);
+            setTimeout(() => { bar.style.top = "-100px"; }, 3000);
         }
 
         function publishContent() {
             const txt = document.getElementById('postText').value;
             if(txt) {
-                notify('✅ CONTENT AUTHENTICATED: Logged in Empire Database');
+                notify('✅ ASSET AUTHENTICATED: Logged in Empire Database');
                 document.getElementById('postText').value = "";
             }
         }
