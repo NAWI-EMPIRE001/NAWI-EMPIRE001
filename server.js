@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const { ObjectId } = require('mongodb');
 
-// 👑 IMPORT MODELS & DB CONNECTION
+// 👑 1. IMPORT MODELS & DB CONNECTION
 const { mongoose, KitchenMeal, pushToGlobalMarket } = require('./db-connect');
 
 const app = express();
@@ -12,7 +12,25 @@ const db = mongoose.connection;
 // --- ☣️ GLOBAL SYSTEM STATE ---
 let isSystemLocked = false; 
 
-// --- 🛡️ MIDDLEWARE STACK ---
+// --- 👤 2. IMPERIAL MODELS & SCHEMAS ---
+const citizenSchema = new mongoose.Schema({
+    userId: { type: String, required: true, unique: true },
+    username: { type: String, default: "Authenticated Citizen" },
+    bio: { type: String, default: "No professional knowledge shared yet." },
+    pfpUrl: { type: String, default: "/assets/default-pfp.png" },
+    posts: [{
+        imageUrl: String,
+        views: { type: Number, default: 0 },
+        likes: { type: Number, default: 0 },
+        timestamp: { type: Date, default: Date.now }
+    }],
+    walletBalance: { type: Number, default: 0 },
+    ruleViolations: { type: Number, default: 0 }
+});
+
+const Citizen = mongoose.model('Citizen', citizenSchema);
+
+// --- 🛡️ 3. MIDDLEWARE STACK ---
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST'],
@@ -43,7 +61,17 @@ const authorizeFounder = (req, res, next) => {
     }
 };
 
-// --- 👤 IDENTITY & REGISTRATION (ANTI-SCAM) ---
+const checkLoyalty = async (req, res, next) => {
+    const userId = req.headers['user-id'];
+    const citizen = await Citizen.findOne({ userId: userId });
+    
+    if (citizen && citizen.ruleViolations > 0) {
+        return res.status(403).json({ message: "ACCESS DENIED: Loyalty Protocol Violated." });
+    }
+    next();
+};
+
+// --- 👤 4. IDENTITY, REGISTRATION & PROFILES ---
 app.post('/api/register', async (req, res) => {
     const { email, password, deviceId } = req.body;
     try {
@@ -66,14 +94,46 @@ app.post('/api/register', async (req, res) => {
             createdAt: new Date()
         };
 
-        await db.collection('users').insertOne(newUser);
+        const result = await db.collection('users').insertOne(newUser);
+        
+        // Create initial Citizen Profile linked to the User
+        await Citizen.create({ userId: result.insertedId.toString() });
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).send("Security Vault Error.");
     }
 });
 
-// --- 🛰️ THE ALL-SEEING EYE (Global Content Monitor) ---
+// API ROUTE: UPDATE PROFILE (From Settings)
+app.post('/api/update-profile', async (req, res) => {
+    try {
+        const { username, bio } = req.body;
+        const userId = req.headers['user-id']; 
+        const updatedCitizen = await Citizen.findOneAndUpdate(
+            { userId: userId }, 
+            { username, bio },
+            { upsert: true, new: true }
+        );
+        res.status(200).json({ message: "Identity Synced Successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Sync Failed" });
+    }
+});
+
+// API ROUTE: GET PROFILE (For Profile Page)
+app.get('/api/get-profile', async (req, res) => {
+    try {
+        const userId = req.headers['user-id'];
+        const citizen = await Citizen.findOne({ userId: userId });
+        if (!citizen) return res.status(404).json({ error: "Citizen Not Found" });
+        res.status(200).json(citizen);
+    } catch (err) {
+        res.status(500).json({ error: "Retrieval Failed" });
+    }
+});
+
+// --- 🛰️ 5. THE ALL-SEEING EYE (Global Content Monitor) ---
 const BANNED_PATTERNS = [/t\.me\//i, /chat\.whatsapp\.com/i, /wa\.me\//i, /bit\.ly\//i, /crypto-giveaway/i];
 
 app.post('/api/global-monitor', async (req, res) => {
@@ -109,12 +169,15 @@ app.post('/api/global-monitor', async (req, res) => {
             { $inc: { violationCount: 1 }, $set: { status: "FLAGGED" } }
         );
 
+        // Also update the Citizen Profile record
+        await Citizen.updateOne({ userId: userId }, { $inc: { ruleViolations: 1 } });
+
         return res.json({ success: false, message: "Content violates Imperial Safety Rules." });
     }
     res.json({ success: true });
 });
 
-// --- 🛡️ IMPERIAL CHAT MONITOR (TRAP LOGIC) ---
+// --- 🛡️ 6. IMPERIAL CHAT MONITOR (TRAP LOGIC) ---
 app.post('/api/send-message', async (req, res) => {
     const { senderId, receiverId, message } = req.body;
     const scamKeywords = ["password", "login", "otp", "verify account", "give me money", "admin", "founder", "hack"];
@@ -141,7 +204,7 @@ app.post('/api/send-message', async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// --- 💰 SOVEREIGN WITHDRAWAL & IDENTITY ---
+// --- 💰 7. SOVEREIGN WITHDRAWAL & IDENTITY ---
 app.post('/api/request-withdrawal', async (req, res) => {
     const { userId, accountName, accountNumber, bankName, amount } = req.body;
     try {
@@ -165,7 +228,7 @@ app.post('/api/request-withdrawal', async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// --- ⚖️ THE FOUNDER'S JUDGMENT (HQ ROUTES) ---
+// --- ⚖️ 8. THE FOUNDER'S JUDGMENT (HQ ROUTES) ---
 app.post('/api/admin/verify-human', authorizeFounder, async (req, res) => {
     await db.collection('users').updateOne(
         { _id: new ObjectId(req.body.userId) },
@@ -182,7 +245,11 @@ app.post('/api/admin/terminate-node', authorizeFounder, async (req, res) => {
     res.json({ success: true });
 });
 
-// --- ☣️ SOVEREIGN OVERRIDE (GLOBAL LOCKOUT) ---
+app.get('/api/admin-panel', authorizeFounder, checkLoyalty, (req, res) => {
+    res.json({ message: "Welcome to the Imperial Command Center." });
+});
+
+// --- ☣️ 9. SOVEREIGN OVERRIDE (GLOBAL LOCKOUT) ---
 app.post('/api/admin/self-destruct', async (req, res) => {
     const { masterPin, action } = req.body;
     if (masterPin !== "7777") return res.status(403).json({ message: "AUTHORITY DENIED" });
@@ -192,7 +259,7 @@ app.post('/api/admin/self-destruct', async (req, res) => {
     res.json({ success: true, message: isSystemLocked ? "EMPIRE LOCKED" : "EMPIRE RESTORED" });
 });
 
-// --- 📦 KITCHEN & GLOBAL MARKET ---
+// --- 📦 10. KITCHEN & GLOBAL MARKET ---
 app.get('/api/get-products', async (req, res) => {
     const products = await KitchenMeal.find({}).sort({ _id: -1 }); 
     res.json(products);
@@ -203,7 +270,7 @@ app.post('/api/add-product', async (req, res) => {
     res.status(201).json(result);
 });
 
-// --- 🔐 FOUNDER LOGIN ---
+// --- 🔐 11. FOUNDER LOGIN ---
 app.post('/api/login', (req, res) => {
     if (req.body.email === "akpanvictor848@gmail.com" && req.body.password === "$Nsikak111") {
         return res.status(200).json({ success: true, token: "FOUNDER_001" });
@@ -211,7 +278,7 @@ app.post('/api/login', (req, res) => {
     res.status(401).json({ success: false });
 });
 
-// --- ⚙️ START ENGINE ---
+// --- ⚙️ 12. START ENGINE ---
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
 const PORT = process.env.PORT || 10000;
