@@ -1,8 +1,207 @@
-<div class="setting-item" style="background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; border-radius: 15px; margin: 20px;">
-    <p style="font-size: 9px; color: #444; letter-spacing: 2px;">EMPIRE BALANCE</p>
-    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-        <span style="font-size: 24px; font-weight: 900;" id="balance">0</span>
-        <img src="coin-icon.png" style="width: 20px;" alt="🪙">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EMPIRE SETTINGS | NAWI EMPIRE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;700;900&display=swap');
+        
+        :root { 
+            --gold: #D4AF37; 
+            --deep-black: #050505; 
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(212, 175, 55, 0.15); 
+        }
+        
+        body { 
+            background: var(--deep-black); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 40px;
+        }
+        
+        .imperial-font { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
+
+        .setting-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-field {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 12px 15px;
+            width: 100%;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus { border-color: var(--gold); }
+
+        .profile-upload {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="flex justify-between items-center mb-10">
+        <h1 class="imperial-font text-xs uppercase tracking-widest text-amber-500">Empire Settings</h1>
+        <button onclick="window.history.back()" class="text-zinc-500 text-xl active:scale-90 transition-transform">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
-    <p style="font-size: 9px; color: var(--gold); margin-top: 15px;">Complete Human Verification to unlock withdrawals.</p>
-</div>
+
+    <div class="setting-card">
+        <p class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6">Citizen Identity</p>
+        
+        <div class="profile-upload" onclick="document.getElementById('pfp-input').click()">
+            <i class="fa-solid fa-camera text-zinc-700"></i>
+            <input type="file" id="pfp-input" class="hidden" accept="image/*">
+        </div>
+        <p class="text-center text-[8px] text-zinc-600 uppercase mb-6 tracking-widest">Tap to Update Portrait</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-[8px] font-black text-zinc-500 uppercase block mb-2 px-1">Imperial Username</label>
+                <input type="text" id="username-input" placeholder="@Citizen_Name" class="input-field">
+            </div>
+            <div>
+                <label class="text-[8px] font-black text-zinc-500 uppercase block mb-2 px-1">Professional Bio</label>
+                <textarea id="bio-input" placeholder="Tell the Empire about your skills..." class="input-field h-24 resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-card border-zinc-800">
+        <p class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4">Governance & Privacy</p>
+        
+        <button onclick="toggleLoyaltyModal()" class="w-full bg-zinc-900/30 p-4 rounded-xl mb-3 flex justify-between items-center border border-zinc-800 active:scale-95 transition-all">
+            <span class="text-[10px] font-bold uppercase tracking-widest">The 7 Pillars & Terms</span>
+            <i class="fa-solid fa-scroll text-amber-500"></i>
+        </button>
+
+        <div class="flex justify-between items-center p-4 bg-zinc-900/30 rounded-xl border border-zinc-800 mb-3">
+            <span class="text-[10px] font-bold uppercase">Hide Identity on Platform</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" value="" class="sr-only peer" checked>
+                <div class="w-8 h-4 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-amber-500"></div>
+            </label>
+        </div>
+
+        <button onclick="alert('Access Restricted: Empire Team Clearance Required')" class="w-full bg-red-950/10 border border-red-900/20 p-4 rounded-xl flex justify-between items-center active:scale-95 transition-all">
+            <span class="text-[10px] font-bold text-red-500 uppercase">Empire Team Command</span>
+            <i class="fa-solid fa-users-gear text-red-500"></i>
+        </button>
+    </div>
+
+    <div class="setting-card">
+        <p class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4">Security Handshake</p>
+        <button class="w-full bg-zinc-900/50 border border-zinc-800 text-zinc-400 py-3 rounded-xl text-[10px] font-bold uppercase mb-3 text-left px-4 flex justify-between items-center">
+            Update Access Password <i class="fa-solid fa-chevron-right text-[8px]"></i>
+        </button>
+        <button class="w-full bg-zinc-900/50 border border-zinc-800 text-zinc-400 py-3 rounded-xl text-[10px] font-bold uppercase text-left px-4 flex justify-between items-center">
+            Identity Verification (Govt ID) <i class="fa-solid fa-shield-check text-amber-500"></i>
+        </button>
+    </div>
+
+    <div class="setting-card border-amber-500/30 bg-amber-500/5 mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-[9px] font-black text-amber-500 uppercase tracking-[0.3em]">Empire Wallet</p>
+            <i class="fa-solid fa-building-columns text-amber-500 text-xs"></i>
+        </div>
+        <div class="flex items-center gap-2 mb-6">
+            <span class="text-2xl font-black">0</span>
+            <span class="text-amber-500 text-xs">🪙</span>
+        </div>
+        <button class="w-full bg-amber-500 text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform" onclick="alert('Withdrawal Protocol Locked: Task Completion Required')">
+            Withdraw Assets
+        </button>
+    </div>
+
+    <p class="text-center text-zinc-800 text-[8px] font-black uppercase tracking-widest mt-10">NAWI-EMPIRE001 | Version 2.0.26</p>
+
+    <div id="loyaltyModal" class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-xl hidden flex-col p-8 overflow-y-auto">
+        <div class="max-w-md mx-auto w-full">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="imperial-font text-amber-500 text-xs">The 7 Pillars of Loyalty</h2>
+                <button onclick="toggleLoyaltyModal()" class="text-white text-xl"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>
+
+            <div class="space-y-6 text-zinc-300 text-[11px] leading-relaxed">
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 1: Absolute Anonymity</p>The identity of the Founders and the CEO remains hidden. Seeking or revealing classified identities is a breach of protocol.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 2: Purpose Over Profit</p>We are not here to collect money. Our mission is to protect the founders and the platform.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 3: Rule Supremacy</p>The only requirement for membership is strict adherence to platform rules. Disobedience results in Node Lockdown.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 4: Sovereign Content</p>All professional knowledge shared must maintain the luxury and high-end aesthetic of the Empire.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 5: Peer Integrity</p>P2P transactions must be verified. Fraudulent activity will trigger an automatic security handshake failure.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 6: Respect the Node</p>Users must respect the digital boundaries of the Studio, Kitchen, and Vault environments.</div>
+                <div class="border-l-2 border-amber-500 pl-4"><p class="font-black text-white uppercase text-[9px] mb-1">Pillar 7: The Master Order</p>The CEO's orders are final for the protection of the digital ecosystem.</div>
+            </div>
+
+            <button onclick="toggleLoyaltyModal()" class="w-full mt-10 bg-amber-500 text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-amber-500/20">
+                I Accept the Imperial Decree
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- ⚖️ MODAL LOGIC ---
+        function toggleLoyaltyModal() {
+            const modal = document.getElementById('loyaltyModal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        // --- 🛰️ IDENTITY SYNC LOGIC ---
+        async function saveImperialIdentity() {
+            const username = document.getElementById('username-input').value;
+            const bio = document.getElementById('bio-input').value;
+            
+            const citizenData = {
+                username: username,
+                bio: bio,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(citizenData)
+                });
+
+                if (response.ok) {
+                    console.log("IDENTITY SYNCED: Profile updated in Empire Database.");
+                }
+            } catch (err) {
+                console.error("Sync Error:", err);
+            }
+        }
+
+        // Listen for input blur to auto-save
+        document.getElementById('username-input').addEventListener('blur', saveImperialIdentity);
+        document.getElementById('bio-input').addEventListener('blur', saveImperialIdentity);
+    </script>
+</body>
+</html>
