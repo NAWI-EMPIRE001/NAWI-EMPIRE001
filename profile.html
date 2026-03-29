@@ -41,7 +41,7 @@
         #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 7000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 10px; outline: none; width: 180px; margin-bottom: 20px; }
 
-        /* MASTER VIEW (The Invisible Profile) */
+        /* MASTER VIEW */
         #masterView { display: none; padding: 25px; animation: fadeIn 0.8s ease; }
         .master-card { background: #080808; border: 1px solid var(--neon); padding: 20px; border-radius: 15px; margin-bottom: 15px; }
         .master-label { color: var(--neon); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; }
@@ -104,8 +104,7 @@
             </div>
         </div>
 
-        <div class="post-grid" id="citizen-post-grid">
-            </div>
+        <div class="post-grid" id="citizen-post-grid"></div>
     </div>
 
     <div id="masterAuth">
@@ -139,19 +138,33 @@
     <script>
         const API_URL = "https://nawi-empire1.onrender.com";
 
-        // --- GHOST TOGGLE LOGIC (5 Second Secret Hold) ---
+        // --- FIXED SOVEREIGN GHOST TOGGLE (5 Second Hold) ---
         let pressTimer;
         const trigger = document.getElementById('masterTrigger');
 
-        trigger.addEventListener('touchstart', () => {
+        trigger.addEventListener('touchstart', (e) => {
+            // Stop mobile "save image" menu
+            e.preventDefault(); 
+            trigger.style.borderColor = "#fff"; 
+            
             pressTimer = window.setTimeout(() => {
                 document.getElementById('masterAuth').style.display = 'flex';
+                if (window.navigator.vibrate) window.navigator.vibrate(100); 
             }, 5000); 
         });
-        trigger.addEventListener('touchend', () => clearTimeout(pressTimer));
+
+        trigger.addEventListener('touchend', () => {
+            clearTimeout(pressTimer);
+            trigger.style.borderColor = "var(--gold)";
+        });
+
+        trigger.addEventListener('touchmove', () => {
+            clearTimeout(pressTimer); 
+        });
 
         function verifyMaster() {
-            if(document.getElementById('masterKey').value === "0001") {
+            const key = document.getElementById('masterKey').value;
+            if(key === "0001") { 
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('masterView').style.display = 'block';
@@ -165,32 +178,30 @@
         function exitMaster() {
             document.getElementById('masterView').style.display = 'none';
             document.getElementById('publicView').style.display = 'block';
+            document.body.style.backgroundColor = "var(--black)";
         }
 
         function toggleSettings() {
             const drawer = document.getElementById('settingsDrawer');
-            drawer.style.left = (drawer.style.left === "0px") ? "-100%" : "0px";
+            drawer.style.left = (drawer.style.left === "0px" || drawer.style.left === "0%") ? "-100%" : "0px";
         }
 
         // --- DYNAMIC DATA LOAD ---
         async function loadCitizenProfile() {
             const userId = localStorage.getItem('user-id');
             try {
-                // Fetch Profile & Posts
-                const response = await fetch('/api/get-profile', {
+                const response = await fetch(`${API_URL}/api/get-profile`, {
                     headers: { 'user-id': userId }
                 });
                 const data = await response.json();
 
-                // Update UI
                 document.getElementById('display-username').innerText = data.username || "NAWI CITIZEN";
                 document.getElementById('display-bio').innerText = data.bio || "No professional knowledge shared yet.";
                 document.getElementById('wallet-balance').innerText = `${data.walletBalance || 0} 🪙`;
-                document.getElementById('asset-count').innerText = data.posts ? data.posts.length : 0;
+                document.getElementById('asset-count').innerText = (data.posts && data.posts.length) ? data.posts.length : 0;
                 
                 if(data.isVerified) document.getElementById('v-badge').style.display = 'block';
 
-                // Render Post Grid
                 const postContainer = document.getElementById('citizen-post-grid');
                 postContainer.innerHTML = ''; 
 
@@ -203,14 +214,13 @@
                                     <span><i class="fa-solid fa-eye mr-1"></i> ${post.views}</span>
                                     <span><i class="fa-solid fa-gem mr-1"></i> ${post.likes}</span>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     });
                 } else {
                     postContainer.innerHTML = `<div class="col-span-3 text-center py-10 text-zinc-800 text-[10px] uppercase font-black">No content published</div>`;
                 }
             } catch (err) {
-                console.log("Profile Sync Error: Connection to Empire Node failed.");
+                console.log("Profile Sync Offline.");
             }
         }
 
