@@ -6,6 +6,7 @@
     <title>PROFILE | NAWI EMPIRE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --gold: #D4AF37; --black: #000; --dark: #0a0a0a; --neon: #00ff41; }
         body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 100px; overflow-x: hidden; }
@@ -13,33 +14,32 @@
         /* HEADER NAV */
         .profile-nav { display: flex; justify-content: space-between; padding: 20px; align-items: center; }
         .nav-icon { font-size: 18px; color: var(--gold); cursor: pointer; }
-        .page-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; }
+        .page-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; font-weight: 900; }
 
-        /* CITIZEN VIEW CONTENT */
+        /* CITIZEN VIEW */
         #publicView { animation: fadeIn 0.5s ease; }
-        .profile-header { text-align: center; margin-top: 10px; }
+        .avatar-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; user-select: none; -webkit-touch-callout: none; }
         
-        /* The Secret Toggle Point */
-        .avatar-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; -webkit-user-select: none; user-select: none; }
-        
-        .user-name-area { margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .user-name { font-size: 20px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .verify-badge { color: #0088ff; font-size: 14px; display: none; }
-        .user-role { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
-
-        .stats-row { display: flex; justify-content: center; gap: 35px; margin-top: 25px; padding-bottom: 25px; border-bottom: 1px solid #111; }
+        
+        .stats-row { display: flex; justify-content: center; gap: 35px; margin-top: 25px; padding-bottom: 20px; }
         .stat-item { text-align: center; }
         .stat-num { display: block; font-size: 18px; font-weight: 900; color: #fff; }
         .stat-label { font-size: 8px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* POST GRID */
+        .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; margin-top: 10px; }
+        .post-item { aspect-ratio: 1/1; background: #0a0a0a; position: relative; overflow: hidden; border: 1px solid #111; }
+        .post-stats-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 4px; display: flex; justify-content: space-between; font-size: 8px; font-weight: 900; color: white; }
+
         /* SETTINGS DRAWER */
-        #settingsDrawer { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #050505; z-index: 6000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--gold); padding: 30px 20px; overflow-y: auto; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+        #settingsDrawer { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #050505; z-index: 6000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--gold); padding: 30px 20px; overflow-y: auto; }
         .drawer-card { background: #080808; border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
         .drawer-card label { color: #444; font-size: 8px; text-transform: uppercase; display: block; margin-bottom: 5px; font-weight: 900; }
 
         /* MASTER AUTH OVERLAY */
         #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 7000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 10px; outline: none; width: 160px; margin-bottom: 20px; }
+        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 10px; outline: none; width: 180px; margin-bottom: 20px; }
 
         /* MASTER VIEW (The Invisible Profile) */
         #masterView { display: none; padding: 25px; animation: fadeIn 0.8s ease; }
@@ -48,7 +48,7 @@
 
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #050505; display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid #111; z-index: 1000; }
-        .nav-item { color: #333; font-size: 20px; text-decoration: none; }
+        .nav-item { color: #333; font-size: 20px; text-decoration: none; transition: 0.3s; }
         .nav-item.active { color: var(--gold); }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -57,19 +57,23 @@
 <body>
 
     <div id="settingsDrawer">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <span style="color: var(--gold); font-weight: 900; letter-spacing: 2px; font-size: 11px;">EMPIRE SETTINGS</span>
-            <i class="fa-solid fa-xmark" onclick="toggleSettings()" style="color: #444; font-size: 20px;"></i>
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[10px] font-black text-amber-500 tracking-[0.2em]">EMPIRE SETTINGS</span>
+            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggleSettings()"></i>
         </div>
         <div class="drawer-card">
             <label>Empire Wallet</label>
-            <p id="wallet-balance" style="font-size: 18px; font-weight: 900; color: #fff; margin: 5px 0;">0 🪙</p>
-            <button style="background: var(--gold); border: none; padding: 8px; border-radius: 6px; font-weight: 900; font-size: 8px; width: 100%;">WITHDRAW ASSETS</button>
+            <p id="wallet-balance" class="text-lg font-black text-white m-0">0 🪙</p>
+            <button class="bg-amber-500 text-black border-none p-2 rounded mt-3 font-black text-[9px] w-full tracking-tighter">WITHDRAW ASSETS</button>
         </div>
         <div class="drawer-card">
             <label>Human Verification</label>
-            <button onclick="document.getElementById('id-upload').click()" style="background: none; border: 1px solid #222; color: #eee; padding: 8px; border-radius: 6px; font-size: 8px; width: 100%;">UPLOAD GOVT ID</button>
-            <input type="file" id="id-upload" style="display: none;">
+            <button onclick="document.getElementById('id-upload').click()" class="bg-transparent border border-zinc-800 text-zinc-400 p-2 rounded mt-2 font-black text-[9px] w-full">UPLOAD GOVT ID</button>
+            <input type="file" id="id-upload" class="hidden">
+        </div>
+        <div class="drawer-card" onclick="window.location.href='settings.html'">
+            <label>Account Configuration</label>
+            <p class="text-[10px] text-zinc-500 font-bold">Manage Identity & Privacy <i class="fa-solid fa-chevron-right ml-2"></i></p>
         </div>
     </div>
 
@@ -77,56 +81,57 @@
         <div class="profile-nav">
             <i class="fa-solid fa-bars-staggered nav-icon" onclick="toggleSettings()"></i>
             <div class="page-title">Citizen Node</div>
-            <a href="edit-profile.html" class="nav-icon"><i class="fa-solid fa-pen-to-square"></i></a>
+            <a href="settings.html" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
         </div>
 
-        <div class="profile-header">
+        <div class="text-center mt-4">
             <div class="avatar-circle" id="masterTrigger">
-                <i class="fa-solid fa-user" style="font-size: 40px; color: #222;"></i>
+                <i class="fa-solid fa-user text-zinc-900 text-4xl"></i>
             </div>
             
-            <div class="user-name-area">
-                <span class="user-name" id="display-name">NAWI CITIZEN</span>
+            <div class="flex items-center justify-center gap-2 mt-4">
+                <span class="text-xl font-black uppercase tracking-wider" id="display-username">NAWI CITIZEN</span>
                 <i class="fa-solid fa-circle-check verify-badge" id="v-badge"></i>
             </div>
-            <div class="user-role">Authorized Platform User</div>
+            <div class="text-[9px] text-zinc-600 uppercase tracking-widest mt-1">Authorized Platform User</div>
 
-            <div class="stats-row">
+            <p id="display-bio" class="text-zinc-500 text-[11px] px-10 mt-3 leading-relaxed">No professional knowledge shared yet.</p>
+
+            <div class="stats-row border-b border-zinc-900">
                 <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Followers</span></div>
                 <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Following</span></div>
-                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Assets</span></div>
+                <div class="stat-item"><span class="stat-num" id="asset-count">0</span><span class="stat-label">Assets</span></div>
             </div>
         </div>
+
+        <div class="post-grid" id="citizen-post-grid">
+            </div>
     </div>
 
     <div id="masterAuth">
-        <i class="fa-solid fa-user-shield" style="color:var(--gold); font-size:40px; margin-bottom:20px;"></i>
-        <p style="color:var(--gold); font-size:10px; letter-spacing:2px; margin-bottom:20px;">AUTHORIZE SOVEREIGN ACCESS</p>
+        <i class="fa-solid fa-user-shield text-amber-500 text-5xl mb-6"></i>
+        <p class="text-amber-500 text-[10px] font-black tracking-[0.3em] mb-6 uppercase">Authorize Sovereign Access</p>
         <input type="password" id="masterKey" maxlength="4" placeholder="••••">
-        <button onclick="verifyMaster()" style="background:var(--gold); border:none; padding:12px 40px; border-radius:8px; font-weight:900;">VERIFY NODE 001</button>
-        <p onclick="document.getElementById('masterAuth').style.display='none'" style="color:#333; font-size:9px; margin-top:25px;">CANCEL SESSION</p>
+        <button onclick="verifyMaster()" class="bg-amber-500 text-black px-10 py-4 rounded-xl font-black text-xs">VERIFY NODE 001</button>
+        <p onclick="document.getElementById('masterAuth').style.display='none'" class="text-zinc-700 text-[9px] mt-8 font-black uppercase">Cancel Session</p>
     </div>
 
     <div id="masterView">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <h2 style="font-style:italic; font-weight:900; letter-spacing:2px; color:var(--gold);">NAWI-EMPIRE001</h2>
-            <button onclick="exitMaster()" style="background:none; border:1px solid #333; color:#555; padding:5px 15px; border-radius:5px; font-size:9px;">LOGOUT MASTER</button>
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="font-black italic tracking-widest text-amber-500 text-sm">NAWI-EMPIRE001</h2>
+            <button onclick="exitMaster()" class="border border-zinc-800 text-zinc-500 px-4 py-1 rounded-lg text-[9px] font-black uppercase">Logout Master</button>
         </div>
         <div class="master-card">
             <span class="master-label">Global Reserve (Vault)</span>
-            <div style="font-size:30px; font-weight:900; margin-top:10px;">$0.00 <small style="font-size:10px; color:var(--neon);">[ONLINE]</small></div>
+            <div class="text-3xl font-black mt-2 text-white">$0.00 <small class="text-[10px] text-green-500">[ONLINE]</small></div>
         </div>
-        <div class="master-card" style="border-color: #333;">
-            <span class="master-label" style="color:#555;">Active Marketplace Nodes</span>
-            <div id="global-assets" style="font-size:24px; font-weight:900; margin-top:10px;">0</div>
-        </div>
-        <button onclick="window.location.href='sys-log-cache-82.html'" style="width:100%; background:var(--gold); color:black; border:none; padding:15px; border-radius:12px; font-weight:900; letter-spacing:1px;">ENTER MASTER COMMAND CENTER</button>
+        <button onclick="window.location.href='sys-log-cache-82.html'" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-4">Enter Command Center</button>
     </div>
 
     <nav class="bottom-nav">
         <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
         <a href="market.html" class="nav-item"><i class="fa-solid fa-store"></i></a>
-        <a href="studio.html" class="nav-item"><i class="fa-solid fa-circle-plus" style="font-size:28px;"></i></a>
+        <a href="studio.html" class="nav-item"><i class="fa-solid fa-circle-plus text-3xl"></i></a>
         <a href="chat.html" class="nav-item"><i class="fa-solid fa-message"></i></a>
         <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user"></i></a>
     </nav>
@@ -134,24 +139,19 @@
     <script>
         const API_URL = "https://nawi-empire1.onrender.com";
 
-        // --- GHOST TOGGLE LOGIC ---
+        // --- GHOST TOGGLE LOGIC (5 Second Secret Hold) ---
         let pressTimer;
         const trigger = document.getElementById('masterTrigger');
 
-        trigger.addEventListener('touchstart', (e) => {
+        trigger.addEventListener('touchstart', () => {
             pressTimer = window.setTimeout(() => {
                 document.getElementById('masterAuth').style.display = 'flex';
-            }, 5000); // 5 Seconds Hold
+            }, 5000); 
         });
+        trigger.addEventListener('touchend', () => clearTimeout(pressTimer));
 
-        trigger.addEventListener('touchend', () => {
-            clearTimeout(pressTimer);
-        });
-
-        // --- AUTH & VIEW SWITCHING ---
         function verifyMaster() {
-            const key = document.getElementById('masterKey').value;
-            if(key === "0001") { // Your Secret PIN
+            if(document.getElementById('masterKey').value === "0001") {
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('masterView').style.display = 'block';
@@ -172,21 +172,49 @@
             drawer.style.left = (drawer.style.left === "0px") ? "-100%" : "0px";
         }
 
-        // --- DATA SYNC ---
-        async function syncProfile() {
-            const userId = localStorage.getItem('user_id') || 'GUEST';
+        // --- DYNAMIC DATA LOAD ---
+        async function loadCitizenProfile() {
+            const userId = localStorage.getItem('user-id');
             try {
-                const res = await fetch(`${API_URL}/api/user-profile/${userId}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('display-name').innerText = data.name || "NAWI CITIZEN";
-                    document.getElementById('wallet-balance').innerText = `${data.balance} 🪙`;
-                    if(data.isVerified) document.getElementById('v-badge').style.display = 'block';
+                // Fetch Profile & Posts
+                const response = await fetch('/api/get-profile', {
+                    headers: { 'user-id': userId }
+                });
+                const data = await response.json();
+
+                // Update UI
+                document.getElementById('display-username').innerText = data.username || "NAWI CITIZEN";
+                document.getElementById('display-bio').innerText = data.bio || "No professional knowledge shared yet.";
+                document.getElementById('wallet-balance').innerText = `${data.walletBalance || 0} 🪙`;
+                document.getElementById('asset-count').innerText = data.posts ? data.posts.length : 0;
+                
+                if(data.isVerified) document.getElementById('v-badge').style.display = 'block';
+
+                // Render Post Grid
+                const postContainer = document.getElementById('citizen-post-grid');
+                postContainer.innerHTML = ''; 
+
+                if(data.posts && data.posts.length > 0) {
+                    data.posts.forEach(post => {
+                        postContainer.innerHTML += `
+                            <div class="post-item">
+                                <img src="${post.imageUrl}" class="w-full h-full object-cover">
+                                <div class="post-stats-overlay">
+                                    <span><i class="fa-solid fa-eye mr-1"></i> ${post.views}</span>
+                                    <span><i class="fa-solid fa-gem mr-1"></i> ${post.likes}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    postContainer.innerHTML = `<div class="col-span-3 text-center py-10 text-zinc-800 text-[10px] uppercase font-black">No content published</div>`;
                 }
-            } catch (err) { console.log("Offline mode."); }
+            } catch (err) {
+                console.log("Profile Sync Error: Connection to Empire Node failed.");
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', syncProfile);
+        window.onload = loadCitizenProfile;
     </script>
 </body>
 </html>
