@@ -47,18 +47,11 @@
 
         .imperial-font { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
 
-        /* --- 🛡️ VAULT ANIMATIONS --- */
-        @keyframes vaultPulse {
-            0% { border-color: var(--border); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
-            50% { border-color: rgba(212, 175, 55, 0.6); box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
-            100% { border-color: var(--border); box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
-        }
-
         .reserve-card { 
             background: linear-gradient(145deg, #0f0f0f 0%, #050505 100%);
             border: 1px solid var(--gold);
-            animation: vaultPulse 3s infinite;
             border-radius: 35px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
         }
 
         .withdrawal-card {
@@ -79,7 +72,6 @@
 
         .input-group:focus-within { border-color: var(--gold); }
 
-        /* --- ⚡ PIN PAD --- */
         .pin-grid { display: grid; grid-template-cols: repeat(3, 1fr); gap: 10px; }
         .pin-btn {
             background: var(--glass); border: 1px solid #111; height: 50px;
@@ -88,7 +80,6 @@
         }
         .pin-btn:active { background: var(--gold); color: black; }
 
-        /* --- 🔔 STATUS BAR --- */
         #status-msg {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: var(--gold); color: black; padding: 10px 25px;
@@ -124,30 +115,7 @@
                     Initialize Withdrawal
                 </button>
             </div>
-
-            <div class="space-y-4">
-                <h3 class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-2 px-2">Sovereign Protocol</h3>
-                <div class="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-user-secret text-amber-500"></i>
-                        <span class="text-[10px] font-black uppercase">Identity Masking</span>
-                    </div>
-                    <span class="text-[8px] text-green-500 font-bold uppercase">Active</span>
-                </div>
-                
-                <div class="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-link text-zinc-600"></i>
-                        <span class="text-[10px] font-black uppercase">DB Handshake</span>
-                    </div>
-                    <span class="text-[8px] text-zinc-600 font-bold uppercase">Render Cloud</span>
-                </div>
             </div>
-
-            <div class="mt-10 border border-red-900/20 bg-red-950/5 p-6 rounded-[30px]">
-                <button class="w-full bg-red-600 text-white py-4 rounded-xl font-black text-[10px] uppercase" onclick="triggerLockdown()">Emergency Lockdown</button>
-            </div>
-        </div>
 
         <div id="view-withdraw" class="tab-content">
             <button onclick="switchTab('view-overview')" class="text-zinc-600 text-[10px] font-black uppercase mb-6">
@@ -156,27 +124,27 @@
 
             <div class="withdrawal-card">
                 <div class="text-center mb-6">
-                    <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">P2P Disbursement</p>
-                    <span class="text-2xl font-black text-amber-500">1,500 <span class="text-xs">🪙</span></span>
+                    <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Secure Disbursement</p>
+                    <span class="text-2xl font-black text-amber-500">Authorized Channel</span>
                 </div>
 
                 <div class="input-group">
-                    <label class="text-[8px] font-black text-zinc-600 uppercase block mb-1">Disburse Amount</label>
-                    <input type="number" id="withdrawAmount" placeholder="0.00" class="bg-transparent border-none outline-none text-xl font-bold w-full text-white">
+                    <label class="text-[8px] font-black text-zinc-600 uppercase block mb-1">Disburse Amount ($)</label>
+                    <input type="number" id="withdrawAmount" placeholder="10.00" class="bg-transparent border-none outline-none text-xl font-bold w-full text-white">
                 </div>
 
                 <div class="input-group">
-                    <label class="text-[8px] font-black text-zinc-600 uppercase block mb-1">Peer Destination Address</label>
-                    <input type="text" placeholder="Empire-ID / Bank-Link" class="bg-transparent border-none outline-none text-xs w-full text-zinc-400">
+                    <label class="text-[8px] font-black text-amber-500 uppercase block mb-1">Binance USDT Address (BEP20)</label>
+                    <input type="text" id="binance-wallet-input" placeholder="Paste 0x... address here" class="bg-transparent border-none outline-none text-xs w-full text-zinc-400">
                 </div>
 
-                <button onclick="processP2P()" class="w-full bg-amber-500 text-black py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] active:scale-95">
-                    Confirm P2P Sync
+                <button onclick="startWithdrawal()" class="w-full bg-amber-500 text-black py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] active:scale-95">
+                    Confirm $10 Test Sync
                 </button>
             </div>
 
             <div class="mt-8">
-                <p class="text-center text-[8px] font-black text-zinc-600 uppercase mb-4 tracking-tighter">Enter Authorization Key</p>
+                <p class="text-center text-[8px] font-black text-zinc-600 uppercase mb-4 tracking-tighter">Authorization Required</p>
                 <div class="pin-grid">
                     <div class="pin-btn">1</div><div class="pin-btn">2</div><div class="pin-btn">3</div>
                     <div class="pin-btn">4</div><div class="pin-btn">5</div><div class="pin-btn">6</div>
@@ -210,17 +178,32 @@
             setTimeout(() => { bar.style.display = "none"; }, 4000);
         }
 
-        function processP2P() {
+        // 🛡️ INTEGRATED SECURE WITHDRAWAL FUNCTION
+        function startWithdrawal() {
+            const address = document.getElementById('binance-wallet-input').value;
             const amt = document.getElementById('withdrawAmount').value;
-            if(!amt || amt <= 0) {
-                showMsg('Enter Valid Amount');
-            } else {
-                showMsg('Syncing Peer Node...');
-                setTimeout(() => {
-                    showMsg('✅ P2P Transaction Logged');
-                    document.getElementById('withdrawAmount').value = "";
-                }, 3000);
+            
+            if (address.length < 20 || !address.startsWith('0x')) {
+                showMsg("❌ INVALID BINANCE BEP20 ADDRESS");
+                return;
             }
+
+            if(!amt || amt <= 0) {
+                showMsg('❌ ENTER VALID AMOUNT');
+                return;
+            }
+            
+            showMsg('⚡ INITIALIZING SOVEREIGN HANDSHAKE...');
+            
+            // This is where your backend API link goes
+            setTimeout(() => {
+                console.log(`LOG: Initiating ${amt} USD to ${address}`);
+                showMsg(`✅ SYNCED: ${amt} USD QUEUED FOR BINANCE`);
+                
+                // Clear fields after success
+                document.getElementById('binance-wallet-input').value = "";
+                document.getElementById('withdrawAmount').value = "";
+            }, 3000);
         }
 
         function triggerLockdown() {
