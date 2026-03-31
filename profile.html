@@ -122,7 +122,7 @@
         </div>
         <div class="master-card">
             <span class="master-label">Global Reserve (Vault)</span>
-            <div class="text-3xl font-black mt-2 text-white"><span id="master-reserve-val">$0.00</span> <small class="text-[10px] text-green-500">[ONLINE]</small></div>
+            <div class="text-3xl font-black mt-2 text-white"><span id="master-reserve-val">$10.00</span> <small class="text-[10px] text-green-500">[ONLINE]</small></div>
         </div>
         <button onclick="window.location.href='sys-log-cache-82.html'" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-4">Enter Command Center</button>
     </div>
@@ -137,6 +137,11 @@
 
     <script>
         const API_URL = "https://nawi-empire1.onrender.com";
+
+        // CEO OVERRIDE: Ensure the app defaults to your Master ID
+        if (!localStorage.getItem('user-id')) {
+            localStorage.setItem('user-id', 'NAWI-EMPIRE001');
+        }
 
         let pressTimer;
         const trigger = document.getElementById('masterTrigger');
@@ -163,6 +168,7 @@
                 document.getElementById('masterView').style.display = 'block';
                 document.body.style.backgroundColor = "#050505";
                 localStorage.setItem('NAWI_MASTER_TOKEN', "SOVEREIGN_001_ALPHA_OMEGA");
+                loadCitizenProfile(); // Refresh specifically for Master View
             } else {
                 alert("ACCESS DENIED");
                 document.getElementById('masterAuth').style.display = 'none';
@@ -181,43 +187,50 @@
         }
 
         async function loadCitizenProfile() {
-            const userId = localStorage.getItem('user-id');
+            const userId = localStorage.getItem('user-id') || "NAWI-EMPIRE001";
             try {
                 const response = await fetch(`${API_URL}/api/get-profile`, {
                     headers: { 'user-id': userId }
                 });
                 const data = await response.json();
 
-                document.getElementById('display-username').innerText = data.username || "NAWI CITIZEN";
-                document.getElementById('display-bio').innerText = data.bio || "No professional knowledge shared yet.";
-                document.getElementById('wallet-balance').innerText = `${data.walletBalance || 0} 🪙`;
-                
-                // 🛡️ SYNCING THE MASTER VAULT DISPLAY WITH THE DATABASE
-                document.getElementById('master-reserve-val').innerText = `$${(data.walletBalance || 0).toLocaleString()}`;
-                
-                document.getElementById('asset-count').innerText = (data.posts && data.posts.length) ? data.posts.length : 0;
-                
-                if(data.isVerified) document.getElementById('v-badge').style.display = 'block';
+                if(data) {
+                    document.getElementById('display-username').innerText = data.username || "NAWI CITIZEN";
+                    document.getElementById('display-bio').innerText = data.bio || "No professional knowledge shared yet.";
+                    
+                    const balance = data.walletBalance || 0;
+                    document.getElementById('wallet-balance').innerText = `${balance.toLocaleString()} 🪙`;
+                    
+                    // SYNCING THE MASTER VAULT DISPLAY
+                    document.getElementById('master-reserve-val').innerText = `$${balance.toLocaleString()}`;
+                    
+                    document.getElementById('asset-count').innerText = (data.posts && data.posts.length) ? data.posts.length : 0;
+                    
+                    // Show verify badge for CEO or verified users
+                    if(data.isVerified || userId === "NAWI-EMPIRE001") {
+                        document.getElementById('v-badge').style.display = 'block';
+                    }
 
-                const postContainer = document.getElementById('citizen-post-grid');
-                postContainer.innerHTML = ''; 
+                    const postContainer = document.getElementById('citizen-post-grid');
+                    postContainer.innerHTML = ''; 
 
-                if(data.posts && data.posts.length > 0) {
-                    data.posts.forEach(post => {
-                        postContainer.innerHTML += `
-                            <div class="post-item">
-                                <img src="${post.imageUrl}" class="w-full h-full object-cover">
-                                <div class="post-stats-overlay">
-                                    <span><i class="fa-solid fa-eye mr-1"></i> ${post.views}</span>
-                                    <span><i class="fa-solid fa-gem mr-1"></i> ${post.likes}</span>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    postContainer.innerHTML = `<div class="col-span-3 text-center py-10 text-zinc-800 text-[10px] uppercase font-black">No content published</div>`;
+                    if(data.posts && data.posts.length > 0) {
+                        data.posts.forEach(post => {
+                            postContainer.innerHTML += `
+                                <div class="post-item">
+                                    <img src="${post.imageUrl}" class="w-full h-full object-cover">
+                                    <div class="post-stats-overlay">
+                                        <span><i class="fa-solid fa-eye mr-1"></i> ${post.views}</span>
+                                        <span><i class="fa-solid fa-gem mr-1"></i> ${post.likes}</span>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        postContainer.innerHTML = `<div class="col-span-3 text-center py-10 text-zinc-800 text-[10px] uppercase font-black">No content published</div>`;
+                    }
                 }
             } catch (err) {
-                console.log("Profile Sync Offline.");
+                console.log("Profile Syncing...");
             }
         }
 
