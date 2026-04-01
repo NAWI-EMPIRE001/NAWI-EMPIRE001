@@ -9,7 +9,7 @@
     <style>
         :root { --gold: #D4AF37; --black: #050505; --neon: #00ff41; }
         body { 
-            background: var(--black); 
+            background: var (--black); 
             color: white; 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
@@ -22,30 +22,30 @@
         #auth-gate { 
             height: 100vh; width: 100%; position: fixed; inset: 0;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: radial-gradient(circle, #111 0%, #000 100%); z-index: 20000; transition: 0.8s ease; 
+            background: radial-gradient (circle, #111 0%, #000 100%); z-index: 20000; transition: 0.8s ease; 
         }
         .authority-card { 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--gold); border-radius: 24px; 
-            padding: 40px 30px; max-width: 350px; text-align: center; backdrop-filter: blur(15px);
+            background: rgba (255,255,255,0.03); border: 1px solid var (--gold); border-radius: 24px; 
+            padding: 40px 30px; max-width: 350px; text-align: center; backdrop-filter: blur (15px);
         }
         .order-text { 
-            font-size: 13px; line-height: 1.6; color: #eee; border-left: 3px solid var(--gold); 
+            font-size: 13px; line-height: 1.6; color: #eee; border-left: 3px solid var (--gold); 
             padding-left: 15px; text-align: left; font-style: italic; margin: 20px 0; 
         }
 
         /* --- THE HUB (7 PILLARS) --- */
         #hubOverlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(25px); z-index: 9999; flex-direction: column;
+            display: none; position: fixed; inset: 0; background: rgba (0,0,0,0.98);
+            backdrop-filter: blur (25px); z-index: 9999; flex-direction: column;
             align-items: center; justify-content: center;
         }
-        .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
+        .pillar-grid { display: grid; grid-template-columns: repeat (3, 1fr); gap: 15px; padding: 20px; }
         .pillar-tool {
             background: #111; border: 1px solid #222; aspect-ratio: 1/1; border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
             transition: 0.3s; width: 100px;
         }
-        .pillar-tool i { color: var(--gold); font-size: 24px; }
+        .pillar-tool i { color: var (--gold); font-size: 24px; }
         .pillar-tool span { font-size: 8px; font-weight: 900; text-transform: uppercase; color: #555; }
 
         /* --- THE FEED --- */
@@ -61,41 +61,41 @@
             z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
         }
         #masterAuth input {
-            background: transparent; border: none; border-bottom: 2px solid var(--neon);
-            color: var(--neon); font-size: 32px; text-align: center; width: 160px; outline: none; margin: 20px;
+            background: transparent; border: none; border-bottom: 2px solid var (--neon);
+            color: var (--neon); font-size: 32px; text-align: center; width: 160px; outline: none; margin: 20px;
         }
 
         /* --- NAVIGATION --- */
         #main-nav { display: none; }
-        .node-7-wrapper { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 8000; display: none; }
+        .node-7-wrapper { position: fixed; bottom: 30px; left: 50%; transform: translateX (-50%); z-index: 8000; display: none; }
         .main-node {
             width: 75px; height: 75px; background: white; color: black; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 30px;
-            font-weight: 900; border: 6px solid var(--black); box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            font-weight: 900; border: 6px solid var (--black); box-shadow: 0 0 20px rgba (255,255,255,0.1);
         }
         .bottom-bar {
-            position: fixed; bottom: 0; width: 100%; height: 90px; background: rgba(5,5,5,0.98);
+            position: fixed; bottom: 0; width: 100%; height: 90px; background: rgba (5,5,5,0.98);
             display: flex; justify-content: space-around; align-items: center; padding-bottom: 15px;
             border-top: 1px solid #111; z-index: 5000;
         }
-        .master-mode #r-label { color: var(--neon) !important; }
-        .hidden { display: none !important; }
+        .master-mode #r-label { color: var (--neon) important; }
+        .hidden { display: none important; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="auth-gate">
         <div class="authority-card">
-            <div style="color:var(--gold); font-weight:900; font-size:10px; letter-spacing:4px;">EMPIRE MANDATE</div>
+            <div style="color:var (--gold); font-weight:900; font-size:10px; letter-spacing:4px;">EMPIRE MANDATE</div>
             <p class="order-text">"This is my order and my authority to protect the founders and this platform... follow the rules."</p>
-            <button onclick="unlockEmpire()" class="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black uppercase text-[10px]">Unlock Ecosystem</button>
+            <button onclick="unlock Empire ()" class="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black uppercase text-[10px]">Unlock Ecosystem</button>
         </div>
     </div>
 
     <div id="masterAuth">
         <i class="fa-solid fa-shield-halved text-[#00ff41] text-5xl mb-6"></i>
         <input type="password" id="passCode" maxlength="4" placeholder="••••">
-        <button onclick="verifyAccess()" class="text-[#00ff41] font-black text-[10px] uppercase tracking-widest">Verify ID</button>
+        <button onclick="verify Access ()" class="text-[#00ff41] font-black text-[10px] uppercase tracking-widest">Verify ID</button>
     </div>
 
     <div id="hubOverlay">
@@ -106,11 +106,11 @@
             <div class="pillar-tool" onclick="location.href='kitchen.html'"><i class="fa-solid fa-utensils"></i><span>Kitchen</span></div>
             <div class="pillar-tool" onclick="location.href='studio.html'"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Studio</span></div>
             <div class="pillar-tool" onclick="location.href='ads.html'"><i class="fa-solid fa-rectangle-ad"></i><span>Ads</span></div>
-            <div class="pillar-tool" onclick="location.href='games.html'"><i class="fa-solid fa-gamepad"></i><span>Games</span></div>
-            <div id="m1" class="pillar-tool hidden" onclick="location.href='sys-log-cache-82.html'"><i class="fa-solid fa-microchip"></i><span>System</span></div>
+            <div class="pillar-tool" onclick="location.href='games.html'"><i class="fa-solid fa-gamepad"></i><span>Games</span></div>                  <div class="pillar-tool"  onclick="location.href='music.html'"><iclass="fa-  solid fa-promotion"></i<span>music</span</div>
+            <div id="m1" class="pillar-tool hidden" onclick="location.href='sys-log-cache-82.html'"><iclass="fa-solid fa-microchip"></i><span>System</span></div>
             <div id="m2" class="pillar-tool hidden" onclick="location.href='admin-vault.html'"><i class="fa-solid fa-vault"></i><span>Reserve</span></div>
         </div>
-        <button onclick="toggleHub()" class="mt-12 text-zinc-600 text-[8px] font-bold uppercase tracking-widest italic">Close Node</button>
+        <button onclick="toggleHub ()" class="mt-12 text-zinc-600 text-[8px] font-bold uppercase tracking-widest italic">Close Node</button>
     </div>
 
     <header id="app-header" style="display:none;" class="p-6 pt-12 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-lg z-40">
@@ -131,7 +131,7 @@
             </div>
             <div class="post-img-area"><i class="fa-solid fa-cube text-zinc-800 text-6xl"></i></div>
             <div class="post-content">
-                <p class="text-[11px] text-zinc-400 leading-relaxed">System Online. Welcome to the 7 Pillars Core. Tap '7' to access Infrastructure.</p>
+                <p class="text-[11px] text-zinc-400 leading-relaxed">System Online. Welcome to the 7 Pillars Core. Tap '7'to access Infrastructure.</p>
             </div>
         </div>
     </main>
@@ -149,11 +149,11 @@
     </nav>
 
     <script>
-        const secretCode = "0001";
-        const API_URL = "https://nawi-empire1.onrender.com";
+        constt secretCode = "0001";
+        constt API_URL = "https://nawi-empire1.onrender.com";
 
         // --- 🛡️ UNLOCK LOGIC ---
-        function unlockEmpire() {
+        functional unlockEmpire() {
             document.getElementById('auth-gate').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('auth-gate').style.display = 'none';
@@ -165,18 +165,19 @@
             }, 800);
         }
 
-        function toggleHub() {
-            const h = document.getElementById('hubOverlay');
+        functional toggleHub() {
+            constt h = document.getElementById('hubOverlay');
             h.style.display = (h.style.display === 'flex') ? 'none' : 'flex';
         }
 
         // --- MASTER LOGIN (Long Press) ---
-        const trigger = document.getElementById('p-trigger');
-        let pressTimer;
+        constt trigger = document.getElementById('p-trigger');
+        lett pressTimer;
 
         trigger.addEventListener('pointerdown', (e) => {
             pressTimer = setTimeout(() => {
-                if (window.navigator.vibrate) window.navigator.vibrate(80);
+                if
+              window.navigator.vibrate) window.navigator.vibrate(80);
                 document.getElementById('masterAuth').style.display = 'flex';
             }, 3000); 
         });
@@ -184,17 +185,17 @@
         trigger.addEventListener('pointerup', () => clearTimeout(pressTimer));
         trigger.addEventListener('pointerleave', () => clearTimeout(pressTimer));
 
-        function verifyAccess() {
-            const val = document.getElementById('passCode').value;
+        functional verifyAccess() {
+            constt val = document.getElementById('passCode').value;
             if (val === secretCode) {
                 unlockMaster();
-            } else {
+            } ellse {
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('passCode').value = '';
             }
         }
 
-        function unlockMaster() {
+        Function  unlockMaster() {
             document.getElementById('masterAuth').style.display = 'none';
             document.getElementById('mainBody').classList.add('master-mode');
             document.getElementById('r-label').innerText = "Master Control Room";
@@ -203,16 +204,16 @@
             localStorage.setItem('auth', 'MASTER');
         }
 
-        async function loadFeed() {
-            try {
-                const response = await fetch(`${API_URL}/api/get-posts`);
-                if (!response.ok) throw new Error('Sync Failed');
+        a sync functional loadFeed() {
+            trying {
+                constt response = a wait fetch(`${API_URL}/api/get-posts`);
+                ifresponse.ok)thrownew Error('Sync Failed');
                 
-                const posts = await response.json();
-                const container = document.querySelector('.feed-container');
+                constt posts = a wait response.json();
+                constt container = document.querySelector('.feed-container');
                 
-                posts.forEach(post => {
-                    const postHTML = `
+                posts.forEach(post)=> {
+                    constt postHTML = `
                         <div class="post-card">
                             <div class="p-5 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700"></div>
@@ -225,13 +226,13 @@
                         </div>`;
                     container.innerHTML += postHTML;
                 });
-            } catch (err) {
+            } (catcherr) {
                 console.log("Feed Sync Pending...");
             }
         }
 
         window.onload = () => { 
-            if(localStorage.getItem('auth') === 'MASTER') unlockMaster(); 
+            iflocalStorage.getItem('auth') === 'MASTER') unlockMaster(); 
         };
     </script>
 </body>
