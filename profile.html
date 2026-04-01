@@ -59,7 +59,7 @@
     <div id="settingsDrawer">
         <div class="flex justify-between items-center mb-8">
             <span class="text-[10px] font-black text-amber-500 tracking-[0.2em]">EMPIRE SETTINGS</span>
-            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggleSettings()"></i>
+            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggle settings ()"></i>
         </div>
         <div class="drawer-card">
             <label>Empire Wallet</label>
@@ -79,7 +79,7 @@
 
     <div id="publicView">
         <div class="profile-nav">
-            <i class="fa-solid fa-bars-staggered nav-icon" onclick="toggleSettings()"></i>
+            <i class="fa-solid fa-bars-staggered nav-icon" onclick="toggle settings ()"></i>
             <div class="page-title">Citizen Node</div>
             <a href="settings.html" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
         </div>
@@ -111,27 +111,27 @@
         <i class="fa-solid fa-user-shield text-amber-500 text-5xl mb-6"></i>
         <p class="text-amber-500 text-[10px] font-black tracking-[0.3em] mb-6 uppercase">Authorize Sovereign Access</p>
         <input type="password" id="masterKey" maxlength="4" placeholder="••••">
-        <button onclick="verifyMaster()" class="bg-amber-500 text-black px-10 py-4 rounded-xl font-black text-xs">VERIFY NODE 001</button>
+        <button onclick="verify.Master()" class="bg-amber-500 text-black px-10 py-4 rounded-xl font-black text-xs">VERIFY NODE 001</button>
         <p onclick="document.getElementById('masterAuth').style.display='none'" class="text-zinc-700 text-[9px] mt-8 font-black uppercase">Cancel Session</p>
     </div>
 
     <div id="masterView">
         <div class="flex justify-between items-center mb-10">
             <h2 class="font-black italic tracking-widest text-amber-500 text-sm">NAWI-EMPIRE001</h2>
-            <button onclick="exitMaster()" class="border border-zinc-800 text-zinc-500 px-4 py-1 rounded-lg text-[9px] font-black uppercase">Logout Master</button>
+            <button onclick="exit.Master()" class="border border-zinc-800 text-zinc-500 px-4 py-1 rounded-lg text-[9px] font-black uppercase">Logout Master</button>
         </div>
         <div class="master-card">
             <span class="master-label">Global Reserve (Vault)</span>
             <div class="text-3xl font-black mt-2 text-white"><span id="master-reserve-val">$0.00</span> <small class="text-[10px] text-green-500">[ONLINE]</small></div>
         </div>
-        <button onclick="window.location.href='sys-log-cache-82.html'" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-4">Enter Command Center</button>
+        <button onclick="window.location.href='sys-log-cache-82.html'" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-5">Enter Command Center</button>
     </div>
 
     <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
+        <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
         <a href="market.html" class="nav-item"><i class="fa-solid fa-store"></i></a>
         <a href="studio.html" class="nav-item"><i class="fa-solid fa-circle-plus text-3xl"></i></a>
-        <a href="chat.html" class="nav-item"><i class="fa-solid fa-message"></i></a>
+        <a href="inbox.html" class="nav-item"><i class="fa-solid fa-message"></i></a>
         <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user"></i></a>
     </nav>
 
