@@ -1,3 +1,4 @@
+require('dotenv').config(); // ✅ FIXED: Added so Render can read your MONGO_URI securely
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -17,7 +18,11 @@ app.use(express.static(path.join(__dirname, '/')));
 
 // Multer for HD Content Handling
 const storage = multer.memoryStorage();
-const upload = multer({ limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB Limit
+// ✅ FIXED: Connected the 'storage' variable to the upload tool
+const upload = multer({ 
+    storage: storage, 
+    limits: { fileSize: 50 * 1024 * 1024 } 
+}); 
 
 // --- ☣️ 2. GLOBAL SYSTEM STATE ---
 let isSystemLocked = false; 
@@ -121,8 +126,6 @@ app.post('/api/login', async (req, res) => {
 });
 
 // --- 📡 6. CONTENT & UPLOAD ENGINE ---
-
-// Fetch Feed
 app.get('/api/get-feed', async (req, res) => {
     try {
         const posts = await Post.find({ status: 'active' }).sort({ createdAt: -1 });
@@ -130,41 +133,31 @@ app.get('/api/get-feed', async (req, res) => {
     } catch (err) { res.status(500).send(err.message); }
 });
 
-// Upload Asset (Multimedia)
 app.post('/api/upload-asset', upload.single('mediaFile'), async (req, res) => {
     try {
         const { authorId, description, type, price, name } = req.body;
-        
-        // Content Level Restriction
         const user = await User.findById(authorId);
         if (type === 'market' && user.level < 1) {
             return res.status(403).json({ message: "Level 1 Required to publish in Market." });
         }
-
-        // Standard Filter
         if (description.includes("naked") || description.length < 5) {
             return res.status(400).json({ message: "Content does not meet Empire standards." });
         }
-
         const newPost = new Post({
             authorName: name || "Citizen",
             authorId: authorId,
-            mediaUrl: req.body.mediaUrl, // URL from Frontend Cloudinary/AWS upload
+            mediaUrl: req.body.mediaUrl,
             description: description,
             type: type,
             priceInCoins: price || 0,
             isMasterPost: (authorId === "NAWI-EMPIRE001")
         });
-
         await newPost.save();
-        
-        // Auto-Check Level Up after posting
         const postCount = await Post.countDocuments({ authorId: authorId });
         if (postCount >= 3 && user.level === 0) {
             user.level = 1;
             user.rank = "Verified Contributor";
             user.pillarsManaged.push("Market_Full_Access");
-            
             const alert = new Message({
                 recipientId: authorId,
                 sender: "Empire Authority",
@@ -173,12 +166,11 @@ app.post('/api/upload-asset', upload.single('mediaFile'), async (req, res) => {
             await alert.save();
             await user.save();
         }
-
         res.status(201).json({ success: true, message: "Asset Logged to Empire Ledger" });
     } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
 
-// --- 💰 7. ECONOMY & GIFTING ENGINE (The $0.02 Sync) ---
+// --- 💰 7. ECONOMY & GIFTING ENGINE ---
 const GIFTS = {
     rose: { cost: 1, minLevel: 0, label: "Imperial Rose" },
     crown: { cost: 500, minLevel: 5, label: "Empire Crown" },
@@ -190,37 +182,23 @@ app.post('/api/send-gift', async (req, res) => {
     try {
         const { senderId, receiverId, giftKey, isPrivate } = req.body;
         const gift = GIFTS[giftKey];
-
         const sender = await User.findById(senderId);
         const receiver = await User.findById(receiverId);
+        if (sender.level < gift.minLevel) return res.status(403).json({ message: `Level ${gift.minLevel} Required!` });
+        if (sender.empireCoins < gift.cost) return res.status(400).json({ message: "Insufficient Coins." });
 
-        if (sender.level < gift.minLevel) {
-            return res.status(403).json({ message: `Reach Level ${gift.minLevel} to unlock this!` });
-        }
-        if (sender.empireCoins < gift.cost) {
-            return res.status(400).json({ message: "Insufficient Coins in Vault." });
-        }
-
-        // Execute Transfer
         sender.empireCoins -= gift.cost;
         const payoutUSD = gift.cost * 0.02; 
         receiver.totalEarningsUSD += payoutUSD;
-
-        // Log Activity
         sender.activityLog.push({ action: `Sent ${gift.label} to ${receiver.username}` });
 
-        // Private vs Public Alert
         const alert = new Message({
             recipientId: receiverId,
             sender: isPrivate ? "Empire Shadow-Vault" : sender.username,
             text: `${isPrivate ? 'A Citizen' : sender.username} sent you a ${gift.label}. $${payoutUSD} added to earnings.`,
             icon: isPrivate ? "fa-solid fa-user-secret" : "fa-solid fa-gift"
         });
-
-        await sender.save();
-        await receiver.save();
-        await alert.save();
-
+        await sender.save(); await receiver.save(); await alert.save();
         res.json({ success: true, message: "Tribute delivered.", newBalance: sender.empireCoins });
     } catch (err) { res.status(500).json({ error: "Transaction Interrupted." }); }
 });
@@ -252,11 +230,13 @@ app.post('/api/admin/self-destruct', (req, res) => {
     res.json({ success: true, message: isSystemLocked ? "EMPIRE LOCKED" : "EMPIRE RESTORED" });
 });
 
-// Final fallback for Single Page Application
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
 const PORT = process.env.PORT || 10000;
-mongoose.connect('YOUR_MONGODB_URI_HERE')
+// ✅ FIXED: Changed to use a variable. Ensure 'MONGO_URI' is set in Render Environment Variables.
+const DB_URL = process.env.MONGO_URI || 'YOUR_MONGODB_URI_HERE'; 
+
+mongoose.connect(DB_URL)
     .then(() => {
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 NAWI-EMPIRE ENGINE ACTIVE ON PORT ${PORT}`);
