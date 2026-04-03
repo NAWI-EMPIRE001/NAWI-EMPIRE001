@@ -1,71 +1,156 @@
-<script>
-    // 🧭 AUTHORIZED ORIENTATION SYSTEM
-    // This script runs automatically to check for new Citizens
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const isNewUser = urlParams.get('new');
-        
-        // Only trigger the popup if the URL contains ?new=true
-        if (isNewUser === 'true') { 
-            showEmpireOrientation(); 
-        }
-    };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DASHBOARD | NAWI EMPIRE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --black: #000; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; }
+        .glass-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.1); backdrop-filter: blur(10px); }
+        .pillar-btn { transition: 0.3s; border: 1px solid #1a1a1a; }
+        .pillar-btn:active { transform: scale(0.95); background: #111; }
+        .locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
+    </style>
+</head>
+<body class="p-6 pb-24">
 
-    function showEmpireOrientation() {
-        // 1. Create the Dark Overlay
-        const guideBox = document.createElement('div');
-        guideBox.id = "imperial-overlay";
-        guideBox.style.cssText = `
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.98); 
-            z-index: 99999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        `;
-
-        // 2. Inject the Luxury Authority Card
-        guideBox.innerHTML = `
-            <div style="width: 85%; max-width: 400px; background: #0a0a0a; border: 1px solid #D4AF37; border-radius: 24px; padding: 35px; text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);">
-                <div style="margin-bottom: 20px;">
-                    <i class="fa-solid fa-gem" style="color:#D4AF37; font-size: 45px;"></i>
-                </div>
-                
-                <h2 style="color:#D4AF37; font-family: sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 4px; margin-bottom: 15px; text-transform: uppercase;">
-                    Welcome to the Empire
-                </h2>
-                
-                <p style="font-size: 12px; color: #a1a1a1; line-height: 1.6; margin-bottom: 25px;">
-                    You have been granted <span style="color:#D4AF37; font-weight:bold;">10 Empire Coins</span> as a foundation bonus.
-                </p>
-
-                <div style="text-align: left; background: #111; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
-                    <p style="color: #eee; font-size: 10px; margin-bottom: 12px;">💎 <b>PILLAR 1:</b> Access the Marketplace.</p>
-                    <p style="color: #eee; font-size: 10px; margin-bottom: 12px;">💎 <b>PILLAR 2:</b> Build your Studio.</p>
-                    <p style="color: #eee; font-size: 10px; margin-bottom: 0;">💎 <b>PILLAR 3:</b> Connect with global Citizens.</p>
-                </div>
-
-                <button onclick="closeOrientation()" style="background:#D4AF37; color:black; border:none; width:100%; padding:18px; border-radius:14px; font-weight:900; font-size:12px; text-transform: uppercase; cursor:pointer; letter-spacing: 1px; transition: 0.3s active;">
-                    Start My Journey
-                </button>
+    <div class="flex justify-between items-start mb-10">
+        <div>
+            <h1 id="username" class="text-2xl font-black uppercase tracking-tighter">Citizen Loader...</h1>
+            <div class="flex items-center gap-2 mt-1">
+                <span id="citizen-level" class="text-amber-500 text-[10px] font-black uppercase tracking-widest">Level 0 • RECRUIT</span>
+                <i class="fa-solid fa-circle-check text-blue-500 text-[10px] hidden" id="v-badge"></i>
             </div>
-        `;
+        </div>
+        <div class="text-right">
+            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Empire Balance</p>
+            <h2 id="coin-balance" class="text-xl font-black text-amber-500">0 🪙</h2>
+        </div>
+    </div>
 
-        document.body.appendChild(guideBox);
-    }
+    <div class="glass-card rounded-[30px] p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Pillar 1 Requirement</h3>
+            <span id="post-stats" class="text-amber-500 font-black text-[10px]">0 / 3</span>
+        </div>
+        
+        <div class="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-4">
+            <div id="level-progress" class="bg-amber-500 h-full transition-all duration-1000" style="width: 0%"></div>
+        </div>
 
-    // 3. Close Function to remove overlay
-    function closeOrientation() {
-        const overlay = document.getElementById('imperial-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            overlay.style.transition = '0.5s';
-            setTimeout(() => overlay.remove(), 500);
+        <p id="requirement-text" class="text-[9px] text-zinc-500 italic leading-tight">
+            *Post 3 professional assets to unlock the Global Market & Pillar tools.
+        </p>
+    </div>
+
+    <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 px-2">Authorized Tools</h3>
+    <div class="grid grid-cols-2 gap-4">
+        <button onclick="location.href='create-post.html'" class="pillar-btn bg-zinc-900/50 p-6 rounded-[24px] flex flex-col items-center">
+            <i class="fa-solid fa-cloud-arrow-up text-amber-500 text-xl mb-3"></i>
+            <span class="text-[10px] font-black uppercase tracking-widest">Post Asset</span>
+        </button>
+
+        <button id="market-btn" onclick="location.href='market.html'" class="pillar-btn bg-zinc-900/50 p-6 rounded-[24px] flex flex-col items-center locked">
+            <i class="fa-solid fa-shop text-zinc-500 text-xl mb-3" id="market-icon"></i>
+            <span class="text-[10px] font-black uppercase tracking-widest">Market</span>
+        </button>
+
+        <button onclick="location.href='studio.html'" class="pillar-btn bg-zinc-900/50 p-6 rounded-[24px] flex flex-col items-center">
+            <i class="fa-solid fa- microphone-lines text-amber-500 text-xl mb-3"></i>
+            <span class="text-[10px] font-black uppercase tracking-widest">Studio</span>
+        </button>
+
+        <button onclick="location.href='kitchen.html'" class="pillar-btn bg-zinc-900/50 p-6 rounded-[24px] flex flex-col items-center">
+            <i class="fa-solid fa-utensils text-amber-500 text-xl mb-3"></i>
+            <span class="text-[10px] font-black uppercase tracking-widest">Kitchen</span>
+        </button>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 w-full bg-black border-t border-zinc-900 flex justify-around p-5 z-50">
+        <a href="index.html" class="text-zinc-600"><i class="fa-solid fa-house text-xl"></i></a>
+        <a href="dashboard.html" class="text-amber-500"><i class="fa-solid fa-chart-line text-xl"></i></a>
+        <a href="profile.html" class="text-zinc-600"><i class="fa-solid fa-user text-xl"></i></a>
+    </nav>
+
+    <script>
+        const API_URL = "https://nawi-empire1.onrender.com";
+        const currentUserID = localStorage.getItem('user-id') || 'NAWI-EMPIRE001';
+
+        window.onload = function() {
+            // Check for New Citizen Orientation
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('new') === 'true') { 
+                showEmpireOrientation(); 
+            }
+            loadDashboardData();
+        };
+
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${API_URL}/api/get-profile`, {
+                    headers: { 'user-id': currentUserID }
+                });
+                const data = await response.json();
+
+                if(data) {
+                    document.getElementById('username').innerText = data.username || "Citizen Node";
+                    document.getElementById('coin-balance').innerText = `${(data.walletBalance || 0).toLocaleString()} 🪙`;
+                    
+                    const postCount = data.posts ? data.posts.length : 0;
+                    document.getElementById('post-stats').innerText = `${postCount} / 3`;
+                    
+                    // Logic to unlock Market Pillar
+                    const progress = Math.min((postCount / 3) * 100, 100);
+                    document.getElementById('level-progress').style.width = progress + "%";
+
+                    if(postCount >= 3 || currentUserID === "NAWI-EMPIRE001") {
+                        const mBtn = document.getElementById('market-btn');
+                        mBtn.classList.remove('locked');
+                        document.getElementById('market-icon').classList.replace('text-zinc-500', 'text-amber-500');
+                        document.getElementById('citizen-level').innerText = "Level 1 • AUTHORIZED CITIZEN";
+                        document.getElementById('requirement-text').innerText = "✅ Global Market Unlocked.";
+                    }
+
+                    if(currentUserID === "NAWI-EMPIRE001") {
+                        document.getElementById('v-badge').classList.remove('hidden');
+                        document.getElementById('citizen-level').innerText = "SYSTEM FOUNDER • NODE 001";
+                    }
+                }
+            } catch (err) {
+                console.log("Dashboard Syncing...");
+            }
         }
-    }
-</script>
+
+        function showEmpireOrientation() {
+            const guideBox = document.createElement('div');
+            guideBox.id = "imperial-overlay";
+            guideBox.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); opacity:1; transition:0.5s;`;
+            guideBox.innerHTML = `
+                <div style="width: 85%; max-width: 400px; background: #0a0a0a; border: 1px solid #D4AF37; border-radius: 24px; padding: 35px; text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);">
+                    <i class="fa-solid fa-gem" style="color:#D4AF37; font-size: 45px; margin-bottom: 20px;"></i>
+                    <h2 style="color:#D4AF37; font-family: sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 4px; margin-bottom: 15px; text-transform: uppercase;">Welcome to the Empire</h2>
+                    <p style="font-size: 12px; color: #a1a1a1; line-height: 1.6; margin-bottom: 25px;">You have been granted <span style="color:#D4AF37; font-weight:bold;">10 Empire Coins</span> as a foundation bonus.</p>
+                    <div style="text-align: left; background: #111; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <p style="color: #eee; font-size: 10px; margin-bottom: 12px;">💎 <b>PILLAR 1:</b> Access the Marketplace.</p>
+                        <p style="color: #eee; font-size: 10px; margin-bottom: 12px;">💎 <b>PILLAR 2:</b> Build your Studio.</p>
+                        <p style="color: #eee; font-size: 10px; margin-bottom: 0;">💎 <b>PILLAR 3:</b> Connect with global Citizens.</p>
+                    </div>
+                    <button onclick="closeOrientation()" style="background:#D4AF37; color:black; border:none; width:100%; padding:18px; border-radius:14px; font-weight:900; font-size:12px; text-transform: uppercase; cursor:pointer; letter-spacing: 1px;">Start My Journey</button>
+                </div>`;
+            document.body.appendChild(guideBox);
+        }
+
+        function closeOrientation() {
+            const overlay = document.getElementById('imperial-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.remove(), 500);
+            }
+        }
+    </script>
+</body>
+</html>
