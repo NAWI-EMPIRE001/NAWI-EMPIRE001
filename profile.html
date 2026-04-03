@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --gold: #D4AF37; --black: #000; --dark: #0a0a0a; --neon: #00ff41; }
-        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 100px; overflow-x: hidden; }
+        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; }
 
         /* HEADER NAV */
         .profile-nav { display: flex; justify-content: space-between; padding: 20px; align-items: center; }
@@ -18,7 +18,7 @@
 
         /* CITIZEN VIEW */
         #publicView { animation: fadeIn 0.5s ease; }
-        .avatar-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; user-select: none; }
+        .avatar-circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; user-select: none; transition: 0.3s; }
         
         .verify-badge { color: #0088ff; font-size: 14px; display: none; }
         
@@ -30,6 +30,7 @@
         /* POST GRID */
         .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; margin-top: 10px; }
         .post-item { aspect-ratio: 1/1; background: #0a0a0a; position: relative; overflow: hidden; border: 1px solid #111; }
+        .post-item img { width: 100%; height: 100%; object-cover: cover; }
         .post-stats-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 4px; display: flex; justify-content: space-between; font-size: 8px; font-weight: 900; color: white; }
 
         /* SETTINGS DRAWER */
@@ -39,19 +40,19 @@
 
         /* MASTER AUTH OVERLAY */
         #masterAuth { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 7000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 10px; outline: none; width: 180px; margin-bottom: 20 px; }
+        #masterAuth input { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; font-size: 28px; letter-spacing: 10px; outline: none; width: 180px; margin-bottom: 20px; }
 
         /* MASTER VIEW */
-        #masterView { display: none; padding: 25 px; animation: fadeIn 0.8 s ease; }
-        .master-card { background: #080808; border: 1 px solid var (--neon); padding: 20 px; border-radius: 15 px; margin-bottom: 15 px; }
-        .master-label { color: var (--neon); font-size: 9 px; letter-spacing: 2 px; text-transform: uppercase; }
+        #masterView { display: none; padding: 25px; animation: fadeIn 0.8s ease; }
+        .master-card { background: #080808; border: 1px solid var(--neon); padding: 20px; border-radius: 15px; margin-bottom: 15px; }
+        .master-label { color: var(--neon); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; }
 
         /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; width: 100 %; background: #050505; display: flex; justify-content: space-around; padding: 18 px 0; border-top: 1 px solid #111; z-index: 1000; }
-        .nav-item { color: #333; font-size: 20 px; text-decoration: none; transition: 0.3 s; }
-        .nav-item.active { color: var (--gold); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #050505; display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid #111; z-index: 1000; }
+        .nav-item { color: #333; font-size: 20px; text-decoration: none; transition: 0.3s; }
+        .nav-item.active { color: var(--gold); }
 
-        >keyframes fadeInfrom { opacity: 0; } too { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -59,27 +60,23 @@
     <div id="settingsDrawer">
         <div class="flex justify-between items-center mb-8">
             <span class="text-[10px] font-black text-amber-500 tracking-[0.2em]">EMPIRE SETTINGS</span>
-            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggle settings ()"></i>
+            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggleSettings()"></i>
         </div>
         <div class="drawer-card">
             <label>Empire Wallet</label>
             <p id="wallet-balance" class="text-lg font-black text-white m-0">0 🪙</p>
-            <button onclick="window.location.href='sys-log-cache-82.html'" class="bg-amber-500 text-black border-none p-2 rounded mt-3 font-black text-[9px] w-full tracking-tighter uppercase">WITHDRAW ASSETS</button>
+            <button onclick="window.location.href='withdraw.html'" class="bg-amber-500 text-black p-2 rounded mt-3 font-black text-[9px] w-full uppercase">WITHDRAW ASSETS</button>
         </div>
         <div class="drawer-card">
             <label>Human Verification</label>
             <button onclick="document.getElementById('id-upload').click()" class="bg-transparent border border-zinc-800 text-zinc-400 p-2 rounded mt-2 font-black text-[9px] w-full">UPLOAD GOVT ID</button>
             <input type="file" id="id-upload" class="hidden">
         </div>
-        <div class="drawer-card" onclick="window.location.href='settings.html'">
-            <label>Account Configuration</label>
-            <p class="text-[10px] text-zinc-500 font-bold">Manage Identity & Privacy <i class="fa-solid fa-chevron-right ml-2"></i></p>
-        </div>
     </div>
 
     <div id="publicView">
         <div class="profile-nav">
-            <i class="fa-solid fa-bars-staggered nav-icon" onclick="toggle settings ()"></i>
+            <i class="fa-solid fa-bars-staggered nav-icon" onclick="toggleSettings()"></i>
             <div class="page-title">Citizen Node</div>
             <a href="settings.html" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
         </div>
@@ -95,12 +92,29 @@
             </div>
             <div class="text-[9px] text-zinc-600 uppercase tracking-widest mt-1">Authorized Platform User</div>
 
-            <p id="display-bio" class="text-zinc-500 text-[11px] px-10 mt-3 leading-relaxed">No professional knowledge shared yet.</p>
+            <p id="display-bio" class="text-zinc-500 text-[11px] px-10 mt-3 leading-relaxed">Loading profile knowledge...</p>
 
             <div class="stats-row border-b border-zinc-900">
                 <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Followers</span></div>
                 <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Following</span></div>
                 <div class="stat-item"><span class="stat-num" id="asset-count">0</span><span class="stat-label">Assets</span></div>
+            </div>
+        </div>
+
+        <div class="px-4 mt-6">
+            <div class="ad-card bg-zinc-900 border-2 border-amber-500/20 rounded-[30px] p-1 mb-8">
+                <div class="p-3 flex justify-between items-center">
+                    <span class="text-[8px] font-black bg-amber-500 text-black px-3 py-1 rounded-full uppercase">Empire Transmission</span>
+                    <i class="fa-solid fa-ellipsis-vertical text-zinc-500"></i>
+                </div>
+                <div class="rounded-[25px] overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" class="w-full aspect-video object-cover">
+                </div>
+                <div class="p-4">
+                    <h4 class="text-xs font-black text-white mb-1">PROMOTED BY: NIKE_AFRICA</h4>
+                    <p class="text-[10px] text-zinc-400 leading-tight">Join the Live Market for the new Empire x Nike limited collection.</p>
+                    <button class="w-full mt-4 bg-white text-black py-3 rounded-2xl font-black text-[10px] uppercase">Enter Transaction</button>
+                </div>
             </div>
         </div>
 
@@ -111,14 +125,14 @@
         <i class="fa-solid fa-user-shield text-amber-500 text-5xl mb-6"></i>
         <p class="text-amber-500 text-[10px] font-black tracking-[0.3em] mb-6 uppercase">Authorize Sovereign Access</p>
         <input type="password" id="masterKey" maxlength="4" placeholder="••••">
-        <button onclick="verify.Master()" class="bg-amber-500 text-black px-10 py-4 rounded-xl font-black text-xs">VERIFY NODE 001</button>
-        <p onclick="document.getElementById('masterAuth').style.display='none'" class="text-zinc-700 text-[9px] mt-8 font-black uppercase">Cancel Session</p>
+        <button onclick="verifyMaster()" class="bg-amber-500 text-black px-10 py-4 rounded-xl font-black text-xs">VERIFY NODE 001</button>
+        <p onclick="document.getElementById('masterAuth').style.display='none'" class="text-zinc-700 text-[9px] mt-8 font-black uppercase cursor-pointer">Cancel Session</p>
     </div>
 
     <div id="masterView">
         <div class="flex justify-between items-center mb-10">
             <h2 class="font-black italic tracking-widest text-amber-500 text-sm">NAWI-EMPIRE001</h2>
-            <button onclick="exit.Master()" class="border border-zinc-800 text-zinc-500 px-4 py-1 rounded-lg text-[9px] font-black uppercase">Logout Master</button>
+            <button onclick="exitMaster()" class="border border-zinc-800 text-zinc-500 px-4 py-1 rounded-lg text-[9px] font-black uppercase">Logout Master</button>
         </div>
         <div class="master-card">
             <span class="master-label">Global Reserve (Vault)</span>
@@ -128,7 +142,7 @@
     </div>
 
     <nav class="bottom-nav">
-        <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
         <a href="market.html" class="nav-item"><i class="fa-solid fa-store"></i></a>
         <a href="studio.html" class="nav-item"><i class="fa-solid fa-circle-plus text-3xl"></i></a>
         <a href="inbox.html" class="nav-item"><i class="fa-solid fa-message"></i></a>
@@ -136,105 +150,84 @@
     </nav>
 
     <script>
-        consst API_URL = "https://nawi-empire1.onrender.com";
+        const API_URL = "https://nawi-empire1.onrender.com";
 
-        // CEO OVERRIDE: Ensure the app defaults to your Master ID
-        iflocalStorage.getItem('user-id')) {
-            localStorage.setItem('user-id', 'NAWI-EMPIRE001');
-        }
+        // MASTER IDENTITY LOCK
+        const currentUserID = localStorage.getItem('user-id') || 'NAWI-EMPIRE001';
 
-        lett pressTimer;
-        consst trigger = document.getElementById('masterTrigger');
+        let pressTimer;
+        const trigger = document.getElementById('masterTrigger');
 
         trigger.addEventListener('touchstart', (e) => {
-            e.preventDefault(); 
-            trigger.style.borderColor = "#fff"; 
             pressTimer = window.setTimeout(() => {
                 document.getElementById('masterAuth').style.display = 'flex';
-                ifwindow.navigator.vibrate) window.navigator.vibrate(100); 
-            }, 5000); 
+                if(window.navigator.vibrate) window.navigator.vibrate(100); 
+            }, 3000); 
         });
 
-        trigger.addEventListener('touchend', () => {
-            clearTimeout(pressTimer);
-            trigger.style.borderColor = "var(--gold)";
-        });
+        trigger.addEventListener('touchend', () => clearTimeout(pressTimer));
 
-        functional verifyMaster() {
-            consst key = document.getElementById('masterKey').value;
-            ifkey === "0001") { 
+        function verifyMaster() {
+            const key = document.getElementById('masterKey').value;
+            if(key === "0001") { 
                 document.getElementById('masterAuth').style.display = 'none';
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('masterView').style.display = 'block';
-                document.body.style.backgroundColor = "#050505";
-                localStorage.setItem('NAWI_MASTER_TOKEN', "SOVEREIGN_001_ALPHA_OMEGA");
-                loadCitizenProfile(); // Refresh specifically for Master View
-            } ellse {
+                localStorage.setItem('NAWI_MASTER_TOKEN', "SOVEREIGN_001");
+            } else {
                 alert("ACCESS DENIED");
-                document.getElementById('masterAuth').style.display = 'none';
             }
         }
 
-        functional exitMaster() {
+        function exitMaster() {
             document.getElementById('masterView').style.display = 'none';
             document.getElementById('publicView').style.display = 'block';
-            document.body.style.backgroundColor = "var(--black)";
         }
 
-        functional toggleSettings() {
-            consst drawer = document.getElementById('settingsDrawer');
-            drawer.style.left = (drawer.style.left === "0px" || drawer.style.left === "0%") ? "-100%" : "0px";
+        function toggleSettings() {
+            const drawer = document.getElementById('settingsDrawer');
+            drawer.style.left = (drawer.style.left === "0px") ? "-100%" : "0px";
         }
 
-        async<functional loadCitizenProfile() {
-            constt userId = localStorage.getItem('user-id') || "NAWI-EMPIRE001";
-            trry
-                constt response = awaitt fetch(`${API_URL}/api/get-profile`, {
-                    headers: { 'user-id': userId }
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/api/get-profile`, {
+                    headers: { 'user-id': currentUserID }
                 });
-                constt data = awaitt response.json();
+                const data = await response.json();
 
-                ifdata) {
+                if(data) {
                     document.getElementById('display-username').innerText = data.username || "NAWI CITIZEN";
                     document.getElementById('display-bio').innerText = data.bio || "No professional knowledge shared yet.";
+                    document.getElementById('wallet-balance').innerText = `${(data.walletBalance || 0).toLocaleString()} 🪙`;
+                    document.getElementById('master-reserve-val').innerText = `$${(data.walletBalance || 0).toLocaleString()}`;
+                    document.getElementById('asset-count').innerText = data.posts ? data.posts.length : 0;
                     
-                    constt balance = data.walletBalance || 0;
-                    document.getElementById('wallet-balance').innerText = `${balance.toLocaleString()} 🪙`;
-                    
-                    // SYNCING THE MASTER VAULT DISPLAY
-                    document.getElementById('master-reserve-val').innerText = `$${balance.toLocaleString()}`;
-                    
-                    document.getElementById('asset-count').innerText = (data.posts && data.posts.length) ? data.posts.length : 0;
-                    
-                    // Show verify badge for CEO or verified users
-                    ifdata.isVerified || userId === "NAWI-EMPIRE001") {
+                    if(data.isVerified || currentUserID === "NAWI-EMPIRE001") {
                         document.getElementById('v-badge').style.display = 'block';
                     }
 
-                    constt postContainer = document.getElementById('citizen-post-grid');
-                    postContainer.innerHTML = ''; 
-
-                    ifdata.posts && data.posts.length > 0) {
-                        data.posts.forEach.post => {
-                            postContainer.innerHTML += `
+                    const grid = document.getElementById('citizen-post-grid');
+                    grid.innerHTML = '';
+                    if(data.posts && data.posts.length > 0) {
+                        data.posts.forEach(post => {
+                            grid.innerHTML += `
                                 <div class="post-item">
-                                    <img src="${post.imageUrl}" class="w-full h-full object-cover">
+                                    <img src="${post.imageUrl}" onerror="this.src='https://via.placeholder.com/150/0a0a0a/D4AF37?text=Asset'">
                                     <div class="post-stats-overlay">
-                                        <span><i class="fa-solid fa-eye mr-1"></i> ${post.views}</span>
-                                        <span><i class="fa-solid fa-gem mr-1"></i> ${post.likes}</span>
+                                        <span><i class="fa-solid fa-eye"></i> ${post.views || 0}</span>
+                                        <span><i class="fa-solid fa-gem"></i> ${post.likes || 0}</span>
                                     </div>
                                 </div>`;
                         });
-                    } ellse {
-                        postContainer.innerHTML = `<div class="col-span-3 text-center py-10 text-zinc-800 text-[10px] uppercase font-black">No content published</div>`;
                     }
                 }
-            } (catcherr) {
-                console.log("Profile Syncing...");
+            } catch (err) {
+                console.log("Syncing Profile...");
             }
         }
 
-        window.onload = loadCitizenProfile;
+        window.onload = loadProfile;
     </script>
 </body>
 </html>
