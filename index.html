@@ -6,6 +6,8 @@
     <title>NAWI EMPIRE | Social Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root { --gold: #D4AF37; --black: #050505; --neon: #00ff41; }
         body { 
@@ -18,7 +20,7 @@
             user-select: none;
         }
 
-        /* --- 🛡️ AUTHORITY GATE --- */
+        /* --- 🛡️ 1. AUTHORITY GATE --- */
         #auth-gate { 
             height: 100vh; width: 100%; position: fixed; inset: 0;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
@@ -33,51 +35,48 @@
             padding-left: 15px; text-align: left; font-style: italic; margin: 20px 0; 
         }
 
-        /* --- THE HUB (7 PILLARS) --- */
-        #hubOverlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(25px); z-index: 9999; flex-direction: column;
-            align-items: center; justify-content: center;
+        /* --- 🖼️ 2. THE 3-WAY PORTAL --- */
+        #live-portal-overlay { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px); z-index: 9999; flex-direction: column;
+            align-items: center; justify-content: center; padding: 24px;
         }
-        .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
-        .pillar-tool {
-            background: #111; border: 1px solid #222; aspect-ratio: 1/1; border-radius: 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.3s; width: 90px; cursor: pointer;
-        }
-        .pillar-tool:active { transform: scale(0.9); border-color: var(--gold); }
-        .pillar-tool i { color: var(--gold); font-size: 20px; }
-        .pillar-tool span { font-size: 8px; font-weight: 900; text-transform: uppercase; color: #888; }
 
-        /* --- THE FEED --- */
-        .feed-container { padding: 15px; padding-bottom: 150px; display: none; }
-        .post-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 25px; margin-bottom: 25px; overflow: hidden; }
-        .post-img-area { width: 100%; aspect-ratio: 1/1; background: #0d0d0d; display: flex; align-items: center; justify-content: center; }
-        .post-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        /* --- 📱 3. IMPERIAL ALERTS --- */
+        #imperial-alert {
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; background: rgba(0,0,0,0.98); border: 1px solid var(--gold);
+            border-radius: 15px; padding: 15px; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,1);
+        }
 
-        /* --- MASTER AUTH --- */
-        #masterAuth {
-            display: none; position: fixed; inset: 0; background: #000;
-            z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+        /* --- UI COMPONENTS --- */
+        .gold-7-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: linear-gradient(45deg, #D4AF37, #F9D71C); color: black;
+            font-weight: 900; font-size: 8px; width: 14px; height: 14px;
+            border-radius: 3px; margin-left: 5px; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
-        #masterAuth input {
-            background: transparent; border: none; border-bottom: 2px solid var(--neon);
-            color: var(--neon); font-size: 32px; text-align: center; width: 160px; outline: none; margin: 20px;
-        }
+
+        .feed-container { padding: 15px; padding-bottom: 120px; display: none; }
+        .post-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 30px; margin-bottom: 25px; overflow: hidden; transition: 0.3s; }
+        .ad-card { border: 2px solid rgba(212, 175, 55, 0.2); }
 
         /* --- NAVIGATION --- */
-        .node-7-wrapper { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 8000; display: none; }
-        .main-node {
+        .node-7-trigger {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             width: 70px; height: 70px; background: white; color: black; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 28px;
-            font-weight: 900; border: 6px solid var(--black); box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            display: none; align-items: center; justify-content: center; font-size: 28px;
+            font-weight: 900; border: 6px solid var(--black); z-index: 8000;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); cursor: pointer;
         }
         .bottom-bar {
-            position: fixed; bottom: 0; width: 100%; height: 85px; background: rgba(5,5,5,0.98);
-            display: flex; justify-content: space-around; align-items: center; padding-bottom: 10px;
-            border-top: 1px solid #111; z-index: 5000; display: none;
+            position: fixed; bottom: 0; width: 100%; height: 85px; background: #050505;
+            display: none; justify-content: space-around; align-items: center;
+            border-top: 1px solid #111; z-index: 5000;
         }
-        .master-mode #r-label { color: var(--neon) !important; }
+
+        /* MASTER MODE COLORS */
+        .master-mode #r-label { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
     </style>
 </head>
 <body id="mainBody">
@@ -86,152 +85,164 @@
         <div class="authority-card">
             <div style="color:var(--gold); font-weight:900; font-size:9px; letter-spacing:4px;">EMPIRE MANDATE</div>
             <p class="order-text">"This is my order and my authority to protect the founders and this platform... follow the rules."</p>
-            <button onclick="unlockEmpire()" class="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black uppercase text-[10px]">Unlock Ecosystem</button>
+            <button onclick="unlockEmpire()" class="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Unlock Ecosystem</button>
         </div>
     </div>
 
-    <div id="masterAuth">
-        <i class="fa-solid fa-shield-halved text-[#00ff41] text-5xl mb-6"></i>
-        <input type="password" id="passCode" maxlength="4" placeholder="••••">
-        <button onclick="verifyAccess()" class="text-[#00ff41] font-black text-[10px] uppercase tracking-widest">Verify ID</button>
+    <div id="imperial-alert">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 border border-[#D4AF37] rounded flex items-center justify-center font-black text-[#D4AF37]">7</div>
+            <div>
+                <h5 class="text-[#D4AF37] text-[10px] font-black uppercase">Imperial Update</h5>
+                <p id="alert-text" class="text-white text-[10px]"></p>
+            </div>
+        </div>
     </div>
 
-    <div id="hubOverlay">
-        <h2 class="text-amber-500 font-black tracking-[0.5em] mb-10 text-[9px] uppercase">Infrastructure</h2>
-        <div class="pillar-grid">
-            <div class="pillar-tool" onclick="location.href='live.html'"><i class="fa-solid fa-tower-broadcast"></i><span>Live</span></div>
-            <div class="pillar-tool" onclick="location.href='market.html'"><i class="fa-solid fa-gem"></i><span>Market</span></div>
-            <div class="pillar-tool" onclick="location.href='kitchen.html'"><i class="fa-solid fa-utensils"></i><span>Kitchen</span></div>
-            <div class="pillar-tool" onclick="location.href='studio.html'"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Studio</span></div>
-            <div class="pillar-tool" onclick="location.href='ads.html'"><i class="fa-solid fa-rectangle-ad"></i><span>Ads</span></div>
-            <div class="pillar-tool" onclick="location.href='games.html'"><i class="fa-solid fa-gamepad"></i><span>Games</span></div>
-            <div class="pillar-tool" onclick="location.href='music.html'"><i class="fa-solid fa-music"></i><span>Music Hub</span></div>
-            
-            <div id="m1" class="pillar-tool hidden" onclick="location.href='sys-log-cache-82.html'"><i class="fa-solid fa-microchip"></i><span>System</span></div>
-            <div id="m2" class="pillar-tool hidden" onclick="location.href='admin-vault.html'"><i class="fa-solid fa-vault"></i><span>Reserve</span></div>
+    <div id="live-portal-overlay">
+        <h2 class="text-amber-500 font-black italic tracking-tighter mb-10">SELECT DESTINATION</h2>
+        <div class="grid grid-cols-1 gap-6 w-full max-w-xs">
+            <button onclick="location.href='studio.html'" class="relative bg-zinc-900 p-6 rounded-[30px] border border-zinc-800">
+                <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Pillar 4</p>
+                <h3 class="text-sm font-black uppercase">Live Studio</h3>
+                <span class="absolute top-4 right-4 w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+            </button>
+            <button onclick="location.href='games.html'" class="bg-zinc-900 p-6 rounded-[30px] border border-zinc-800">
+                <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Pillar 5</p>
+                <h3 class="text-sm font-black uppercase">Gaming Arena</h3>
+            </button>
+            <button onclick="location.href='kitchen.html'" class="bg-zinc-900 p-6 rounded-[30px] border border-zinc-800">
+                <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Pillar 3</p>
+                <h3 class="text-sm font-black uppercase">Kitchen Live</h3>
+            </button>
         </div>
-        <button onclick="toggleHub()" class="mt-12 text-zinc-600 text-[8px] font-bold uppercase tracking-widest italic">Close Node</button>
+        <button onclick="closePortal()" class="mt-12 text-zinc-600 text-[10px] font-black uppercase">Return to Feed</button>
     </div>
 
     <header id="app-header" style="display:none;" class="p-6 pt-12 flex justify-between items-center sticky top-0 bg-black/95 z-40">
         <div>
             <p id="r-label" class="text-[7px] font-black tracking-[0.4em] text-zinc-600 uppercase">Empire Feed</p>
-            <h1 id="greet" class="text-xl font-black italic">NAWI SOCIAL</h1>
+            <h1 class="text-xl font-black italic">NAWI SOCIAL</h1>
         </div>
-        <button onclick="location.href='create-post.html'" class="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center">
-            <i class="fa-solid fa-plus text-amber-500"></i>
-        </button>
+        <div class="flex gap-4">
+            <i class="fa-solid fa-plus text-zinc-700" onclick="location.href='create-post.html'"></i>
+            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                <i class="fa-solid fa-bell text-amber-500 text-xs"></i>
+            </div>
+        </div>
     </header>
 
-    <main class="feed-container">
-        <div class="post-card">
-            <div class="p-5 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700"></div>
-                <span class="text-[10px] font-black uppercase">Empire Intelligence</span>
+    <main class="feed-container" id="empire-feed">
+        <div class="ad-card bg-zinc-900 rounded-[35px] p-1 mb-8">
+            <div class="p-3 flex justify-between items-center">
+                <span class="text-[8px] font-black bg-amber-500 text-black px-3 py-1 rounded-full uppercase">Empire Transmission</span>
+                <i class="fa-solid fa-ellipsis-vertical text-zinc-500 mr-2"></i>
             </div>
-            <div class="post-img-area"><i class="fa-solid fa-cube text-zinc-800 text-6xl"></i></div>
-            <div class="post-content">
-                <p class="text-[11px] text-zinc-400 leading-relaxed">System Online. Welcome to the 7 Pillars Core. Tap '7' to access Infrastructure.</p>
+            <div class="rounded-[30px] overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" class="w-full aspect-video object-cover">
             </div>
+            <div class="p-4">
+                <h4 class="text-xs font-black text-white mb-1 uppercase">Promoted: Diamondback 231</h4>
+                <p class="text-[10px] text-zinc-400 leading-tight">Elite Graphic Design Services. Access the 3D Logo Vault now.</p>
+                <button class="w-full mt-4 bg-white text-black py-3 rounded-2xl font-black text-[10px] uppercase">Enter Transaction</button>
+            </div>
+        </div>
+        
+        <div id="feed-loader" class="text-center py-10">
+            <i class="fa-solid fa-7 fa-spin text-amber-500 text-2xl"></i>
+            <p class="text-[8px] text-zinc-600 mt-2 uppercase tracking-widest">Accessing Ledger...</p>
         </div>
     </main>
 
-    <div class="node-7-wrapper" id="center-node">
-        <div class="main-node" onclick="toggleHub()">7</div>
-    </div>
+    <div class="node-7-trigger animate-pulse" id="center-node" onclick="openPortal()">7</div>
 
     <nav class="bottom-bar" id="main-nav">
         <a href="index.html" class="text-amber-500 text-2xl"><i class="fa-solid fa-house"></i></a>
         <a href="market.html" class="text-zinc-800 text-2xl"><i class="fa-solid fa-bag-shopping"></i></a>
         <div style="width: 75px;"></div>
-        <a href="messages.html" class="text-zinc-800 text-2xl"><i class="fa-solid fa-paper-plane"></i></a>
-        <a href="dashboard.html" class="text-zinc-800 text-2xl" id="p-trigger"><i class="fa-solid fa-circle-user"></i></a>
+        <a href="inbox.html" class="text-zinc-800 text-2xl"><i class="fa-solid fa-message"></i></a>
+        <a href="profile.html" class="text-zinc-800 text-2xl" id="p-trigger"><i class="fa-solid fa-circle-user"></i></a>
     </nav>
 
     <script>
-        const secretCode = "0001";
         const API_URL = "https://nawi-empire1.onrender.com";
 
+        // 🛡️ UNLOCK FLOW
         function unlockEmpire() {
             document.getElementById('auth-gate').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('auth-gate').style.display = 'none';
-                document.querySelector('.feed-container').style.display = 'block';
                 document.getElementById('app-header').style.display = 'flex';
+                document.getElementById('empire-feed').style.display = 'block';
                 document.getElementById('main-nav').style.display = 'flex';
-                document.getElementById('center-node').style.display = 'block';
-                loadFeed();
+                document.getElementById('center-node').style.display = 'flex';
+                loadHomeFeed();
             }, 800);
         }
 
-        function toggleHub() {
-            const h = document.getElementById('hubOverlay');
-            h.style.display = (h.style.display === 'flex') ? 'none' : 'flex';
+        // 🖼️ PORTAL LOGIC
+        function openPortal() { document.getElementById('live-portal-overlay').style.display = 'flex'; }
+        function closePortal() { document.getElementById('live-portal-overlay').style.display = 'none'; }
+
+        // 📱 ALERT LOGIC
+        function showEmpireAlert(text) {
+            const box = document.getElementById('imperial-alert');
+            document.getElementById('alert-text').innerText = text;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 5000);
         }
 
-        // --- MASTER LOGIN (Long Press on Profile) ---
+        // 🕵️ MASTER LOGIN (3 Sec Long Press on Profile)
         const trigger = document.getElementById('p-trigger');
         let pressTimer;
 
-        trigger.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
+        trigger.addEventListener('pointerdown', () => {
             pressTimer = setTimeout(() => {
-                if (window.navigator.vibrate) window.navigator.vibrate(80);
-                document.getElementById('masterAuth').style.display = 'flex';
-            }, 3000); 
+                const pass = prompt("ENTER MASTER DECREE:");
+                if(pass === "0001") {
+                    document.getElementById('mainBody').classList.add('master-mode');
+                    document.getElementById('r-label').innerText = "SYSTEM CONTROL ROOM";
+                    showEmpireAlert("Master Authenticated.");
+                }
+            }, 3000);
         });
-
         trigger.addEventListener('pointerup', () => clearTimeout(pressTimer));
 
-        function verifyAccess() {
-            const val = document.getElementById('passCode').value;
-            if (val === secretCode) {
-                unlockMaster();
-            } else {
-                document.getElementById('masterAuth').style.display = 'none';
-                document.getElementById('passCode').value = '';
-            }
-        }
-
-        function unlockMaster() {
-            document.getElementById('masterAuth').style.display = 'none';
-            document.getElementById('mainBody').classList.add('master-mode');
-            document.getElementById('r-label').innerText = "Master Control Room";
-            document.getElementById('m1').classList.remove('hidden');
-            document.getElementById('m2').classList.remove('hidden');
-            localStorage.setItem('auth', 'MASTER');
-        }
-
-        async function loadFeed() {
+        // 📥 LIVE FEED FETCH
+        async function loadHomeFeed() {
             try {
                 const response = await fetch(`${API_URL}/api/get-posts`);
-                if (!response.ok) return;
-                
                 const posts = await response.json();
-                const container = document.querySelector('.feed-container');
-                
+                const feed = document.getElementById('empire-feed');
+                document.getElementById('feed-loader').remove();
+
                 posts.forEach(post => {
                     const postHTML = `
-                        <div class="post-card">
+                        <div class="post-card border-b border-zinc-800 pb-6 mb-6">
                             <div class="p-5 flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700"></div>
-                                <span class="text-[10px] font-black uppercase">${post.author || 'Citizen'}</span>
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border border-amber-500/20"></div>
+                                <div>
+                                    <p class="text-[9px] font-black uppercase text-amber-500">${post.isVerified ? 'NODE 001 VERIFIED' : 'CITIZEN'}</p>
+                                    <h3 class="text-xs font-bold">${post.authorName || 'Victor Johnson'}</h3>
+                                </div>
                             </div>
-                            <img src="${post.image}" class="post-image" onerror="this.style.display='none'">
-                            <div class="post-content">
-                                <p class="text-[12px] text-zinc-400">${post.content}</p>
+                            <div class="px-2">
+                                <img src="${post.mediaUrl}" class="w-full object-cover aspect-square rounded-[25px] border border-zinc-900" onerror="this.src='https://via.placeholder.com/400?text=Empire+Image'">
+                            </div>
+                            <div class="p-5">
+                                <p class="text-[11px] text-zinc-400 mb-4">${post.description}</p>
+                                <div class="flex justify-between items-center">
+                                    <button class="text-amber-500 font-black text-[9px] uppercase border border-amber-500/30 px-4 py-2 rounded-full">Support 7</button>
+                                    ${post.price ? `<span class="text-white font-bold text-xs">${post.price} 🪙</span>` : ''}
+                                </div>
                             </div>
                         </div>`;
-                    container.innerHTML += postHTML;
+                    feed.insertAdjacentHTML('beforeend', postHTML);
                 });
             } catch (err) {
-                console.log("Feed Sync Pending...");
+                document.getElementById('feed-loader').innerHTML = '<p class="text-[8px] text-zinc-600">DATABASE SYNCING...</p>';
             }
         }
-
-        window.onload = () => { 
-            if (localStorage.getItem('auth') === 'MASTER') unlockMaster(); 
-        };
     </script>
 </body>
 </html>
