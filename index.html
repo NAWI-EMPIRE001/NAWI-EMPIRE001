@@ -10,7 +10,7 @@
     
     <style>
         :root { --gold: #D4AF37; --black: #050505; --neon: #00ff41; --glass: rgba(255, 255, 255, 0.05); }
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; -webkit-user-select: none; user-select: none; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: none; }
 
         /* --- 🛡️ UI OVERLAYS --- */
         #auth-gate, .oath-overlay, #empireEntryPopup { 
@@ -50,9 +50,12 @@
         /* --- 7 NODES --- */
         .node-7-trigger { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70px; height: 70px; background: white; color: black; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; border: 6px solid var(--black); z-index: 8000; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
 
-        #glow { position: fixed; width: 200px; height: 200px; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%); pointer-events: none; z-index: 10; transform: translate(-50%, -50%); }
+        #glow { position: fixed; width: 200px; height: 200px; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%); pointer-events: none; z-index: 10; transform: translate(-50%, -50%); transition: opacity 0.3s; }
 
         .master-mode #r-label { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
+        
+        /* Smooth transition for the Mandate button */
+        #acceptBtn { transition: all 0.5s ease; }
     </style>
 </head>
 <body id="mainBody">
@@ -76,6 +79,7 @@
                 <p>III. Rules: The pillars are my shield.</p>
                 <p>IV. Legacy: I build for the Empire.</p>
                 <p style="margin-top:20px; color:var(--gold);">Scroll to the bottom to confirm citizenship...</p>
+                <br><br><br> 
             </div>
             <button id="acceptBtn" disabled onclick="unlockEmpire()" class="w-full bg-zinc-800 text-zinc-500 py-3 rounded mt-4 uppercase font-black text-[10px]">I Accept the Mandate</button>
         </div>
@@ -84,8 +88,8 @@
     <nav class="empire-sidebar" id="mainSidebar">
         <div class="p-4 mb-10 text-center font-black text-amber-500 border-b border-amber-500/20">001</div>
         <div class="nav-links">
-            <a onclick="showModule('feed')" class="nav-item active"><span class="icon">📱</span><span class="label">FEED</span></a>
-            <a onclick="showModule('kitchen')" class="nav-item"><span class="icon">🍳</span><span class="label">KITCHEN</span></a>
+            <a id="nav-feed" onclick="showModule('feed')" class="nav-item active"><span class="icon">📱</span><span class="label">FEED</span></a>
+            <a id="nav-kitchen" onclick="showModule('kitchen')" class="nav-item"><span class="icon">🍳</span><span class="label">KITCHEN</span></a>
             <a onclick="accessTool('PILLAR_1')" class="nav-item"><span class="icon">🎵</span><span class="label">PROMOTION</span></a>
             <a onclick="accessTool('PILLAR_4')" class="nav-item"><span class="icon">🎬</span><span class="label">ADS</span></a>
             <a onclick="accessTool('PILLAR_5')" class="nav-item"><span class="icon">🎮</span><span class="label">GAMING</span></a>
@@ -118,11 +122,11 @@
             <p id="r-label" class="text-[7px] font-black tracking-[0.4em] text-zinc-600 uppercase">Empire Ledger</p>
             <h1 class="text-xl font-black italic">NAWI-EMPIRE</h1>
         </div>
-        <i class="fa-solid fa-bell text-amber-500" id="p-trigger"></i>
+        <i class="fa-solid fa-bell text-amber-500" id="p-trigger" style="cursor:pointer;"></i>
     </header>
 
     <main class="feed-container pl-20 pt-4" id="empire-feed" style="display:none;">
-        <div class="post-card p-4 border border-zinc-900 bg-zinc-950/50 rounded-3xl mb-4">
+        <div class="post-card p-4 border border-zinc-900 bg-zinc-950/50 rounded-3xl mb-4 mr-4">
             <p class="text-[10px] text-zinc-500">Welcome to the Sovereign Feed, Citizen.</p>
         </div>
     </main>
@@ -130,38 +134,36 @@
     <div class="node-7-trigger" id="center-node">7</div>
 
     <script>
-        /* --- 🏛️ MASTER REGISTRY & ROUTING --- */
+        /* --- 🏛️ MASTER REGISTRY --- */
         const EMPIRE_SYSTEM = {
-            PILLAR_1: { name: "Music Promo", path: "/studio/promo" },
-            PILLAR_2: { name: "Content Feed", path: "/feed/live" },
-            PILLAR_3: { name: "Kitchen Live", path: "/market/kitchen" },
-            PILLAR_4: { name: "Ads Manager", path: "/studio/ads" },
-            PILLAR_5: { name: "Gaming Arena", path: "/gaming/arena" },
-            PILLAR_6: { name: "Apparel Studio", path: "/studio/bespoke" },
-            PILLAR_7: { name: "P2P Gateway", path: "/gateway/secure" }
+            PILLAR_1: { name: "Music Promo" },
+            PILLAR_4: { name: "Ads Manager" },
+            PILLAR_5: { name: "Gaming Arena" },
+            PILLAR_6: { name: "Apparel Studio" }
         };
 
         function accessTool(pillarKey) {
             const tool = EMPIRE_SYSTEM[pillarKey];
-            if (tool) {
-                console.log(`Navigating to ${tool.name}`);
-                // window.location.href = tool.path; // Unmute when paths are ready
-                alert(`${tool.name} Accessing...`);
-            }
+            if (tool) { alert(`${tool.name} Accessing...`); }
         }
 
-        /* --- 🛡️ AUTHENTICATION & ONBOARDING --- */
+        /* --- 🛡️ ONBOARDING (OPTIMIZED) --- */
         function showOath() {
             document.getElementById('auth-gate').style.display = 'none';
             document.getElementById('oathContainer').style.display = 'flex';
+            checkScroll(document.getElementById('oathText'));
         }
 
         function checkScroll(el) {
-            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 1) {
+            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10;
+            const isNotScrollable = el.scrollHeight <= el.clientHeight;
+
+            if (isAtBottom || isNotScrollable) {
                 const btn = document.getElementById('acceptBtn');
                 btn.disabled = false;
-                btn.classList.replace('bg-zinc-800', 'bg-amber-500');
-                btn.classList.replace('text-zinc-500', 'text-black');
+                btn.style.background = '#D4AF37'; 
+                btn.style.color = 'black';
+                btn.innerText = "MANDATE AUTHORIZED";
             }
         }
 
@@ -174,12 +176,12 @@
             localStorage.setItem('citizen_verified', 'true');
         }
 
-        /* --- 🍳 KITCHEN & GIFTING LOGIC --- */
+        /* --- 🍳 KITCHEN & CAMERA --- */
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('localVideo').srcObject = stream;
-            } catch (err) { console.error("Camera Bridge Interrupted"); }
+            } catch (err) { alert("Camera Access Required for Kitchen Live"); }
         }
 
         function sendGift(name, price) {
@@ -192,13 +194,18 @@
             const feed = document.getElementById('empire-feed');
             const kitchen = document.getElementById('kitchen-live-module');
             const header = document.getElementById('app-header');
+            
+            // Handle Sidebar Highlights
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
             if(module === 'kitchen') {
+                document.getElementById('nav-kitchen').classList.add('active');
                 feed.style.display = 'none';
                 header.style.display = 'none';
                 kitchen.style.display = 'block';
                 startCamera();
             } else {
+                document.getElementById('nav-feed').classList.add('active');
                 feed.style.display = 'block';
                 header.style.display = 'flex';
                 kitchen.style.display = 'none';
@@ -208,7 +215,7 @@
         /* --- 🕵️ MASTER OVERRIDE --- */
         const trigger = document.getElementById('p-trigger');
         let pressTimer;
-        trigger.addEventListener('pointerdown', () => {
+        trigger.addEventListener('touchstart', (e) => {
             pressTimer = setTimeout(() => {
                 const pass = prompt("REVEAL CEO IDENTITY? ENTER 0001:");
                 if(pass === "0001") {
@@ -217,30 +224,19 @@
                 }
             }, 3000);
         });
-        trigger.addEventListener('pointerup', () => clearTimeout(pressTimer));
+        trigger.addEventListener('touchend', () => clearTimeout(pressTimer));
 
-        /* --- 📱 TOUCH & GLOW --- */
+        /* --- 📱 MOBILE GLOW (ANTI-REFRESH) --- */
         const glow = document.getElementById('glow');
         document.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Prevents page bounce/refresh on Spark 30C
             const touch = e.touches[0];
             glow.style.left = touch.clientX + 'px';
             glow.style.top = touch.clientY + 'px';
-        });
+        }, { passive: false });
 
-        /* --- 🌉 BRIDGE RECOVERY --- */
-        async function fetchInboxMessages() {
-            try {
-                const res = await fetch('/api/inbox/messages');
-                if (!res.ok) throw new Error();
-                // Logic to render messages here
-            } catch (e) { console.warn("Bridge Re-linking..."); }
-        }
-
-        // Initialize system on load
         window.onload = () => {
-            if(localStorage.getItem('citizen_verified') === 'true') {
-                unlockEmpire();
-            }
+            if(localStorage.getItem('citizen_verified') === 'true') { unlockEmpire(); }
         };
     </script>
 </body>
