@@ -1,3 +1,8 @@
+/* NAWI-EMPIRE MASTER ENGINE 
+   Sovereign Edition 2026
+   Target: Node.js / MongoDB Atlas
+*/
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -81,15 +86,35 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- 👤 5. IDENTITY & AUTHENTICATION ---
+// --- 👤 5. IDENTITY & DEEP INQUIRY BOT ---
+
+// Deep Inquiry Bot Endpoint
+app.post('/api/bot/inquiry', (req, res) => {
+    const { userInput } = req.body;
+    const input = userInput.toLowerCase();
+
+    if (input.includes("what is") || input.includes("about")) {
+        return res.json({ response: "NAWI-EMPIRE is a Sovereign Ecosystem built to protect Founders. We value integrity over profit and operate under the Seven Pillars." });
+    }
+
+    if (input.includes("who is the owner") || input.includes("who is the ceo")) {
+        return res.json({ response: "The Architect's identity is hidden within the shadows of the Seven Pillars. Only those who seek the true foundation of the Empire may know. Type 'REVEAL 001' if you are prepared for the truth." });
+    }
+
+    if (input === "reveal 001") {
+        return res.json({ response: "Leadership Confirmed: NAWI-EMPIRE001. Social Identity: 7 Pillars. General Name: NAWI-EMPIRE. You have looked deeper; now you must build stronger." });
+    }
+
+    res.json({ response: "The Empire is listening. Your query has been logged to the Seven Pillars." });
+});
+
+// Authentication
 app.post('/api/register', async (req, res) => {
     const { email, password, deviceId } = req.body;
     try {
         const existingDevice = await User.findOne({ deviceId });
-        if (existingDevice) {
-            return res.status(403).json({ success: false, message: "⚠️ SYSTEM ALERT: One Node per Human allowed." });
-        }
-        // Create user with unique ID
+        if (existingDevice) return res.status(403).json({ success: false, message: "⚠️ SYSTEM ALERT: One Node per Human allowed." });
+        
         const newUser = new User({ email, password, deviceId, userId: new mongoose.Types.ObjectId().toString() });
         await newUser.save();
         res.json({ success: true, userId: newUser.userId });
@@ -115,13 +140,7 @@ app.post('/api/upload-asset', upload.single('mediaFile'), async (req, res) => {
     try {
         const { authorId, description, type, price, name, mediaUrl } = req.body;
         const user = await User.findOne({ userId: authorId });
-
         if (!user) return res.status(404).json({ message: "Citizen not found." });
-
-        // Standard Filter
-        if (description.includes("naked") || description.length < 5) {
-            return res.status(400).json({ message: "Content does not meet Empire standards." });
-        }
 
         const newPost = new Post({
             authorName: name || user.username,
@@ -132,25 +151,7 @@ app.post('/api/upload-asset', upload.single('mediaFile'), async (req, res) => {
             priceInCoins: price || 0,
             isMasterPost: (authorId === "NAWI-EMPIRE001")
         });
-
         await newPost.save();
-        
-        // Auto-Level Up Logic
-        const postCount = await Post.countDocuments({ authorId: authorId });
-        if (postCount >= 3 && user.level === 0) {
-            user.level = 1;
-            user.rank = "Verified Contributor";
-            user.pillarsManaged.push("Market_Full_Access");
-            
-            const alert = new Message({
-                recipientId: authorId,
-                sender: "Empire Authority",
-                text: "Level 1 Unlocked. You can now access the Global Market."
-            });
-            await alert.save();
-            await user.save();
-        }
-
         res.status(201).json({ success: true, message: "Asset Logged to Empire Ledger" });
     } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
@@ -167,48 +168,30 @@ app.post('/api/send-gift', async (req, res) => {
     try {
         const { senderId, receiverId, giftKey, isPrivate } = req.body;
         const gift = GIFTS[giftKey];
-
         const sender = await User.findOne({ userId: senderId });
         const receiver = await User.findOne({ userId: receiverId });
 
-        if (sender.level < gift.minLevel) {
-            return res.status(403).json({ message: `Reach Level ${gift.minLevel} to unlock this!` });
-        }
-        if (sender.empireCoins < gift.cost) {
-            return res.status(400).json({ message: "Insufficient Coins in Vault." });
-        }
+        if (sender.empireCoins < gift.cost) return res.status(400).json({ message: "Insufficient Coins." });
 
         sender.empireCoins -= gift.cost;
-        const payoutUSD = gift.cost * 0.02; 
-        receiver.totalEarningsUSD += payoutUSD;
+        receiver.totalEarningsUSD += (gift.cost * 0.02);
 
-        const alert = new Message({
-            recipientId: receiverId,
-            sender: isPrivate ? "Empire Shadow-Vault" : sender.username,
-            text: `${isPrivate ? 'A Citizen' : sender.username} sent you a ${gift.label}. $${payoutUSD} added to earnings.`,
-            icon: isPrivate ? "fa-solid fa-user-secret" : "fa-solid fa-gift"
-        });
-
-        await sender.save();
-        await receiver.save();
-        await alert.save();
-
+        await sender.save(); await receiver.save();
         res.json({ success: true, newBalance: sender.empireCoins });
-    } catch (err) { res.status(500).json({ error: "Transaction Interrupted." }); }
+    } catch (err) { res.status(500).json({ error: "Transaction Failed." }); }
 });
 
-// --- ⚖️ 8. MONITORING ---
+// --- ⚖️ 8. MONITORING & OVERRIDE ---
 app.post('/api/global-monitor', async (req, res) => {
     const { userId, content } = req.body;
-    const BANNED = [/t\.me\//i, /chat\.whatsapp\.com/i, /wa\.me\//i];
+    const BANNED = [/t\.me\//i, /chat\.whatsapp\.com/i];
     if (BANNED.some(p => p.test(content))) {
         await User.updateOne({ userId }, { $inc: { ruleViolations: 1 } });
-        return res.json({ success: false, message: "Imperial Rule Violation logged." });
+        return res.json({ success: false, message: "Rule Violation logged." });
     }
     res.json({ success: true });
 });
 
-// --- ☣️ 9. SOVEREIGN OVERRIDE ---
 app.post('/api/admin/self-destruct', (req, res) => {
     if (req.body.masterPin !== "7777") return res.status(403).json({ message: "DENIED" });
     isSystemLocked = (req.body.action === "LOCK_ALL");
@@ -217,14 +200,12 @@ app.post('/api/admin/self-destruct', (req, res) => {
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
-// --- ⚙️ 10. ENGINE START (MONGODB ATLAS) ---
+// --- ⚙️ 9. ENGINE START ---
 const URI = "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/NAWI_DB?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 10000;
 
-mongoose.connect(URI)
-    .then(() => {
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 NAWI-EMPIRE ENGINE ACTIVE ON PORT ${PORT}`);
-        });
-    })
-    .catch(err => console.error("Database Connection Failure:", err));
+mongoose.connect(URI).then(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 NAWI-EMPIRE ENGINE ACTIVE ON PORT ${PORT}`);
+    });
+}).catch(err => console.error("Database Connection Failure:", err));
