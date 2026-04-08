@@ -10,7 +10,9 @@
     
     <style>
         :root { --gold: #D4AF37; --black: #050505; --neon: #00ff41; --glass: rgba(255, 255, 255, 0.05); }
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: none; }
+        
+        /* FIX: Changed touch-action to pan-y to allow scrolling on mobile */
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
 
         /* --- 🛡️ UI OVERLAYS --- */
         #auth-gate, .oath-overlay, #empireEntryPopup { 
@@ -20,10 +22,13 @@
         }
         .authority-card, .oath-scroll-box, .luxury-popup { 
             background: rgba(15,15,15,0.95); border: 1px solid var(--gold); border-radius: 24px; 
-            padding: 30px; max-width: 400px; text-align: center; backdrop-filter: blur(15px);
+            padding: 30px; width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(15px);
             box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
         }
         .order-text { font-size: 11px; line-height: 1.6; color: #eee; border-left: 3px solid var(--gold); padding-left: 15px; text-align: left; font-style: italic; margin: 20px 0; }
+
+        /* FIX: Ensure scroll box is touch-friendly for iPhone and Android */
+        .oath-scroll-box div { -webkit-overflow-scrolling: touch; }
 
         /* --- 🏛️ SIDEBAR --- */
         .empire-sidebar {
@@ -53,9 +58,8 @@
         #glow { position: fixed; width: 200px; height: 200px; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%); pointer-events: none; z-index: 10; transform: translate(-50%, -50%); transition: opacity 0.3s; }
 
         .master-mode #r-label { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
-        
-        /* Smooth transition for the Mandate button */
-        #acceptBtn { transition: all 0.5s ease; }
+        #acceptBtn { transition: all 0.5s ease; cursor: pointer; }
+        #acceptBtn:disabled { cursor: not-allowed; opacity: 0.5; }
     </style>
 </head>
 <body id="mainBody">
@@ -73,13 +77,14 @@
     <div id="oathContainer" class="oath-overlay" style="display:none;">
         <div class="oath-scroll-box">
             <h2 style="color:var(--gold); font-family:'Cinzel';">THE FOUNDER'S OATH</h2>
-            <div id="oathText" style="height:150px; overflow-y:scroll; font-size:10px; padding:15px; text-align:left;" onscroll="checkScroll(this)">
+            <div id="oathText" style="height:180px; overflow-y:auto; font-size:11px; padding:15px; text-align:left; border: 1px solid #333; margin: 15px 0;" onscroll="checkScroll(this)">
                 <p>I. Integrity: I shall trade with honor.</p>
                 <p>II. Authority: I acknowledge NAWI-EMPIRE001.</p>
                 <p>III. Rules: The pillars are my shield.</p>
                 <p>IV. Legacy: I build for the Empire.</p>
-                <p style="margin-top:20px; color:var(--gold);">Scroll to the bottom to confirm citizenship...</p>
-                <br><br><br> 
+                <p style="margin-top:20px; color:var(--gold); font-weight:bold;">Scroll to the bottom to confirm citizenship...</p>
+                <br><br><br><br>
+                <p style="color:var(--gold); text-align:center;">--- END OF MANDATE ---</p>
             </div>
             <button id="acceptBtn" disabled onclick="unlockEmpire()" class="w-full bg-zinc-800 text-zinc-500 py-3 rounded mt-4 uppercase font-black text-[10px]">I Accept the Mandate</button>
         </div>
@@ -147,19 +152,21 @@
             if (tool) { alert(`${tool.name} Accessing...`); }
         }
 
-        /* --- 🛡️ ONBOARDING (OPTIMIZED) --- */
+        /* --- 🛡️ ONBOARDING (CROSS-PLATFORM FIX) --- */
         function showOath() {
             document.getElementById('auth-gate').style.display = 'none';
             document.getElementById('oathContainer').style.display = 'flex';
+            // Start checking immediately for desktop users/large screens
             checkScroll(document.getElementById('oathText'));
         }
 
         function checkScroll(el) {
-            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10;
+            const btn = document.getElementById('acceptBtn');
+            // Detect if user has reached the bottom (buffer of 15px for different browsers)
+            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 15;
             const isNotScrollable = el.scrollHeight <= el.clientHeight;
 
             if (isAtBottom || isNotScrollable) {
-                const btn = document.getElementById('acceptBtn');
                 btn.disabled = false;
                 btn.style.background = '#D4AF37'; 
                 btn.style.color = 'black';
@@ -195,7 +202,6 @@
             const kitchen = document.getElementById('kitchen-live-module');
             const header = document.getElementById('app-header');
             
-            // Handle Sidebar Highlights
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
             if(module === 'kitchen') {
@@ -212,10 +218,11 @@
             }
         }
 
-        /* --- 🕵️ MASTER OVERRIDE --- */
+        /* --- 🕵️ MASTER OVERRIDE (TOUCH + MOUSE) --- */
         const trigger = document.getElementById('p-trigger');
         let pressTimer;
-        trigger.addEventListener('touchstart', (e) => {
+
+        const startPress = () => {
             pressTimer = setTimeout(() => {
                 const pass = prompt("REVEAL CEO IDENTITY? ENTER 0001:");
                 if(pass === "0001") {
@@ -223,17 +230,26 @@
                     document.getElementById('r-label').innerText = "FOUNDER: NAWI-EMPIRE001";
                 }
             }, 3000);
-        });
-        trigger.addEventListener('touchend', () => clearTimeout(pressTimer));
+        };
 
-        /* --- 📱 MOBILE GLOW (ANTI-REFRESH) --- */
+        const endPress = () => clearTimeout(pressTimer);
+
+        trigger.addEventListener('touchstart', startPress);
+        trigger.addEventListener('mousedown', startPress); // Web compatibility
+        trigger.addEventListener('touchend', endPress);
+        trigger.addEventListener('mouseup', endPress);
+
+        /* --- 📱 GLOW (SMOOTH ON ALL DEVICES) --- */
         const glow = document.getElementById('glow');
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Prevents page bounce/refresh on Spark 30C
-            const touch = e.touches[0];
-            glow.style.left = touch.clientX + 'px';
-            glow.style.top = touch.clientY + 'px';
-        }, { passive: false });
+        const handleMove = (e) => {
+            let x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            let y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            glow.style.left = x + 'px';
+            glow.style.top = y + 'px';
+        };
+
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('touchmove', handleMove, { passive: true });
 
         window.onload = () => {
             if(localStorage.getItem('citizen_verified') === 'true') { unlockEmpire(); }
