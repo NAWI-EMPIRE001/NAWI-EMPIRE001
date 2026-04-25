@@ -1,6 +1,6 @@
-/* NAWI-EMPIRE MASTER ENGINE 
+/* NAWI-EMPIRE MASTER ENGINE v2.0
    Sovereign Edition 2026
-   Target: Node.js / MongoDB Atlas
+   Integrated: Infinite Pulse, 24/7 Feed, & Template Seeding
 */
 
 const express = require('express');
@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 
@@ -28,166 +29,143 @@ let isSystemLocked = false;
 
 // --- 🏛️ 3. DATABASE SCHEMAS & MODELS ---
 
-// User Schema with Pillar Management
+// Unified User Schema (Matching your GitHub user-schema.json)
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
-    username: { type: String, default: "Authenticated Citizen" },
+    identity: {
+        sovereign_name: { type: String, default: "Authenticated Citizen" },
+        legacy_rank: { type: String, default: "Citizen" },
+        id_verified: { type: Boolean, default: false },
+        joined_date: { type: String, default: () => new Date().toISOString().split('T')[0] }
+    },
     email: String,
-    password: { type: String, select: false },
-    deviceId: String,
-    bio: { type: String, default: "No professional knowledge shared yet." },
-    pfpUrl: { type: String, default: "/assets/default-pfp.png" },
-    empireCoins: { type: Number, default: 0 },
-    totalEarningsUSD: { type: Number, default: 0 },
-    level: { type: Number, default: 0 },
-    rank: { type: String, default: "Citizen" },
-    isVerifiedCitizen: { type: Boolean, default: false }, 
-    mandateAcceptedAt: Date, 
-    ruleViolations: { type: Number, default: 0 },
-    pillarsManaged: [String], // Tracking Pillar Authority
-    activityLog: [{ action: String, timestamp: { type: Date, default: Date.now } }]
+    metrics: {
+        follower_count: { type: Number, default: 0 },
+        following_count: { type: Number, default: 0 },
+        daily_streak: { type: Number, default: 0 },
+        activity_score: { type: Number, default: 0 }
+    },
+    eligibility: {
+        can_go_live: { type: Boolean, default: false },
+        is_monetized: { type: Boolean, default: false },
+        gate_1k_reached: { type: Boolean, default: false },
+        gate_20k_reached: { type: Boolean, default: false }
+    },
+    wallet: {
+        empire_coins: { type: Number, default: 0 },
+        total_earned_to_date: { type: Number, default: 0 },
+        pending_conversion: { type: Number, default: 0.00 },
+        last_mint_date: String
+    },
+    security: {
+        is_banned: { type: Boolean, default: false },
+        scam_alert_flag: { type: Number, default: 0 },
+        multi_factor_auth: { type: String, default: "ENABLED" }
+    }
 });
 const User = mongoose.model('User', userSchema);
 
-// Post Schema
+// Post Schema (The Feed Engine)
 const postSchema = new mongoose.Schema({
     authorName: String,
     authorId: String,
     mediaUrl: String,
     description: String,
-    type: { type: String, enum: ['graphic', 'video', 'lifestyle', 'audio', 'market'], default: 'lifestyle' },
-    priceInCoins: { type: Number, default: 0 },
-    isVerified: { type: Boolean, default: false },
-    isMasterPost: { type: Boolean, default: false },
+    pillarType: { type: String, enum: ['Comedy', 'Arena', 'Music', 'Kitchen', 'Apparel', 'Normal'], default: 'Normal' },
+    type: { type: String, enum: ['graphic', 'video', 'audio', 'promotion'], default: 'video' },
+    isAd: { type: Boolean, default: false },
     likes: { type: Number, default: 0 },
+    durationWatched: { type: Number, default: 0 }, // For Surveillance Data
     status: { type: String, default: 'active' },
     createdAt: { type: Date, default: Date.now }
 });
 const Post = mongoose.model('Post', postSchema);
 
-// Imperial Message Schema (Missing Structure Restored)
-const messageSchema = new mongoose.Schema({
-    recipientId: String,
-    sender: String,
-    text: String,
-    type: { type: String, default: "P2P ALERT" },
-    icon: { type: String, default: "fa-solid fa-bell" },
-    timestamp: { type: Date, default: Date.now }
-});
-const Message = mongoose.model('Message', messageSchema);
-
-// --- 🛡️ 4. SECURITY GATEKEEPER ---
-app.use(async (req, res, next) => {
-    const userId = req.headers['user-id'];
-    
-    if (userId === "NAWI-EMPIRE001") return next();
-
-    if (isSystemLocked) {
-        return res.status(503).json({ message: "SYSTEM UNDER MAINTENANCE." });
-    }
-
-    const publicPaths = ['/api/login', '/api/register', '/api/verify-mandate', '/api/bot/inquiry'];
-    if (!publicPaths.includes(req.path) && userId) {
-        try {
-            const user = await User.findOne({ userId });
-            if (user && !user.isVerifiedCitizen) {
-                return res.status(403).json({ message: "MANDATE NOT ACCEPTED", requireVerification: true });
-            }
-        } catch (err) {
-            return res.status(500).json({ message: "Security Check Failure." });
-        }
-    }
-    next();
-});
-
-// --- 👤 5. IDENTITY & DEEP INQUIRY BOT (Missing Structure Restored) ---
-
-app.post('/api/bot/inquiry', (req, res) => {
-    const { userInput } = req.body;
-    const input = userInput.toLowerCase();
-
-    if (input.includes("what is") || input.includes("about")) {
-        return res.json({ response: "NAWI-EMPIRE is a Sovereign Ecosystem built to protect Founders. We value integrity over profit and operate under the Seven Pillars." });
-    }
-
-    if (input.includes("who is the owner") || input.includes("who is the ceo")) {
-        return res.json({ response: "The Architect's identity is hidden within the shadows of the Seven Pillars. Type 'REVEAL 001' if you are prepared for the truth." });
-    }
-
-    if (input === "reveal 001") {
-        return res.json({ response: "Leadership Confirmed: NAWI-EMPIRE001. Social Identity: 7 Pillars. General Name: NAWI-EMPIRE. You have looked deeper; now you must build stronger." });
-    }
-
-    res.json({ response: "The Empire is listening. Your query has been logged to the Seven Pillars." });
-});
-
-app.post('/api/verify-mandate', async (req, res) => {
-    const { userId } = req.body;
+// --- 🛡️ 4. SEEDING & INITIATION ---
+const seedEmpire = async () => {
     try {
-        const user = await User.findOneAndUpdate(
-            { userId: userId },
-            { 
-                $set: { rank: "Verified Citizen", isVerifiedCitizen: true, mandateAcceptedAt: new Date() }, 
-                $push: { activityLog: { action: "ACCEPTED_MANDATE" } } 
-            },
-            { new: true }
-        );
-        res.json({ success: true, message: "Citizenship confirmed in Empire Ledger." });
-    } catch (err) { res.status(500).json({ success: false }); }
+        const userCount = await User.countDocuments();
+        if (userCount === 0) {
+            const templatePath = path.join(__dirname, 'templates', 'user-schema.json');
+            if (fs.existsSync(templatePath)) {
+                const data = fs.readFileSync(templatePath, 'utf8');
+                const template = JSON.parse(data);
+                template.userId = "NAWI-EMPIRE001"; // Assign Founder ID
+                const founder = new User(template);
+                await founder.save();
+                console.log("🏛️ NAWI-EMPIRE001: Genesis Founder Seeded.");
+            }
+        }
+    } catch (err) { console.error("❌ Seed Error:", err); }
+};
+
+// --- 📡 5. THE PULSE API (Universal Feed & Surveillance) ---
+
+// 24/7 Busy Feed with Ad Injection
+app.get('/api/feed', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        // Fetch mixed content from 7 Pillars
+        const feedItems = await Post.aggregate([
+            { $match: { status: 'active' } },
+            { $sample: { size: limit } } // Randomize for "Busy" feel
+        ]);
+
+        res.json(feedItems);
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// Surveillance Engine: Tracking "Screwing" through content
+app.post('/api/track-engagement', async (req, res) => {
+    const { contentId, duration } = req.body;
+    try {
+        await Post.findByIdAndUpdate(contentId, { $inc: { durationWatched: duration } });
+        res.sendStatus(200);
+    } catch (err) { res.sendStatus(500); }
+});
+
+// --- 👤 6. IDENTITY & SECURITY ---
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
+    // Hardcoded Founder Access
     if (email === "akpanvictor848@gmail.com" && password === "$Nsikak111") {
         return res.status(200).json({ success: true, userId: "NAWI-EMPIRE001", rank: "FOUNDER" });
     }
     res.status(401).json({ success: false, message: "Invalid Credentials." });
 });
 
-// --- 📡 6. PILLAR TOOLS & ECONOMY (Missing Structure Restored) ---
+// --- ⚖️ 7. PILLAR ECONOMY ($0.02 Logic) ---
+const COIN_VAL = 0.02;
 
-const PILLAR_ECONOMY = {
-    rose: { cost: 1, payout: 0.02 },
-    crown: { cost: 500, payout: 10.00 },
-    lion: { cost: 500000, payout: 10000.00 }
-};
+app.post('/api/convert-coins', async (req, res) => {
+    const { userId, amount } = req.body;
+    if (amount < 2500) return res.status(400).json({ message: "Min 2500 Coins required." });
 
-app.post('/api/send-gift', async (req, res) => {
-    const { senderId, receiverId, giftKey } = req.body;
-    const gift = PILLAR_ECONOMY[giftKey];
     try {
-        const sender = await User.findOne({ userId: senderId });
-        if (sender.empireCoins < gift.cost) return res.status(400).json({ message: "Insufficient Coins." });
+        const user = await User.findOne({ userId });
+        if (user.wallet.empire_coins < amount) return res.status(400).json({ message: "Insufficient balance." });
 
-        await User.updateOne({ userId: senderId }, { $inc: { empireCoins: -gift.cost } });
-        await User.updateOne({ userId: receiverId }, { $inc: { totalEarningsUSD: gift.payout } });
-
-        res.json({ success: true });
-    } catch (err) { res.status(500).json({ error: "Transaction Failed." }); }
+        const usdAmount = amount * COIN_VAL;
+        await User.updateOne({ userId }, { 
+            $inc: { "wallet.empire_coins": -amount, "wallet.pending_conversion": usdAmount } 
+        });
+        res.json({ success: true, usd: usdAmount });
+    } catch (err) { res.status(500).json({ error: "Vault error." }); }
 });
 
-app.get('/api/get-feed', async (req, res) => {
-    try {
-        const posts = await Post.find({ status: 'active' }).sort({ createdAt: -1 });
-        res.json(posts);
-    } catch (err) { res.status(500).send(err.message); }
-});
-
-// --- ⚖️ 8. MONITORING & OVERRIDE ---
-app.post('/api/admin/self-destruct', (req, res) => {
-    if (req.body.masterPin !== "7777") return res.status(403).json({ message: "DENIED" });
-    isSystemLocked = (req.body.action === "LOCK_ALL");
-    res.json({ success: true, message: isSystemLocked ? "LOCKED" : "RESTORED" });
-});
-
-app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
-
-// --- ⚙️ 9. ENGINE START ---
+// --- ⚙️ 8. ENGINE START ---
 const URI = "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/NAWI_DB?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 10000;
 
 mongoose.connect(URI).then(() => {
+    seedEmpire(); // Inject GitHub Template on Start
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`🚀 NAWI-EMPIRE ENGINE ACTIVE ON PORT ${PORT}`);
     });
 }).catch(err => console.error("Database Connection Failure:", err));
+
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
