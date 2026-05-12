@@ -1,48 +1,93 @@
-/* NAWI-EMPIRE001: THE UNIVERSAL CORE 
-   Target Devices: Spark 30C, iPhone, Android, Desktop
-*/
+/**
+ * NAWI-EMPIRE V1: THE IMPERIAL SOVEREIGN CORE
+ * Target: Universal (Spark 30C, iOS, Android, Web)
+ * Authority: NAWI-EMPIRE001
+ */
 
-const EmpireCore = {
-    version: "1.0.0-Node001",
-    vaultReserve: 35000000, // $35M Reserve
-    spreadRate: 0.08, // The Master's $0.08 profit per coin
-    royaltyRate: 0.02, // The Citizen's $0.02 payout
+const NawiEmpire = {
+    config: {
+        version: "1.2.0-Sovereign",
+        reserve: 35000000, // $35M Platform Liquidity
+        rates: { spread: 0.08, royalty: 0.02 },
+        pillars: ['General', 'Market', 'Games', 'Studio', 'LiveStream', 'Kitchen', 'Music', 'Stylist']
+    },
 
-    // 1. THE BORDER CONTROL (No P2P Transfers, No External Apps)
-    securityShield: {
-        allowP2P: false, // HARD LOCK: Users cannot send money to each other
-        monitoredKeywords: ["whatsapp", "telegram", "+234", "dm me"],
+    // 🛡️ BORDER CONTROL & SECURITY
+    security: {
+        restricted: ["whatsapp", "telegram", "+234", "dm me", "inbox me"],
         
-        validateMessage: (text) => {
-            return !EmpireCore.securityShield.monitoredKeywords.some(k => text.includes(k));
-        }
-    },
-
-    // 2. THE MASTER'S PAYOUT GATE (Smart Control)
-    payoutEngine: {
-        processWithdrawal: (userId, amount, reputation) => {
-            if (amount > 200000 || reputation < 90) {
-                return "PENDING_MASTER_SEAL"; // Requires your Spark 30C approval
+        // Prevents platform leakage to external apps
+        sanitizeContent: (text) => {
+            const forbidden = NawiEmpire.security.restricted.some(word => text.toLowerCase().includes(word));
+            if (forbidden) {
+                console.warn("SECURITY ALERT: External contact detected. Flagging for Master Seal.");
+                return "CONTENT_RESTRICTED_BY_EMPIRE";
             }
-            return "AUTO_DISBURSED"; // Stress-free automation
+            return text;
         }
     },
 
-    // 3. THE BRANDING ENGINE (Automatic Logo Injection)
-    brandingEngine: {
-        logoSource: "NODE_001_GOLD_FRAME", // cite: 1000115249.jpg
-        applySeal: (asset) => {
-            console.log(`Applying Imperial Seal to ${asset}`);
-            // Logic to burn the 7-Pillar logo into the MP3/MP4/JPG
+    // 💰 ECONOMIC ENGINE
+    economy: {
+        calculatePayout: (coins) => coins * NawiEmpire.config.rates.royalty,
+        
+        processWithdrawal: (amount, reputation) => {
+            // High-value transfers require your Spark 30C manual approval
+            return (amount > 200000 || reputation < 90) ? "PENDING_MASTER_APPROVAL" : "AUTO_DISBURSED";
+        }
+    },
+
+    // 🖼️ SOVEREIGN RENDERING ENGINE
+    ui: {
+        async renderFeed() {
+            const feedElement = document.getElementById('home-feed');
+            if (!feedElement) return;
+
+            try {
+                const response = await fetch('/api/home-feed');
+                const posts = await response.json();
+
+                feedElement.innerHTML = posts.map(post => {
+                    // Logic for Pillar 7 (Stylist) and Ads
+                    const isStylist = post.pillar_origin === 7 ? 'sovereign-stylist' : '';
+                    const isAd = post.content_type === 'Sponsored_Ad';
+                    
+                    // Sanitize caption through the Security Shield
+                    const safeCaption = NawiEmpire.security.sanitizeContent(post.caption || "");
+
+                    return `
+                        <div class="post-card ${isStylist}" data-pillar="${post.pillar_origin}">
+                            <div class="post-header">
+                                <span class="pillar-tag">PILLAR ${post.pillar_origin}: ${NawiEmpire.config.pillars[post.pillar_origin]}</span>
+                                ${isAd ? '<span class="ad-badge">PROMOTED BY ADS MANAGER</span>' : ''}
+                                ${post.is_master_post ? '<span class="master-seal">👑 FOUNDER</span>' : ''}
+                            </div>
+                            
+                            <div class="post-media">
+                                <img src="${post.media_url}" alt="Empire Asset" loading="lazy">
+                            </div>
+
+                            <div class="post-content">
+                                <h3>${safeCaption}</h3>
+                                <div class="post-footer">
+                                    <span>AUTH: NAWI-EMPIRE001</span>
+                                    <span class="price-tag">${post.priceInCoins || 0} COINS</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Feed sync failed:", err);
+            }
+        },
+
+        init() {
+            console.log(`NAWI-EMPIRE Core Online. Version: ${this.config.version}`);
+            this.renderFeed();
         }
     }
 };
 
-// 4. THE 7 PILLARS NAVIGATION (Universal Responsive Switcher)
-function navigatePillar(pillarName) {
-    const pillars = ['Music', 'Kitchen', 'Studio', 'Gaming', 'Market', 'Apparel', 'Frames'];
-    if (pillars.includes(pillarName)) {
-        console.log(`Entering Pillar: ${pillarName}`);
-        // Universal UI adjustment for Spark 30C vs iPhone
-    }
-}
+// Start the Empire
+document.addEventListener('DOMContentLoaded', () => NawiEmpire.ui.init());
