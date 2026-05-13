@@ -1,20 +1,54 @@
 {
-  "name": "nawi-empire",
-  "version": "1.0.0",
-  "description": "NAWI-EMPIRE Digital Ecosystem",
+  "name": "nawi-empire-sovereign-node",
+  "version": "1.1.0",
+  "description": "Master Infrastructure for the NAWI-EMPIRE 7-Pillar Ecosystem | Secured by Aurora-231 Node",
   "main": "server.js",
+  "author": "NAWI-EMPIRE001 (Nsikak Warri)",
+  "license": "Private",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build:3d": "node scripts/process-renders.js",
+    "secure:gate": "node scripts/p2p-handshake.js",
+    "vault:sync": "node scripts/sync-liquidity.js"
   },
+  "keywords": [
+    "NAWI-EMPIRE",
+    "Sovereign-P2P",
+    "Technical-Luxury",
+    "Aurora-231",
+    "Diamondback-231",
+    "Nigeria-Fintech"
+  ],
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^8.0.0",
-    "mongodb": "^6.0.0",
+    "mongoose": "^8.3.0",
+    "mongodb": "^6.5.0",
+    "dotenv": "^16.4.5",
     "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "dotenv": "^16.0.3"
+    "cloudinary": "^2.1.0",
+    "socket.io": "^4.7.5",
+    "axios": "^1.6.8",
+    "stripe": "^14.25.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   },
   "engines": {
-    "node": "18.x"
-  }
+    "node": ">=18.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RobbieCraig/nawi-empire.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RobbieCraig/nawi-empire/issues"
+  },
+  "homepage": "https://nawi-empire1.onrender.com"
 }
