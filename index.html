@@ -3,256 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAWI EMPIRE | Sovereign Ecosystem</title>
+    <title>NAWI-EMPIRE | Sovereign Ecosystem</title>
+    
+    <!-- Unified Tech Stack -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --neon: #00ff41; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; --glass: rgba(255, 255, 255, 0.03); }
         
-        /* FIX: Changed touch-action to pan-y to allow scrolling on mobile */
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; touch-action: pan-y; }
 
-        /* --- 🛡️ UI OVERLAYS --- */
-        #auth-gate, .oath-overlay, #empireEntryPopup { 
+        /* --- 🛡️ THE SECURITY GATE --- */
+        #auth-gate, .oath-overlay { 
             height: 100vh; width: 100%; position: fixed; inset: 0;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: radial-gradient(circle, #111 0%, #000 100%); z-index: 20000; transition: 0.8s ease; 
+            background: radial-gradient(circle, #111 0%, #000 100%); z-index: 20000; 
         }
-        .authority-card, .oath-scroll-box, .luxury-popup { 
-            background: rgba(15,15,15,0.95); border: 1px solid var(--gold); border-radius: 24px; 
-            padding: 30px; width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(15px);
-            box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+        .authority-card { 
+            background: rgba(10,10,10,0.9); border: 1px solid var(--gold); border-radius: 24px; 
+            padding: 40px; width: 90%; max-width: 420px; text-align: center; backdrop-filter: blur(20px);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
         }
-        .order-text { font-size: 11px; line-height: 1.6; color: #eee; border-left: 3px solid var(--gold); padding-left: 15px; text-align: left; font-style: italic; margin: 20px 0; }
 
-        /* FIX: Ensure scroll box is touch-friendly for iPhone and Android */
-        .oath-scroll-box div { -webkit-overflow-scrolling: touch; }
-
-        /* --- 🏛️ SIDEBAR --- */
-        .empire-sidebar {
-            position: fixed; left: 0; top: 0; height: 100vh; width: 60px;
-            background: var(--black); border-right: 1px solid var(--gold);
-            display: none; flex-direction: column; transition: width 0.4s; z-index: 9999; overflow: hidden;
+        /* --- 🏛️ EXECUTIVE LAYOUT (RESPONSIBLE) --- */
+        .alpha-header {
+            height: 70px; background: rgba(5,5,5,0.8); border-bottom: 1px solid #1a1a1a;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; position: fixed; top: 0; width: 100%; z-index: 1000; backdrop-blur: 10px;
         }
-        .empire-sidebar:hover { width: 180px; }
-        .nav-item { display: flex; align-items: center; padding: 15px 20px; text-decoration: none; color: #888; transition: 0.3s; white-space: nowrap; cursor: pointer; }
-        .nav-item .icon { font-size: 1.4rem; margin-right: 20px; min-width: 24px; }
-        .nav-item .label { opacity: 0; font-size: 0.8rem; font-weight: bold; transition: 0.3s; }
-        .empire-sidebar:hover .label { opacity: 1; }
-        .nav-item:hover, .nav-item.active { color: var(--gold); background: var(--glass); }
 
-        /* --- 🍳 KITCHEN & FEED --- */
-        #kitchen-live-module { display: none; padding: 20px; padding-left: 80px; }
-        .stream-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .video-card { background: #1a1a1a; border: 1px solid var(--glass); border-radius: 12px; position: relative; height: 150px; overflow: hidden; }
-        .self-view { border: 1px solid var(--gold); }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        .master-grid {
+            display: grid; margin-top: 70px; height: calc(100vh - 70px);
+            grid-template-columns: 1fr; /* Default Mobile */
+        }
 
-        #gift-notification { color: var(--gold); font-weight: 900; text-align: center; height: 20px; font-size: 10px; }
+        @media (min-width: 1024px) {
+            .master-grid { grid-template-columns: 280px 1fr 320px; }
+            .mobile-only { display: none; }
+        }
 
-        /* --- 7 NODES --- */
-        .node-7-trigger { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70px; height: 70px; background: white; color: black; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; border: 6px solid var(--black); z-index: 8000; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
+        /* --- 🍳 KITCHEN MODULE --- */
+        #kitchen-overlay {
+            display: none; position: fixed; inset: 0; background: var(--black);
+            z-index: 15000; padding: 20px;
+        }
+        .video-canvas { background: #111; border-radius: 20px; border: 1px solid var(--gold); overflow: hidden; height: 60vh; }
 
-        #glow { position: fixed; width: 200px; height: 200px; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%); pointer-events: none; z-index: 10; transform: translate(-50%, -50%); transition: opacity 0.3s; }
+        /* --- 7 NODES FLOATING TRIGGER --- */
+        .node-7-hub {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 75px; height: 75px; background: white; color: black;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-weight: 900; z-index: 8000;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); border: 5px solid var(--black);
+            cursor: pointer; transition: 0.3s;
+        }
+        .node-7-hub:active { transform: translateX(-50%) scale(0.9); }
 
-        .master-mode #r-label { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
-        #acceptBtn { transition: all 0.5s ease; cursor: pointer; }
-        #acceptBtn:disabled { cursor: not-allowed; opacity: 0.5; }
+        /* --- POST CARDS --- */
+        .post-luxury {
+            background: var(--glass); border: 1px solid #1a1a1a;
+            border-radius: 25px; padding: 15px; margin-bottom: 25px;
+            transition: 0.3s;
+        }
+        .post-luxury:hover { border-color: var(--gold); }
     </style>
 </head>
-<body id="mainBody">
+<body>
 
-    <div id="glow"></div>
-
+    <!-- 1. MANDATE SECURITY GATE -->
     <div id="auth-gate">
         <div class="authority-card">
-            <div style="color:var(--gold); font-weight:900; font-size:9px; letter-spacing:4px;">EMPIRE MANDATE</div>
-            <p class="order-text">"This is my order and my authority to protect the founders and this platform... follow the rules."</p>
-            <button onclick="showOath()" class="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black uppercase text-[10px]">Unlock Ecosystem</button>
+            <div class="text-[10px] font-black text-amber-500 tracking-[0.4em] mb-4">MANDATE UNLOCKED</div>
+            <p class="text-sm italic text-zinc-400 border-l-2 border-amber-500 pl-4 my-6 leading-relaxed">
+                "This is my order and my authority to protect the founders and this platform... follow the rules."
+            </p>
+            <button onclick="revealOath()" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-lg shadow-amber-500/20">Enter Empire</button>
         </div>
     </div>
 
-    <div id="oathContainer" class="oath-overlay" style="display:none;">
-        <div class="oath-scroll-box">
-            <h2 style="color:var(--gold); font-family:'Cinzel';">THE FOUNDER'S OATH</h2>
-            <div id="oathText" style="height:180px; overflow-y:auto; font-size:11px; padding:15px; text-align:left; border: 1px solid #333; margin: 15px 0;" onscroll="checkScroll(this)">
-                <p>I. Integrity: I shall trade with honor.</p>
-                <p>II. Authority: I acknowledge NAWI-EMPIRE001.</p>
-                <p>III. Rules: The pillars are my shield.</p>
-                <p>IV. Legacy: I build for the Empire.</p>
-                <p style="margin-top:20px; color:var(--gold); font-weight:bold;">Scroll to the bottom to confirm citizenship...</p>
-                <br><br><br><br>
-                <p style="color:var(--gold); text-align:center;">--- END OF MANDATE ---</p>
+    <!-- 2. FOUNDER'S OATH -->
+    <div id="oath-gate" class="oath-overlay" style="display:none;">
+        <div class="authority-card">
+            <h2 class="text-xl font-black text-amber-500 font-['Cinzel'] mb-6">CITIZEN OATH</h2>
+            <div id="oath-scroll" class="h-48 overflow-y-auto text-left text-[11px] text-zinc-500 pr-2 border-y border-zinc-900 py-4 mb-6" onscroll="checkOathScroll(this)">
+                <p class="mb-4">1. I shall trade with 100% integrity within the P2P Ledger.</p>
+                <p class="mb-4">2. I acknowledge NAWI-EMPIRE001 as the Master Authority.</p>
+                <p class="mb-4">3. I will protect the creative assets of all Citizens.</p>
+                <p class="mb-4">4. I respect the 7 Pillars of the Sovereign Ecosystem.</p>
+                <div class="text-amber-500 font-bold text-center mt-10">SCROLL TO AUTHORIZE</div>
             </div>
-            <button id="acceptBtn" disabled onclick="unlockEmpire()" class="w-full bg-zinc-800 text-zinc-500 py-3 rounded mt-4 uppercase font-black text-[10px]">I Accept the Mandate</button>
+            <button id="oath-btn" disabled onclick="unlockEmpire()" class="w-full bg-zinc-900 text-zinc-600 py-4 rounded-2xl font-black uppercase text-[11px]">Authorize Identity</button>
         </div>
     </div>
 
-    <nav class="empire-sidebar" id="mainSidebar">
-        <div class="p-4 mb-10 text-center font-black text-amber-500 border-b border-amber-500/20">001</div>
-        <div class="nav-links">
-            <a id="nav-feed" onclick="showModule('feed')" class="nav-item active"><span class="icon">📱</span><span class="label">FEED</span></a>
-            <a id="nav-kitchen" onclick="showModule('kitchen')" class="nav-item"><span class="icon">🍳</span><span class="label">KITCHEN</span></a>
-            <a onclick="accessTool('PILLAR_1')" class="nav-item"><span class="icon">🎵</span><span class="label">PROMOTION</span></a>
-            <a onclick="accessTool('PILLAR_4')" class="nav-item"><span class="icon">🎬</span><span class="label">ADS</span></a>
-            <a onclick="accessTool('PILLAR_5')" class="nav-item"><span class="icon">🎮</span><span class="label">GAMING</span></a>
-            <a onclick="accessTool('PILLAR_6')" class="nav-item"><span class="icon">👕</span><span class="label">APPAREL</span></a>
-            <a href="inbox.html" class="nav-item"><span class="icon">🛡️</span><span class="label">INBOX</span></a>
+    <!-- 3. KITCHEN LIVE MODULE (PILLAR 3) -->
+    <div id="kitchen-overlay">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-amber-500 font-black italic tracking-tighter">PILLAR 3: KITCHEN LIVE</h2>
+            <button onclick="closeKitchen()" class="text-zinc-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
         </div>
-    </nav>
+        <div class="video-canvas">
+            <video id="stream-view" autoplay muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-6">
+            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Rose')">🌹</button>
+            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Lion')">🦁</button>
+            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Crown')">👑</button>
+        </div>
+    </div>
 
-    <main id="kitchen-live-module">
-        <h2 class="text-amber-500 font-black italic tracking-tighter">PILLAR 3: KITCHEN LIVE</h2>
-        <div id="gift-notification"></div>
-        <div class="stream-grid">
-            <div class="video-card self-view">
-                <video id="localVideo" autoplay muted playsinline></video>
-                <div class="absolute bottom-2 left-2 text-[8px] bg-black/50 p-1">FOUNDER_VIEW</div>
-            </div>
-            <div class="video-card peer-view">
-                <div class="flex items-center justify-center h-full text-zinc-800 text-[10px]">WAITING FOR CITIZENS...</div>
-            </div>
+    <!-- 4. MASTER EXECUTIVE INTERFACE -->
+    <header class="alpha-header">
+        <div class="logo-section font-black text-amber-500 tracking-[0.3em] text-sm">NAWI-EMPIRE</div>
+        <div class="hidden md:flex gap-8">
+            <a href="market.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500">Market</a>
+            <a href="studio.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500">Studio</a>
+            <a href="games.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500">Gaming</a>
         </div>
-        <div class="flex justify-around mt-6 bg-white/5 p-4 rounded-2xl border border-amber-500/20">
-            <button class="text-2xl" onclick="sendGift('Rose', 10)">🌹</button>
-            <button class="text-2xl" onclick="sendGift('Crown', 500)">👑</button>
-            <button class="text-2xl" onclick="sendGift('Lion', 1000)">🦁</button>
-        </div>
-    </main>
-
-    <header id="app-header" style="display:none;" class="p-6 pt-12 flex justify-between items-center sticky top-0 bg-black/95 z-40 ml-12">
-        <div>
-            <p id="r-label" class="text-[7px] font-black tracking-[0.4em] text-zinc-600 uppercase">Empire Ledger</p>
-            <h1 class="text-xl font-black italic">NAWI-EMPIRE</h1>
-        </div>
-        <i class="fa-solid fa-bell text-amber-500" id="p-trigger" style="cursor:pointer;"></i>
+        <a href="dashboard.html" class="text-[9px] font-black bg-amber-500 text-black px-4 py-2 rounded-full">DASHBOARD</a>
     </header>
 
-    <main class="feed-container pl-20 pt-4" id="empire-feed" style="display:none;">
-        <div class="post-card p-4 border border-zinc-900 bg-zinc-950/50 rounded-3xl mb-4 mr-4">
-            <p class="text-[10px] text-zinc-500">Welcome to the Sovereign Feed, Citizen.</p>
-        </div>
-    </main>
+    <div class="master-grid">
+        <!-- Left: Identity & Node Status -->
+        <aside class="hidden lg:block border-r border-zinc-900 p-6">
+            <div class="text-[9px] font-black text-zinc-600 uppercase mb-8 tracking-widest">Master Authority</div>
+            <div class="bg-zinc-900/40 p-4 rounded-2xl border border-amber-500/10">
+                <p class="text-xs font-black">NODE: 001-ALPHA</p>
+                <p class="text-[10px] text-zinc-500 mt-1">Status: Executive Verified</p>
+                <div class="mt-4 h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-amber-500 w-full"></div>
+                </div>
+            </div>
+        </aside>
 
-    <div class="node-7-trigger" id="center-node">7</div>
+        <!-- Center: The Sovereign Feed -->
+        <main class="p-4 overflow-y-auto" id="main-feed">
+            <div class="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl mb-8 text-center">
+                <span class="text-[10px] font-black text-amber-500 uppercase">P2P Gateway: Protected by NAWI-ESCROW</span>
+            </div>
+            
+            <!-- Feed Content -->
+            <div id="dynamic-feed">
+                <div class="post-luxury">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-amber-500"></div>
+                        <span class="text-[10px] font-black uppercase">Empire Intelligence</span>
+                    </div>
+                    <div class="w-full aspect-video bg-zinc-900 rounded-xl mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80" class="w-full h-full object-cover opacity-50">
+                    </div>
+                    <p class="text-xs text-zinc-400 leading-relaxed">Welcome, Citizen. All 7 Pillars are now synchronized to your current hardware node.</p>
+                </div>
+            </div>
+        </main>
 
+        <!-- Right: Sponsored Ads (Pillar 2) -->
+        <aside class="hidden lg:block border-l border-zinc-900 p-6">
+            <div class="text-[9px] font-black text-zinc-600 uppercase mb-8 tracking-widest">Empire Sponsored</div>
+            <div id="sponsored-node" class="space-y-6">
+                <!-- Ad Slots -->
+                <div class="bg-zinc-900/20 border border-zinc-800 p-4 rounded-2xl">
+                    <div class="w-full aspect-square bg-zinc-800 rounded-lg mb-3"></div>
+                    <p class="text-[10px] font-black text-white">Diamondback 231</p>
+                    <p class="text-[8px] text-zinc-500">New 3D Frames Available</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- THE 7 NODES HUB (CENTRAL TRIGGER) -->
+    <div class="node-7-hub" onclick="window.location.href='dashboard.html'">
+        <span id="center-digit">7</span>
+    </div>
+
+    <!-- NO NAVIGATION BAR (Handled by the 7 Hub and Header) -->
+
+    <script src="nawi_empire_v1.js"></script>
     <script>
-        /* --- 🏛️ MASTER REGISTRY --- */
-        const EMPIRE_SYSTEM = {
-            PILLAR_1: { name: "Music Promo" },
-            PILLAR_4: { name: "Ads Manager" },
-            PILLAR_5: { name: "Gaming Arena" },
-            PILLAR_6: { name: "Apparel Studio" }
-        };
-
-        function accessTool(pillarKey) {
-            const tool = EMPIRE_SYSTEM[pillarKey];
-            if (tool) { alert(`${tool.name} Accessing...`); }
-        }
-
-        /* --- 🛡️ ONBOARDING (CROSS-PLATFORM FIX) --- */
-        function showOath() {
+        // Security logic
+        function revealOath() {
             document.getElementById('auth-gate').style.display = 'none';
-            document.getElementById('oathContainer').style.display = 'flex';
-            // Start checking immediately for desktop users/large screens
-            checkScroll(document.getElementById('oathText'));
+            document.getElementById('oath-gate').style.display = 'flex';
         }
 
-        function checkScroll(el) {
-            const btn = document.getElementById('acceptBtn');
-            // Detect if user has reached the bottom (buffer of 15px for different browsers)
-            const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 15;
-            const isNotScrollable = el.scrollHeight <= el.clientHeight;
-
-            if (isAtBottom || isNotScrollable) {
+        function checkOathScroll(el) {
+            const btn = document.getElementById('oath-btn');
+            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 20) {
                 btn.disabled = false;
-                btn.style.background = '#D4AF37'; 
-                btn.style.color = 'black';
-                btn.innerText = "MANDATE AUTHORIZED";
+                btn.className = "w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] shadow-lg shadow-amber-500/20";
+                btn.innerText = "Authorize Identity";
             }
         }
 
         function unlockEmpire() {
-            document.getElementById('oathContainer').style.display = 'none';
-            document.getElementById('mainSidebar').style.display = 'flex';
-            document.getElementById('app-header').style.display = 'flex';
-            document.getElementById('empire-feed').style.display = 'block';
-            document.getElementById('center-node').style.display = 'flex';
-            localStorage.setItem('citizen_verified', 'true');
+            document.getElementById('oath-gate').style.display = 'none';
+            localStorage.setItem('nawi_citizen_status', 'verified');
         }
 
-        /* --- 🍳 KITCHEN & CAMERA --- */
-        async function startCamera() {
+        // Kitchen Logic (Pillar 3)
+        async function openKitchen() {
+            document.getElementById('kitchen-overlay').style.display = 'block';
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('localVideo').srcObject = stream;
-            } catch (err) { alert("Camera Access Required for Kitchen Live"); }
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('stream-view').srcObject = stream;
+            } catch (err) { console.log("Camera access denied."); }
         }
 
-        function sendGift(name, price) {
-            const notif = document.getElementById('gift-notification');
-            notif.innerText = `SENT ${name.toUpperCase()} (${price} COINS) 🔱`;
-            setTimeout(() => { notif.innerText = ""; }, 3000);
+        function closeKitchen() {
+            document.getElementById('kitchen-overlay').style.display = 'none';
+            const stream = document.getElementById('stream-view').srcObject;
+            if (stream) stream.getTracks().forEach(track => track.stop());
         }
 
-        function showModule(module) {
-            const feed = document.getElementById('empire-feed');
-            const kitchen = document.getElementById('kitchen-live-module');
-            const header = document.getElementById('app-header');
-            
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-            if(module === 'kitchen') {
-                document.getElementById('nav-kitchen').classList.add('active');
-                feed.style.display = 'none';
-                header.style.display = 'none';
-                kitchen.style.display = 'block';
-                startCamera();
-            } else {
-                document.getElementById('nav-feed').classList.add('active');
-                feed.style.display = 'block';
-                header.style.display = 'flex';
-                kitchen.style.display = 'none';
-            }
-        }
-
-        /* --- 🕵️ MASTER OVERRIDE (TOUCH + MOUSE) --- */
-        const trigger = document.getElementById('p-trigger');
-        let pressTimer;
-
-        const startPress = () => {
-            pressTimer = setTimeout(() => {
-                const pass = prompt("REVEAL CEO IDENTITY? ENTER 0001:");
-                if(pass === "0001") {
-                    document.getElementById('mainBody').classList.add('master-mode');
-                    document.getElementById('r-label').innerText = "FOUNDER: NAWI-EMPIRE001";
-                }
-            }, 3000);
-        };
-
-        const endPress = () => clearTimeout(pressTimer);
-
-        trigger.addEventListener('touchstart', startPress);
-        trigger.addEventListener('mousedown', startPress); // Web compatibility
-        trigger.addEventListener('touchend', endPress);
-        trigger.addEventListener('mouseup', endPress);
-
-        /* --- 📱 GLOW (SMOOTH ON ALL DEVICES) --- */
-        const glow = document.getElementById('glow');
-        const handleMove = (e) => {
-            let x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-            let y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-            glow.style.left = x + 'px';
-            glow.style.top = y + 'px';
-        };
-
-        document.addEventListener('mousemove', handleMove);
-        document.addEventListener('touchmove', handleMove, { passive: true });
-
+        // Initialize
         window.onload = () => {
-            if(localStorage.getItem('citizen_verified') === 'true') { unlockEmpire(); }
+            if (localStorage.getItem('nawi_citizen_status') === 'verified') {
+                document.getElementById('auth-gate').style.display = 'none';
+                document.getElementById('oath-gate').style.display = 'none';
+            }
         };
     </script>
 </body>
