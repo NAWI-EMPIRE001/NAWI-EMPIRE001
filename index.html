@@ -26,7 +26,7 @@
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
         }
 
-        /* --- 🏛️ EXECUTIVE LAYOUT (RESPONSIBLE) --- */
+        /* --- 🏛️ EXECUTIVE LAYOUT --- */
         .alpha-header {
             height: 70px; background: rgba(5,5,5,0.8); border-bottom: 1px solid #1a1a1a;
             display: flex; justify-content: space-between; align-items: center;
@@ -34,40 +34,78 @@
         }
 
         .master-grid {
-            display: grid; margin-top: 70px; height: calc(100vh - 70px);
-            grid-template-columns: 1fr; /* Default Mobile */
+            display: grid; margin-top: 70px; min-height: calc(100vh - 70px);
+            grid-template-columns: 1fr;
         }
 
         @media (min-width: 1024px) {
             .master-grid { grid-template-columns: 280px 1fr 320px; }
-            .mobile-only { display: none; }
         }
 
-        /* --- 🍳 KITCHEN MODULE --- */
-        #kitchen-overlay {
-            display: none; position: fixed; inset: 0; background: var(--black);
-            z-index: 15000; padding: 20px;
+        /* --- 🛠️ UPDATED TOOL GRID STYLING --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px;
         }
-        .video-canvas { background: #111; border-radius: 20px; border: 1px solid var(--gold); overflow: hidden; height: 60vh; }
 
-        /* --- 7 NODES FLOATING TRIGGER --- */
-        .node-7-hub {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 75px; height: 75px; background: white; color: black;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 32px; font-weight: 900; z-index: 8000;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); border: 5px solid var(--black);
-            cursor: pointer; transition: 0.3s;
+        @media (min-width: 768px) {
+            .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        .node-7-hub:active { transform: translateX(-50%) scale(0.9); }
 
-        /* --- POST CARDS --- */
-        .post-luxury {
-            background: var(--glass); border: 1px solid #1a1a1a;
-            border-radius: 25px; padding: 15px; margin-bottom: 25px;
+        .tool-box {
+            background: var(--matte);
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             transition: 0.3s;
+            text-decoration: none;
+            color: white;
         }
-        .post-luxury:hover { border-color: var(--gold); }
+
+        .tool-box:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+            transform: scale(1.02);
+        }
+
+        .tool-box i { font-size: 28px; color: var(--gold); margin-bottom: 12px; }
+        .tool-box .label { font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #888; }
+        .tool-box:hover .label { color: white; }
+
+        .tool-box.highlight { border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.02); }
+
+        /* --- 🍳 KITCHEN & DASHBOARD ELEMENTS --- */
+        .node-7-hub {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 60px; background: white; color: black;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 900; z-index: 8000;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); border: 4px solid var(--black);
+            cursor: pointer;
+        }
+
+        /* Bottom Nav Bridge */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: #050505; border-top: 1px solid #1a1a1a;
+            display: flex; justify-content: space-around; align-items: center; z-index: 9000;
+        }
+
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; text-decoration: none; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item span { font-size: 8px; font-weight: 900; margin-top: 5px; }
+        .master-plus {
+            width: 55px; height: 55px; background: var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: black; font-size: 24px; font-weight: 900; margin-top: -30px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -76,9 +114,9 @@
         <div class="authority-card">
             <div class="text-[10px] font-black text-amber-500 tracking-[0.4em] mb-4">MANDATE UNLOCKED</div>
             <p class="text-sm italic text-zinc-400 border-l-2 border-amber-500 pl-4 my-6 leading-relaxed">
-                "This is my order and my authority to protect the founders and this platform... follow the rules."
+                "This is my order and my authority to protect the founders and this platform."
             </p>
-            <button onclick="revealOath()" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-lg shadow-amber-500/20">Enter Empire</button>
+            <button onclick="revealOath()" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Enter Empire</button>
         </div>
     </div>
 
@@ -89,130 +127,99 @@
                 <p class="mb-4">1. I shall trade with 100% integrity within the P2P Ledger.</p>
                 <p class="mb-4">2. I acknowledge NAWI-EMPIRE001 as the Master Authority.</p>
                 <p class="mb-4">3. I will protect the creative assets of all Citizens.</p>
-                <p class="mb-4">4. I respect the 7 Pillars of the Sovereign Ecosystem.</p>
                 <div class="text-amber-500 font-bold text-center mt-10">SCROLL TO AUTHORIZE</div>
             </div>
             <button id="oath-btn" disabled onclick="unlockEmpire()" class="w-full bg-zinc-900 text-zinc-600 py-4 rounded-2xl font-black uppercase text-[11px]">Authorize Identity</button>
         </div>
     </div>
 
-    <div id="kitchen-overlay">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-amber-500 font-black italic tracking-tighter">PILLAR 3: KITCHEN LIVE</h2>
-            <button onclick="closeKitchen()" class="text-zinc-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
-        </div>
-        <div class="video-canvas">
-            <video id="stream-view" autoplay muted playsinline class="w-full h-full object-cover"></video>
-        </div>
-        <div class="grid grid-cols-3 gap-4 mt-6">
-            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Rose')">🌹</button>
-            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Lion')">🦁</button>
-            <button class="bg-zinc-900 p-4 rounded-2xl text-2xl" onclick="sendGift('Crown')">👑</button>
-        </div>
-    </div>
-
     <header class="alpha-header">
         <div class="logo-section font-black text-amber-500 tracking-[0.3em] text-sm">NAWI-EMPIRE</div>
-        <div class="hidden md:flex gap-6 lg:gap-8">
-            <a href="market.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500 transition-colors">Market</a>
-            <a href="studio.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500 transition-colors">Studio</a>
-            <a href="games.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500 transition-colors">Gaming</a>
-            <a href="stylist.html" class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-amber-500 transition-colors">Sovereign Stylist</a>
+        <div class="empire-reserve text-right">
+            <span class="text-[8px] text-zinc-500 block">EMPIRE RESERVE</span>
+            <span class="text-amber-500 font-black">0.00 <i class="fa-solid fa-coins"></i></span>
         </div>
-        <a href="dashboard.html" class="text-[9px] font-black bg-amber-500 text-black px-4 py-2 rounded-full hover:bg-white transition-all">DASHBOARD</a>
     </header>
 
     <div class="master-grid">
-        <aside class="hidden lg:block border-r border-zinc-900 p-6">
-            <div class="text-[9px] font-black text-zinc-600 uppercase mb-8 tracking-widest">Master Authority</div>
-            <div class="bg-zinc-900/40 p-4 rounded-2xl border border-amber-500/10">
-                <p class="text-xs font-black">NODE: 001-ALPHA</p>
-                <p class="text-[10px] text-zinc-500 mt-1">Status: Executive Verified</p>
-                <div class="mt-4 h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <div class="h-full bg-amber-500 w-full"></div>
-                </div>
-            </div>
-        </aside>
-
-        <main class="p-4 overflow-y-auto" id="main-feed">
-            <div class="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl mb-8 text-center">
-                <span class="text-[10px] font-black text-amber-500 uppercase">P2P Gateway: Protected by NAWI-ESCROW</span>
-            </div>
+        <main class="p-4">
+            <div class="text-[10px] font-black text-zinc-500 mb-6 tracking-widest uppercase">Citizen Node: Level 0 Recruit</div>
             
-            <div id="dynamic-feed">
-                <div class="post-luxury">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-full bg-amber-500"></div>
-                        <span class="text-[10px] font-black uppercase">Empire Intelligence</span>
-                    </div>
-                    <div class="w-full aspect-video bg-zinc-900 rounded-xl mb-4 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80" class="w-full h-full object-cover opacity-50">
-                    </div>
-                    <p class="text-xs text-zinc-400 leading-relaxed">Welcome, Citizen. All 7 Pillars are now synchronized to your current hardware node.</p>
+            <div class="dashboard-grid">
+                <a href="market.html" class="tool-box">
+                    <i class="fa-solid fa-shop"></i>
+                    <div class="label">Marketplace</div>
+                </a>
+                <a href="ads.html" class="tool-box">
+                    <i class="fa-solid fa-rectangle-ad"></i>
+                    <div class="label">Ads Manager</div>
+                </a>
+                <a href="games.html" class="tool-box">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <div class="label">Game Node</div>
+                </a>
+                <a href="studio.html" class="tool-box">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div class="label">Digital Studio</div>
+                </a>
+                <a href="live.html" class="tool-box">
+                    <i class="fa-solid fa-video"></i>
+                    <div class="label">Live Stream</div>
+                </a>
+                <a href="kitchen.html" class="tool-box">
+                    <i class="fa-solid fa-utensils"></i>
+                    <div class="label">Empire Kitchen</div>
+                </a>
+                <a href="stylist.html" class="tool-box">
+                    <i class="fa-solid fa-gem"></i>
+                    <div class="label">Stylist Tool</div>
+                </a>
+                <a href="music.html" class="tool-box highlight">
+                    <i class="fa-solid fa-music"></i>
+                    <div class="label">Music Hub</div>
+                </a>
+                <a href="create-post.html" class="tool-box">
+                    <i class="fa-solid fa-plus"></i>
+                    <div class="label">Create Post</div>
+                </a>
+            </div>
+
+            <div class="mt-12">
+                <div class="text-[10px] font-black text-zinc-600 mb-4 tracking-widest uppercase">Recent P2P Transactions</div>
+                <div class="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800 flex justify-between items-center">
+                    <span class="text-xs text-zinc-500">Scanning Ledger...</span>
+                    <span class="text-[10px] font-bold text-amber-500">SYNCING</span>
                 </div>
             </div>
         </main>
-
-        <aside class="hidden lg:block border-l border-zinc-900 p-6">
-            <div class="text-[9px] font-black text-zinc-600 uppercase mb-8 tracking-widest">Empire Sponsored</div>
-            <div id="sponsored-node" class="space-y-6">
-                <div class="bg-zinc-900/20 border border-zinc-800 p-4 rounded-2xl">
-                    <div class="w-full aspect-square bg-zinc-800 rounded-lg mb-3"></div>
-                    <p class="text-[10px] font-black text-white">Diamondback 231</p>
-                    <p class="text-[8px] text-zinc-500">New 3D Frames Available</p>
-                </div>
-            </div>
-        </aside>
     </div>
 
-    <div class="node-7-hub" onclick="window.location.href='dashboard.html'">
-        <span id="center-digit">7</span>
-    </div>
+    <footer class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>HOME</span>
+        </a>
+        <a href="market.html" class="nav-item">
+            <i class="fa-solid fa-compass"></i>
+            <span>EXPLORE</span>
+        </a>
+        <a href="create-post.html" class="master-plus">+</a>
+        <a href="inbox.html" class="nav-item">
+            <i class="fa-solid fa-comment"></i>
+            <span>INBOX</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>PROFILE</span>
+        </a>
+    </footer>
 
     <script src="nawi_empire_v1.js"></script>
     <script>
-        // Security logic
-        function revealOath() {
-            document.getElementById('auth-gate').style.display = 'none';
-            document.getElementById('oath-gate').style.display = 'flex';
-        }
-
-        function checkOathScroll(el) {
-            const btn = document.getElementById('oath-btn');
-            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 20) {
-                btn.disabled = false;
-                btn.className = "w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] shadow-lg shadow-amber-500/20";
-                btn.innerText = "Authorize Identity";
-            }
-        }
-
-        function unlockEmpire() {
-            document.getElementById('oath-gate').style.display = 'none';
-            localStorage.setItem('nawi_citizen_status', 'verified');
-        }
-
-        // Kitchen Logic (Pillar 3)
-        async function openKitchen() {
-            document.getElementById('kitchen-overlay').style.display = 'block';
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('stream-view').srcObject = stream;
-            } catch (err) { console.log("Camera access denied."); }
-        }
-
-        function closeKitchen() {
-            document.getElementById('kitchen-overlay').style.display = 'none';
-            const stream = document.getElementById('stream-view').srcObject;
-            if (stream) stream.getTracks().forEach(track => track.stop());
-        }
-
-        // Initialize
-        window.onload = () => {
-            if (localStorage.getItem('nawi_citizen_status') === 'verified') {
-                document.getElementById('auth-gate').style.display = 'none';
-                document.getElementById('oath-gate').style.display = 'none';
-            }
-        };
+        function revealOath() { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('oath-gate').style.display = 'flex'; }
+        function checkOathScroll(el) { if (el.scrollHeight - el.scrollTop <= el.clientHeight + 20) { const btn = document.getElementById('oath-btn'); btn.disabled = false; btn.className = "w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px]"; } }
+        function unlockEmpire() { document.getElementById('oath-gate').style.display = 'none'; localStorage.setItem('nawi_citizen_status', 'verified'); }
+        window.onload = () => { if (localStorage.getItem('nawi_citizen_status') === 'verified') { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('oath-gate').style.display = 'none'; } };
     </script>
 </body>
 </html>
