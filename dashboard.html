@@ -5,160 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SOVEREIGN DASHBOARD | NAWI-EMPIRE</title>
     
-    <!-- Unified Technical Luxury Branding -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; }
-        body { background: var(--black); color: white; overflow-x: hidden; }
+        :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; --glass: rgba(255, 255, 255, 0.03); }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         
         .glass-widget { 
-            background: rgba(255,255,255,0.02); 
+            background: var(--glass); 
             border: 1px solid rgba(212, 175, 55, 0.1); 
             backdrop-filter: blur(15px); 
-            border-radius: 20px;
+            border-radius: 24px;
         }
+
+        /* --- TOOL GRID STYLING --- */
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 768px) { .pillar-grid { grid-template-columns: repeat(4, 1fr); } }
 
         .pillar-card {
             background: var(--matte);
             border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            text-align: center;
         }
 
         .pillar-card:hover:not(.locked) {
             border-color: var(--gold);
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+            background: rgba(212, 175, 55, 0.05);
         }
 
-        .locked { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+        .pillar-card i { font-size: 22px; margin-bottom: 10px; }
+        .pillar-card span { font-weight: 900; font-size: 9px; text-transform: uppercase; tracking-widest: 0.1em; color: #666; }
+        .pillar-card:hover span { color: white; }
+
+        .locked { opacity: 0.2; filter: grayscale(1); cursor: not-allowed; }
         
-        .progress-bar {
-            height: 4px;
-            background: #111;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        /* Progress System */
+        .progress-bar { height: 4px; background: #111; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gold); transition: width 1s ease; width: 0%; }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold), #fdfc97);
-            transition: width 1s ease-in-out;
+        /* Bottom Nav Bridge */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: #050505; border-top: 1px solid #1a1a1a;
+            display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
-
-        /* Responsive Sidebar for Desktop / Bottom Nav for Mobile */
-        @media (max-width: 768px) { .desktop-nav { display: none; } }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; text-decoration: none; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item span { font-size: 8px; font-weight: 900; margin-top: 5px; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <!-- 1. SOVEREIGN HEADER -->
-    <header class="p-6 flex justify-between items-center border-b border-zinc-900 bg-black/50 sticky top-0 z-40 backdrop-blur-md">
+    <header class="p-6 flex justify-between items-center border-b border-zinc-900 sticky top-0 z-40 bg-black/80 backdrop-blur-md">
         <div>
-            <h1 id="username" class="text-xl font-black uppercase tracking-tighter">Citizen Node...</h1>
+            <h1 id="username" class="text-lg font-black uppercase tracking-tighter">Scanning Node...</h1>
             <div class="flex items-center gap-2">
-                <span id="citizen-level" class="text-[9px] text-amber-500 font-bold uppercase tracking-[0.2em]">Level 0 • RECRUIT</span>
+                <span id="citizen-level" class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Initial Sync</span>
                 <i class="fa-solid fa-circle-check text-blue-500 text-[10px] hidden" id="v-badge"></i>
             </div>
         </div>
         <div class="text-right">
             <p class="text-[8px] text-zinc-500 uppercase font-black">Empire Reserve</p>
-            <h2 id="coin-balance" class="text-lg font-black text-amber-500">0.00 🪙</h2>
+            <h2 id="coin-balance" class="text-lg font-black text-amber-500">0.00 <i class="fa-solid fa-coins"></i></h2>
         </div>
     </header>
 
-    <main class="p-6 max-w-5xl mx-auto">
+    <main class="p-4 max-w-5xl mx-auto">
         
-        <!-- 2. PILLAR 1 PROGRESSION WIDGET -->
         <div class="glass-widget p-6 mb-8">
             <div class="flex justify-between items-end mb-4">
                 <div>
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Pillar 1 Activation</h3>
-                    <p id="requirement-text" class="text-[11px] text-zinc-500 mt-1">Post 3 professional assets to unlock the Empire Market.</p>
+                    <h3 class="text-[9px] font-black uppercase tracking-widest text-amber-500">Pillar 1 Activation</h3>
+                    <p id="requirement-text" class="text-[11px] text-zinc-500 mt-1">Submit 3 designs to unlock the P2P Marketplace.</p>
                 </div>
-                <span id="post-stats" class="text-amber-500 font-black text-xs">0 / 3</span>
+                <span id="post-stats" class="text-white font-black text-xs">0 / 3</span>
             </div>
             <div class="progress-bar">
-                <div id="level-progress" class="progress-fill" style="width: 0%"></div>
+                <div id="level-progress" class="progress-fill"></div>
             </div>
         </div>
 
-        <!-- 3. THE 7 PILLARS TOOLKIT -->
-        <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6 px-2">Authorized Ecosystem Tools</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="pillar-grid">
             
-            <!-- Pillar 1: Market -->
-            <div id="pillar-market" class="pillar-card p-6 rounded-2xl flex flex-col items-center locked" onclick="location.href='market.html'">
-                <i class="fa-solid fa-shop text-xl mb-3 text-zinc-500 icon-ref"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Marketplace</span>
-            </div>
+            <a href="market.html" id="pillar-market" class="pillar-card locked">
+                <i class="fa-solid fa-shop text-zinc-600 icon-ref"></i>
+                <span>Marketplace</span>
+            </a>
 
-            <!-- Pillar 2: Ads Manager -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='ads-manager.html'">
-                <i class="fa-solid fa-rectangle-ad text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Ads Manager</span>
-            </div>
+            <a href="ads.html" class="pillar-card">
+                <i class="fa-solid fa-rectangle-ad text-amber-500"></i>
+                <span>Ads Manager</span>
+            </a>
 
-            <!-- Pillar 3: Gaming -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='gaming.html'">
-                <i class="fa-solid fa-gamepad text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Game Node</span>
-            </div>
+            <a href="games.html" class="pillar-card">
+                <i class="fa-solid fa-gamepad text-amber-500"></i>
+                <span>Game Node</span>
+            </a>
 
-            <!-- Pillar 4: Studio -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='studio.html'">
-                <i class="fa-solid fa-wand-magic-sparkles text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Digital Studio</span>
-            </div>
+            <a href="studio.html" class="pillar-card">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                <span>Digital Studio</span>
+            </a>
 
-            <!-- Pillar 5: Live Stream -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='live.html'">
-                <i class="fa-solid fa-video text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Live Stream</span>
-            </div>
+            <a href="live.html" class="pillar-card">
+                <i class="fa-solid fa-video text-amber-500"></i>
+                <span>Live Stream</span>
+            </a>
 
-            <!-- Pillar 6: Kitchen -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='kitchen.html'">
-                <i class="fa-solid fa-utensils text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Empire Kitchen</span>
-            </div>
+            <a href="music.html" class="pillar-card highlight">
+                <i class="fa-solid fa-music text-amber-500"></i>
+                <span>Music Hub</span>
+            </a>
 
-            <!-- Pillar 7: Sovereign Stylist -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center" onclick="location.href='stylist.html'">
-                <i class="fa-solid fa-gem text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Stylist Tool</span>
-            </div>
+            <a href="stylist.html" class="pillar-card">
+                <i class="fa-solid fa-gem text-amber-500"></i>
+                <span>Stylist Tool</span>
+            </a>
 
-            <!-- Master Control: Only for Node 001 -->
-            <div class="pillar-card p-6 rounded-2xl flex flex-col items-center border-amber-500/30" onclick="location.href='create-post.html'">
-                <i class="fa-solid fa-plus text-xl mb-3 text-amber-500"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Create Post</span>
-            </div>
+            <a href="kitchen.html" class="pillar-card">
+                <i class="fa-solid fa-utensils text-amber-500"></i>
+                <span>Empire Kitchen</span>
+            </a>
+
+            <a href="create-post.html" class="pillar-card border-amber-500/20 col-span-2 md:col-span-1">
+                <i class="fa-solid fa-plus text-amber-500"></i>
+                <span>Create Post</span>
+            </a>
+
+            <a href="wallet.html" class="pillar-card col-span-2 md:col-span-1">
+                <i class="fa-solid fa-wallet text-amber-500"></i>
+                <span>Wallet Vault</span>
+            </a>
         </div>
 
-        <!-- 4. P2P ESCROW LEDGER -->
-        <div class="mt-12">
-            <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 px-2">Recent P2P Transactions</h2>
-            <div class="glass-widget overflow-hidden">
+        <div class="mt-10">
+            <h2 class="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4 px-2">Sovereign Ledger Status</h2>
+            <div class="glass-widget overflow-x-auto">
                 <table class="w-full text-left text-[11px]">
-                    <thead class="bg-white/5 uppercase text-[9px] text-amber-500">
+                    <thead class="bg-white/5 uppercase text-[8px] text-amber-500">
                         <tr>
                             <th class="p-4">Pillar</th>
-                            <th class="p-4">Item</th>
-                            <th class="p-4">Status</th>
+                            <th class="p-4">Asset</th>
+                            <th class="p-4">P2P Status</th>
                             <th class="p-4 text-right">Value</th>
                         </tr>
                     </thead>
                     <tbody id="ledger-body" class="divide-y divide-zinc-900">
-                        <!-- Loaded via nawi_empire_v1.js -->
                         <tr>
-                            <td class="p-4 text-zinc-500">---</td>
-                            <td class="p-4 text-zinc-500">Scanning Ledger...</td>
-                            <td class="p-4 text-zinc-500">SYNCING</td>
-                            <td class="p-4 text-right text-zinc-500">0.00</td>
+                            <td class="p-4 text-zinc-600">---</td>
+                            <td class="p-4 text-zinc-400 italic">Connecting to Aurora-231...</td>
+                            <td class="p-4 text-amber-500 font-bold">SYNCING</td>
+                            <td class="p-4 text-right">0.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -166,24 +178,33 @@
         </div>
     </main>
 
-    <!-- MOBILE NAVIGATION BAR -->
-    <nav class="fixed bottom-0 left-0 w-full bg-black/90 border-t border-zinc-900 flex justify-around p-5 z-50 backdrop-blur-lg">
-        <a href="index.html" class="text-zinc-600 hover:text-amber-500 transition-colors"><i class="fa-solid fa-house text-xl"></i></a>
-        <a href="dashboard.html" class="text-amber-500"><i class="fa-solid fa-chart-line text-xl"></i></a>
-        <a href="profile.html" class="text-zinc-600 hover:text-amber-500 transition-colors"><i class="fa-solid fa-user text-xl"></i></a>
-    </nav>
+    <footer class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>HOME</span>
+        </a>
+        <a href="market.html" class="nav-item">
+            <i class="fa-solid fa-compass"></i>
+            <span>EXPLORE</span>
+        </a>
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>DASHBOARD</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>PROFILE</span>
+        </a>
+    </footer>
 
     <script src="nawi_empire_v1.js"></script>
     <script>
         const currentUserID = localStorage.getItem('user-id') || 'NAWI-EMPIRE001';
 
-        window.onload = function() {
-            loadDashboardData();
-        };
+        window.onload = () => loadDashboard();
 
-        async function loadDashboardData() {
+        async function loadDashboard() {
             try {
-                // Fetch user profile from your Render backend
                 const response = await fetch('https://nawi-empire1.onrender.com/api/get-profile', {
                     headers: { 'user-id': currentUserID }
                 });
@@ -191,33 +212,31 @@
 
                 if(data) {
                     document.getElementById('username').innerText = data.username || "Citizen Node";
-                    document.getElementById('coin-balance').innerText = `${(data.walletBalance || 0).toLocaleString()} 🪙`;
+                    document.getElementById('coin-balance').innerHTML = `${(data.walletBalance || 0).toLocaleString()} <i class="fa-solid fa-coins"></i>`;
                     
                     const postCount = data.posts ? data.posts.length : 0;
                     document.getElementById('post-stats').innerText = `${postCount} / 3`;
                     
-                    // Logic to unlock Market Pillar
                     const progress = Math.min((postCount / 3) * 100, 100);
                     document.getElementById('level-progress').style.width = progress + "%";
 
-                    // Unlock logic for high-level citizens or the Founder
+                    // Unlock logic for Node 001 or high-activity users
                     if(postCount >= 3 || currentUserID === "NAWI-EMPIRE001") {
                         const mBtn = document.getElementById('pillar-market');
                         mBtn.classList.remove('locked');
-                        mBtn.querySelector('.icon-ref').classList.replace('text-zinc-500', 'text-amber-500');
-                        document.getElementById('citizen-level').innerText = "Level 1 • AUTHORIZED CITIZEN";
-                        document.getElementById('requirement-text').innerText = "✅ Authority granted. Global Market Unlocked.";
+                        mBtn.querySelector('i').classList.replace('text-zinc-600', 'text-amber-500');
+                        document.getElementById('citizen-level').innerText = "Level 1 • Authorized Citizen";
                     }
 
-                    // Founder Verification
+                    // CEO Identity Masking & Verification
                     if(currentUserID === "NAWI-EMPIRE001") {
                         document.getElementById('v-badge').classList.remove('hidden');
-                        document.getElementById('citizen-level').innerText = "SYSTEM FOUNDER • NODE 001";
-                        document.getElementById('citizen-level').classList.replace('text-amber-500', 'text-blue-500');
+                        document.getElementById('citizen-level').innerText = "System Founder • Node 001";
+                        document.getElementById('citizen-level').style.color = "#3b82f6"; // Blue for Authority
                     }
                 }
             } catch (err) {
-                console.warn("Empire Syncing in Offline Mode...");
+                console.warn("Manual P2P Sync Required.");
             }
         }
     </script>
