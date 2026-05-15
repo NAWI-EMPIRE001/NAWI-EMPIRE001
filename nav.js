@@ -27,12 +27,15 @@ function showEmpireAlert(message, type = "success") {
         backdrop-filter: blur(10px);
     `;
 
-    // Add icon based on type
-    const icon = type === '7 pillar'icon ' : '✨ ';
-    alertBox.innerHTML = `7pillar{icon} ${inbox}`;
+    // Fixed Syntax: Assigning icon based on type
+    let icon = "✨ ";
+    if (type === "warning") icon = "⚠️ ";
+    if (type === "pillar") icon = "🏛️ ";
+
+    alertBox.innerHTML = `<span>${icon} ${message}</span>`;
     document.body.appendChild(alertBox);
 
-    // Slide up into view (Notification bar position)
+    // Slide up into view
     setTimeout(() => { alertBox.style.top = "25px"; }, 100);
 
     // Slide Up and remove after 5 seconds
@@ -44,12 +47,10 @@ function showEmpireAlert(message, type = "success") {
 
 /**
  * 🛡️ SOVEREIGN STATUS & BALANCE SYNC
- * Updates wealth and checks for banishment.
  */
 async function syncEmpireData() {
     const userId = localStorage.getItem('user_id');
     
-    // If no user is logged in, restrict to guest view
     if (!userId) {
         console.log("Guest Node: Authority Limited.");
         return;
@@ -59,23 +60,18 @@ async function syncEmpireData() {
         const response = await fetch(`${API_URL}/api/user-profile/${userId}`);
         const data = await response.json();
 
-        // 1. BANISHMENT ENFORCEMENT
-        // If the CEO has terminated this node, kick them out instantly
         if (data.status === "TERMINATED") {
             window.location.href = "banished.html";
             return;
         }
 
-        // 2. CHECK FOR PENDING WARNINGS
-        // If the Founder issued a warning, show it as a Golden Alert
         if (data.pendingWarning) {
             showEmpireAlert(data.pendingWarning, "warning");
         }
 
-        // 3. UPDATE TOP NAVIGATION UI
         const coinDisplay = document.getElementById('empire-balance-top');
         if (coinDisplay) {
-            coinDisplay.innerHTML = `<i class="fa-solid fa-coins"></i> ${data.balance}`;
+            coinDisplay.innerHTML = `<i class="fa-solid fa-coins"></i> ${data.balance || '0.00'}`;
         }
 
         const userName = document.getElementById('nav-user-name');
@@ -91,11 +87,30 @@ async function syncEmpireData() {
 }
 
 /**
+ * 🛠️ NAVIGATION & TOOL REDIRECTION
+ * Ensures tools go to the correct files instead of the homepage.
+ */
+function initializeNavigation() {
+    // Select all tool cards/containers
+    const toolCards = document.querySelectorAll('.tool-card, [data-tool]');
+
+    toolCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            const target = card.getAttribute('data-tool');
+            if (target) {
+                window.location.href = `${target}.html`;
+            }
+        });
+    });
+}
+
+/**
  * 🚀 INITIALIZATION
- * Runs the sync the moment any page loads.
  */
 window.addEventListener('DOMContentLoaded', () => {
     syncEmpireData();
-    // Auto-sync every 60 seconds to keep the balance and status fresh
+    initializeNavigation();
+    
+    // Auto-sync every 60 seconds
     setInterval(syncEmpireData, 60000);
 });
