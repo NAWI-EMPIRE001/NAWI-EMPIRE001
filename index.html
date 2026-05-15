@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NAWI-EMPIRE | Sovereign Ecosystem</title>
     
-    <!-- Core Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
@@ -37,7 +36,7 @@
             bottom: 80px;
             background: var(--black); 
             z-index: 500; 
-            display: none;
+            display: none; /* Controlled by Engine */
             overflow-y: auto; 
             padding: 24px 20px;
             -webkit-overflow-scrolling: touch;
@@ -66,9 +65,7 @@
             z-index: 20000; 
         }
 
-        /* --- 👑 HIGH-END LUXURY TYPOGRAPHY & ELEMENTS --- */
         .gold-glow { text-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-        .gold-border { border-color: var(--gold); }
         .gold-gradient-bg { background: linear-gradient(135deg, var(--gold) 0%, #AA7C11 100%); }
         
         .luxury-card {
@@ -77,12 +74,7 @@
             border-radius: 24px;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .luxury-card:active {
-            transform: scale(0.97);
-            border-color: var(--gold);
-        }
 
-        /* --- 🏛️ SYSTEM BAR MECHANICS --- */
         .alpha-header {
             height: 75px; 
             background: rgba(5, 5, 5, 0.92); 
@@ -110,383 +102,190 @@
             padding: 30px 24px; 
             overflow-y: auto;
         }
-        .hub-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 16px; 
-        }
+        .hub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 
-        /* --- ⚓ INTERFACE TRIGGERS --- */
         .node-7-hub {
             position: fixed; 
             bottom: 100px; 
             right: 24px;
-            width: 68px; 
-            height: 68px; 
-            background: #FFFFFF; 
-            color: #000000;
+            width: 68px; height: 68px; 
+            background: #FFFFFF; color: #000;
             border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-size: 28px; 
-            font-weight: 900; 
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif; font-size: 28px; font-weight: 900; 
             z-index: 16000; 
             border: 5px solid var(--black);
-            cursor: pointer; 
-            box-shadow: 0 12px 35px rgba(0,0,0,0.7), 0 0 0 2px rgba(255,255,255,0.1);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
         }
-        .node-7-hub:active { transform: scale(0.9) rotate(-10deg); }
 
         .bottom-nav {
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            height: 80px;
-            background: rgba(5, 5, 5, 0.95); 
-            backdrop-filter: blur(15px);
-            border-top: 1px solid var(--border-color);
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 9000;
-            padding-bottom: 8px;
+            position: fixed; bottom: 0; width: 100%; height: 80px;
+            background: rgba(5, 5, 5, 0.95); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
 
-        .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            color: #444444; 
-            cursor: pointer; 
-            transition: color 0.2s ease;
-            width: 60px;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; width: 60px; }
         .nav-item.active { color: var(--gold); }
-        .nav-item span { 
-            font-size: 9px; 
-            font-weight: 700; 
-            margin-top: 6px; 
-            text-transform: uppercase; 
-            tracking-widest: 0.1em;
-        }
+        .nav-item span { font-size: 9px; font-weight: 700; margin-top: 6px; text-transform: uppercase; }
 
         .master-plus {
-            width: 60px; 
-            height: 60px; 
-            background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%); 
-            border-radius: 50%;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: black; 
-            font-size: 22px; 
-            font-weight: 900; 
-            margin-top: -36px;
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
-            border: 4px solid var(--black);
+            width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: black; font-size: 22px; margin-top: -36px; border: 4px solid var(--black);
         }
-
-        /* Custom Scrollbar for Luxury Aesthetics */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--black); }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- 🛡️ SECURITY LAYER I: AUTHORITY LOCK -->
     <div id="auth-gate">
-        <div class="p-8 w-[88%] max-w-[400px] border border-zinc-800 rounded-[32px] text-center bg-black/90 backdrop-blur-md shadow-2xl">
+        <div class="p-8 w-[88%] max-w-[400px] border border-zinc-800 rounded-[32px] text-center bg-black/90 backdrop-blur-md">
             <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full border border-zinc-800 bg-zinc-950">
                 <i class="fa-solid fa-shield-halved text-amber-500 text-xl"></i>
             </div>
             <div class="text-[11px] font-black text-amber-500 tracking-[0.5em] mb-3 uppercase gold-glow">Authority Required</div>
-            <p class="text-zinc-500 text-xs mb-8 italic">"This is my order to protect the founders and this platform."</p>
-            <button onclick="revealOath()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-lg active:scale-[0.98] transition-transform">Unlock Access</button>
+            <p class="text-zinc-500 text-xs mb-8 italic">"Protecting the founders and this platform."</p>
+            <button onclick="revealOath()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Unlock Access</button>
         </div>
     </div>
 
-    <!-- 🛡️ SECURITY LAYER II: THE SOVEREIGN DECREE OATH -->
     <div id="oath-gate" style="display:none;">
-        <div class="p-8 w-[90%] max-w-[420px] border border-amber-500/30 rounded-[32px] text-center bg-black/95 shadow-2xl">
+        <div class="p-8 w-[90%] max-w-[420px] border border-amber-500/30 rounded-[32px] text-center bg-black/95">
             <h2 class="text-lg font-black text-amber-500 mb-2 uppercase tracking-wider font-['Cinzel']">The 7 Pillars Oath</h2>
-            <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Ecosystem Legal Framework</p>
-            <div class="h-48 overflow-y-auto text-left text-[11px] text-zinc-400 mb-6 border-y border-zinc-800/80 py-4 px-2 space-y-3 leading-relaxed">
-                <p class="text-white font-bold">As a verified participant of NAWI-EMPIRE, I agree:</p>
-                <p><span class="text-amber-500 font-bold">01.</span> To fully uphold the trustless peer-to-peer transaction protocol.</p>
-                <p><span class="text-amber-500 font-bold">02.</span> To recognize that the platform exists for community protection, and rule compliance remains mandatory.</p>
-                <p><span class="text-amber-500 font-bold">03.</span> To deliver elite-tier professional standards and absolute design integrity.</p>
-                <p><span class="text-amber-500 font-bold">04.</span> That failure to abide by platform regulations results in instant node termination across all gateways.</p>
+            <div class="h-48 overflow-y-auto text-left text-[11px] text-zinc-400 mb-6 border-y border-zinc-800/80 py-4 px-2 space-y-3">
+                <p class="text-white font-bold">As a verified participant, I agree:</p>
+                <p><span class="text-amber-500 font-bold">01.</span> To uphold trustless P2P protocols.</p>
+                <p><span class="text-amber-500 font-bold">02.</span> To follow the rules of the platform.</p>
+                <p><span class="text-amber-500 font-bold">03.</span> To maintain elite design integrity.</p>
             </div>
-            <button onclick="unlockEmpire()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest active:scale-[0.98] transition-transform">Sign Sovereign Decree</button>
+            <button onclick="unlockEmpire()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Sign Sovereign Decree</button>
         </div>
     </div>
 
-    <!-- 🏛️ CENTRAL ALPHA EXECUTIVE HEADER -->
     <header class="alpha-header">
-        <div class="flex flex-col" onclick="openTool('home')" class="cursor-pointer">
+        <div class="flex flex-col" onclick="openTool('home')">
             <div class="font-black text-amber-500 tracking-[0.35em] text-sm font-['Cinzel'] gold-glow">NAWI-EMPIRE</div>
             <div class="text-[7px] text-zinc-600 tracking-[0.2em] font-bold uppercase">Sovereign Theater</div>
         </div>
         <div class="flex items-center gap-4">
             <div class="text-right bg-zinc-950/80 border border-zinc-900 px-3 py-1.5 rounded-xl">
-                <span class="text-[7px] text-zinc-500 block uppercase font-black tracking-wider">Empire Reserve</span>
+                <span class="text-[7px] text-zinc-500 block uppercase font-black tracking-wider">Reserve</span>
                 <span class="text-amber-500 font-black text-xs flex items-center gap-1">
                     <span id="balance">100.00</span> <i class="fa-solid fa-coins text-[10px]"></i>
                 </span>
             </div>
-            <div onclick="openTool('sovereign')" class="w-9 h-9 rounded-full bg-gradient-to-b from-zinc-800 to-zinc-950 border border-zinc-800 flex items-center justify-center text-[10px] font-black cursor-pointer text-amber-500 shadow-inner">
-                Ω
-            </div>
+            <div onclick="openTool('sovereign')" class="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-500 cursor-pointer">Ω</div>
         </div>
     </header>
 
-    <!-- 🏠 GATEWAY 0: CORE CENTRAL NODE (HOME) -->
-    <main id="home-viewport" class="tool-viewport active">
-        <div class="space-y-5 pt-2">
-            <!-- Main Theater Banner -->
-            <div class="bg-zinc-950 aspect-[4/3] rounded-[32px] overflow-hidden relative border border-zinc-900 shadow-2xl">
+    <main id="home-viewport" class="tool-viewport active" style="display:block;">
+        <div class="space-y-5">
+            <div class="bg-zinc-950 aspect-[4/3] rounded-[32px] overflow-hidden relative border border-zinc-900">
                 <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover opacity-30 mix-blend-luminosity">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                    <h2 class="text-4xl font-black font-['Cinzel'] text-white tracking-widest">NODE 001</h2>
+                    <h2 class="text-4xl font-black font-['Cinzel'] text-white">NODE 001</h2>
                     <p class="text-amber-500 text-[9px] tracking-[0.45em] uppercase font-black mt-1">Ecosystem Infrastructure Active</p>
                 </div>
             </div>
-
-            <!-- Real-time Status Display -->
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-gradient-to-br from-zinc-950 to-zinc-900 p-4 rounded-2xl border border-zinc-900">
-                    <p class="text-[8px] text-zinc-500 uppercase font-black tracking-wider mb-1">Architecture Pipeline</p>
-                    <p class="text-xs font-black text-green-500 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 7 PILLARS LIVE
-                    </p>
-                </div>
-                <div class="bg-gradient-to-br from-zinc-950 to-zinc-900 p-4 rounded-2xl border border-zinc-900">
-                    <p class="text-[8px] text-zinc-500 uppercase font-black tracking-wider mb-1">Active Clearance</p>
-                    <p class="text-xs font-black tracking-wide text-zinc-200">EXECUTIVE FOUNDER</p>
-                </div>
-            </div>
-
-            <!-- Platform Advisory Callout -->
-            <div class="bg-zinc-950 p-5 rounded-2xl border border-amber-500/10 space-y-2">
-                <div class="text-amber-500 font-black text-[9px] tracking-widest uppercase">Public Mandate Advisory</div>
-                <p class="text-zinc-400 text-xs leading-relaxed font-light italic">
-                    "We are not here to collect your money; the only thing that we need is for participants to follow the rules of this platform."
-                </p>
+            <div class="bg-zinc-950 p-5 rounded-2xl border border-amber-500/10 italic text-zinc-400 text-xs text-center">
+                "We are not here to collect your money; we need you to follow the rules."
             </div>
         </div>
     </main>
 
-    <!-- 🛒 PILLAR 1: THE MARKETPLACE -->
     <div id="market-viewport" class="tool-viewport">
-        <div class="mb-6">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">The Marketplace</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Pillar I • Secure Escrow Asset Exchange</p>
-        </div>
-        
-        <div class="space-y-4">
-            <div class="luxury-card p-4 flex justify-between items-center">
-                <div>
-                    <p class="font-bold text-sm text-zinc-200">Sovereign UI/UX Kit</p>
-                    <p class="text-[9px] text-zinc-500 uppercase tracking-wide">Premium Assets • Verified Whitelist</p>
-                </div>
-                <button onclick="buyItem(50, 'Sovereign UI/UX Kit')" class="bg-white text-black px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider active:scale-95 transition-transform">50.00 <i class="fa-solid fa-coins ml-0.5"></i></button>
-            </div>
-            <div class="luxury-card p-4 flex justify-between items-center">
-                <div>
-                    <p class="font-bold text-sm text-zinc-200">Pillar Sync License</p>
-                    <p class="text-[9px] text-zinc-500 uppercase tracking-wide">Data Modules • Core Authorization</p>
-                </div>
-                <button onclick="buyItem(25, 'Pillar Sync License')" class="bg-white text-black px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider active:scale-95 transition-transform">25.00 <i class="fa-solid fa-coins ml-0.5"></i></button>
-            </div>
+        <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel'] mb-6">Marketplace</h1>
+        <div class="luxury-card p-4 flex justify-between items-center mb-4">
+            <span class="text-sm font-bold">Sovereign UI Kit</span>
+            <button onclick="buyItem(50, 'UI Kit')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black">50.00 <i class="fa-solid fa-coins"></i></button>
         </div>
     </div>
 
-    <!-- 🎨 PILLAR 2: APPAREL & DIAMONDBACK 231 -->
-    <div id="apparel-viewport" class="tool-viewport">
-        <div class="mb-6">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">Diamondback 231</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Pillar II • Technical Luxury Branding Studio</p>
-        </div>
-        <div class="space-y-4">
-            <div class="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 text-center space-y-4">
-                <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-amber-500/20 to-transparent border border-amber-500/30 flex items-center justify-center">
-                    <i class="fa-solid fa-gem text-amber-500 text-3xl"></i>
-                </div>
-                <h3 class="text-md font-bold text-white uppercase">Aesthetic Identity Framework</h3>
-                <p class="text-zinc-400 text-xs max-w-[280px] mx-auto font-light leading-relaxed">
-                    Rendering execution interfaces focusing entirely on 24k gold, crystalline vectors, and matte black textures.
-                </p>
-                <div class="pt-2">
-                    <span class="inline-block bg-zinc-900 text-amber-500 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Sovereign Stylist Node</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🍳 PILLAR 3: THE KITCHEN -->
-    <div id="kitchen-viewport" class="tool-viewport">
-        <div class="mb-6">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">The Kitchen</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Pillar III • Industrial Food Service Operations</p>
-        </div>
-        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-3xl text-center space-y-3">
-            <i class="fa-solid fa-utensils text-4xl text-zinc-700"></i>
-            <h2 class="text-zinc-300 font-bold uppercase text-sm">Global Palate Infrastructure</h2>
-            <p class="text-zinc-500 text-xs max-w-[240px] mx-auto">System logistics scaling for luxury hospitality and precise recipe distributions.</p>
-        </div>
-    </div>
-
-    <!-- 🎵 PILLAR 4: THE SOUND STAGE -->
-    <div id="music-viewport" class="tool-viewport">
-        <div class="mb-6 text-center">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">The Sound Stage</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Pillar IV • Media Scaling & Music Promotion</p>
-        </div>
-        <div class="luxury-card p-6 text-center border border-zinc-800/80">
-            <div class="w-44 h-44 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl relative group">
-                <i class="fa-solid fa-compact-disc text-amber-500/80 text-7xl animate-[spin_8s_linear_infinite]"></i>
-                <div class="absolute inset-0 rounded-3xl bg-amber-500/5 mix-blend-color"></div>
-            </div>
-            <h3 class="font-black text-lg text-zinc-100">Empire Production Core</h3>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-6">Sovereign Distribution Engine</p>
-            <div class="flex justify-center gap-8 items-center bg-zinc-950 py-3 px-6 rounded-2xl border border-zinc-900/60 w-max mx-auto">
-                <i class="fa-solid fa-backward text-sm text-zinc-600 cursor-pointer hover:text-white"></i>
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-lg cursor-pointer active:scale-90 transition-transform">
-                    <i class="fa-solid fa-play text-lg ml-0.5"></i>
-                </div>
-                <i class="fa-solid fa-forward text-sm text-zinc-600 cursor-pointer hover:text-white"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🕹️ PILLAR 5: THE GAMING STUDIO -->
-    <div id="games-viewport" class="tool-viewport flex flex-col items-center justify-center text-center">
-        <div class="w-20 h-20 bg-zinc-950 border border-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-            <i class="fa-solid fa-gamepad text-3xl text-amber-500"></i>
-        </div>
-        <h1 class="text-white font-black uppercase font-['Cinzel'] tracking-wider">The Gaming Studio</h1>
-        <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-2">Pillar V • High-Fidelity Asset Pipeline</p>
-        <p class="text-zinc-400 text-xs max-w-[220px] font-light mt-2 leading-relaxed">Synchronizing multiplayer engine frameworks for ecosystem integration.</p>
-    </div>
-
-    <!-- 📦 PILLAR 6: THE LOGISTICS NODE -->
-    <div id="logistics-viewport" class="tool-viewport">
-        <div class="mb-6">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">Logistics Node</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Pillar VI • Precision Distribution Channels</p>
-        </div>
-        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-3xl text-center space-y-3">
-            <i class="fa-solid fa-truck-fast text-4xl text-zinc-700"></i>
-            <h2 class="text-zinc-300 font-bold uppercase text-sm">Physical Asset Deployment</h2>
-            <p class="text-zinc-500 text-xs max-w-[240px] mx-auto">Configuring routing pathways for international delivery protocols and asset transport.</p>
-        </div>
-    </div>
-
-    <!-- 💻 PILLAR 7: THE TECH NEXUS -->
-    <div id="studio-viewport" class="tool-viewport flex flex-col items-center justify-center text-center">
-        <div class="w-20 h-20 bg-zinc-950 border border-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-            <i class="fa-solid fa-cubes text-3xl text-amber-500"></i>
-        </div>
-        <h1 class="text-white font-black uppercase font-['Cinzel'] tracking-wider">The Tech Nexus</h1>
-        <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-4">Pillar VII • Software Integration Matrix</p>
-        <button class="border border-dashed border-zinc-800 hover:border-amber-500/40 w-full max-w-[300px] py-12 rounded-[24px] text-zinc-600 text-[10px] uppercase font-bold tracking-widest bg-zinc-950/40 transition-colors">
-            Initialize Plugin Pipeline
-        </button>
-    </div>
-
-    <!-- 🗺️ EXPLORATION GRID (THE MATRIX ARCHITECTURE) -->
     <div id="explore-viewport" class="tool-viewport">
-        <div class="mb-6">
-            <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel']">The Grid</h1>
-            <p class="text-zinc-500 text-[9px] uppercase tracking-wider">Ecosystem Monitor Pipeline</p>
-        </div>
+        <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] mb-6 uppercase">The Grid</h1>
         <div class="grid grid-cols-2 gap-4">
-            <div class="aspect-square bg-gradient-to-br from-zinc-950 to-zinc-900 rounded-2xl border border-zinc-900 flex flex-col justify-end p-4">
-                <span class="text-[9px] text-amber-500 font-bold tracking-wider uppercase">Vault Sync</span>
-            </div>
-            <div class="aspect-square bg-gradient-to-br from-zinc-950 to-zinc-900 rounded-2xl border border-zinc-900 flex flex-col justify-end p-4">
-                <span class="text-[9px] text-emerald-500 font-bold tracking-wider uppercase">P2P Ledger</span>
-            </div>
-            <div class="aspect-square bg-gradient-to-br from-zinc-950 to-zinc-900 rounded-2xl border border-zinc-900 flex flex-col justify-end p-4">
-                <span class="text-[9px] text-zinc-600 font-bold tracking-wider uppercase">Node Security</span>
-            </div>
-            <div class="aspect-square bg-gradient-to-br from-zinc-950 to-zinc-900 rounded-2xl border border-zinc-900 flex flex-col justify-end p-4">
-                <span class="text-[9px] text-zinc-600 font-bold tracking-wider uppercase">Verification Tier</span>
-            </div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex items-end"><span class="text-[9px] text-amber-500 font-black">VAULT SYNC</span></div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex items-end"><span class="text-[9px] text-emerald-500 font-black">P2P LEDGER</span></div>
         </div>
     </div>
 
-    <!-- 👑 GOVERNANCE MANAGEMENT SYSTEM (SETTING IDENTITY SHIELD) -->
     <div id="sovereign-viewport" class="tool-viewport">
         <div class="text-center mb-8">
-            <div class="w-24 h-24 bg-gradient-to-b from-zinc-900 to-zinc-950 rounded-full border border-amber-500/40 mx-auto mb-4 flex items-center justify-center shadow-xl">
-                <i class="fa-solid fa-crown text-3xl text-amber-500 gold-glow"></i>
+            <div class="w-20 h-20 bg-zinc-900 rounded-full border border-amber-500/30 mx-auto mb-4 flex items-center justify-center">
+                <i class="fa-solid fa-crown text-2xl text-amber-500"></i>
             </div>
-            <h2 class="text-xl font-black uppercase tracking-wider font-['Cinzel'] text-zinc-100" id="profile-name">NAWI-EMPIRE001</h2>
-            <p class="text-zinc-500 text-[9px] font-bold uppercase tracking-widest mt-0.5">Master Executive Governance</p>
+            <h2 class="text-xl font-black font-['Cinzel']" id="profile-name">NAWI-EMPIRE001</h2>
         </div>
-        
-        <div class="space-y-4 max-w-[440px] mx-auto">
-            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900">
-                <label class="text-[8px] text-zinc-500 uppercase block font-black tracking-widest mb-1">Ecosystem Designation</label>
-                <input type="text" id="input-name" placeholder="NAWI-EMPIRE001" class="bg-transparent border-none text-zinc-100 w-full outline-none font-black text-sm">
-            </div>
-            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900">
-                <label class="text-[8px] text-zinc-500 uppercase block font-black tracking-widest mb-1">Public Broadcast Identity</label>
-                <input type="text" id="input-social" placeholder="7 Pillars" class="bg-transparent border-none text-zinc-100 w-full outline-none font-black text-sm">
-            </div>
-            <button onclick="saveProfile()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-lg mt-2 active:scale-[0.98] transition-transform">Synchronize Authorization</button>
+        <div class="space-y-4 max-w-[400px] mx-auto">
+            <input type="text" id="input-name" placeholder="Update Identity" class="w-full bg-zinc-900 p-4 rounded-2xl border border-zinc-800 outline-none text-sm">
+            <button onclick="saveProfile()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px]">Sync Authorization</button>
         </div>
     </div>
 
-    <!-- 🏢 CENTRAL OVERLAY COMMAND INTERFACE -->
+    <div id="apparel-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar II: Apparel</h1> </div>
+    <div id="kitchen-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar III: Kitchen</h1> </div>
+    <div id="music-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar IV: Sound</h1> </div>
+    <div id="games-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar V: Gaming</h1> </div>
+    <div id="logistics-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VI: Logistics</h1> </div>
+    <div id="studio-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VII: Tech Nexus</h1> </div>
+
     <div id="hub-overlay">
         <div class="flex justify-between items-center mb-8">
-            <div class="flex flex-col">
-                <div class="text-amber-500 font-black text-sm tracking-widest uppercase font-['Cinzel']">7 Pillars Command Hub</div>
-                <div class="text-[8px] text-zinc-500 uppercase font-bold tracking-wide">Select Specialized Gateway Architecture</div>
-            </div>
-            <button onclick="toggleHub()" class="text-zinc-400 hover:text-white text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            <h1 class="text-amber-500 font-black tracking-widest font-['Cinzel'] uppercase">Command Hub</h1>
+            <button onclick="toggleHub()" class="text-zinc-400 text-2xl"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="hub-grid">
-            <div onclick="openTool('market')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-shop text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">I. Market</span></div>
-            <div onclick="openTool('apparel')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-gem text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">II. Apparel</span></div>
-            <div onclick="openTool('kitchen')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-utensils text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">III. Kitchen</span></div>
-            <div onclick="openTool('music')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-music text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">IV. Sound Stage</span></div>
-            <div onclick="openTool('games')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-gamepad text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">V. Gaming</span></div>
-            <div onclick="openTool('logistics')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-truck-fast text-amber-500 text-lg mb-3"></i><span class="text-[9px] font-black uppercase tracking-wider">VI. Logistics</span></div>
-            <div onclick="openTool('studio')" class="tool-card luxury-card p-5 flex flex-col items-center cursor-pointer col-span-2"><i class="fa-solid fa-cubes text-amber-500 text-lg mb-2"></i><span class="text-[9px] font-black uppercase tracking-wider">VII. Tech Nexus</span></div>
+            <div onclick="openTool('market')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-shop text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Market</span></div>
+            <div onclick="openTool('apparel')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-gem text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Apparel</span></div>
+            <div onclick="openTool('kitchen')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-utensils text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Kitchen</span></div>
+            <div onclick="openTool('music')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-music text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Sound</span></div>
+            <div onclick="openTool('games')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-gamepad text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Gaming</span></div>
+            <div onclick="openTool('logistics')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-truck-fast text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Logistics</span></div>
+            <div onclick="openTool('studio')" class="luxury-card p-5 flex flex-col items-center col-span-2"><i class="fa-solid fa-cubes text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Tech Nexus</span></div>
         </div>
     </div>
 
-    <!-- ⚓ FIXED CORE EMBLEM -->
-    <div class="node-7-hub" id="master-hub-trigger" onclick="toggleHub()">7</div>
+    <div class="node-7-hub" onclick="toggleHub()">7</div>
 
-    <!-- 🗺️ CORE NAVIGATION CONTROL SYSTEM -->
     <footer class="bottom-nav">
-        <div onclick="openTool('home')" class="nav-item active" id="nav-home">
-            <i class="fa-solid fa-house text-lg"></i><span>Home</span>
-        </div>
-        <div onclick="openTool('explore')" class="nav-item" id="nav-explore">
-            <i class="fa-solid fa-compass text-lg"></i><span>Grid</span>
-        </div>
+        <div onclick="openTool('home')" class="nav-item active" id="nav-home"><i class="fa-solid fa-house text-lg"></i><span>Home</span></div>
+        <div onclick="openTool('explore')" class="nav-item" id="nav-explore"><i class="fa-solid fa-compass text-lg"></i><span>Grid</span></div>
         <div onclick="toggleHub()" class="master-plus"><i class="fa-solid fa-plus"></i></div>
-        <div onclick="openTool('market')" class="nav-item" id="nav-market">
-            <i class="fa-solid fa-shop text-lg"></i><span>Market</span>
-        </div>
-        <div onclick="openTool('sovereign')" class="nav-item" id="nav-sovereign">
-            <i class="fa-solid fa-user-gear text-lg"></i><span>Identity</span>
-        </div>
+        <div onclick="openTool('market')" class="nav-item" id="nav-market"><i class="fa-solid fa-shop text-lg"></i><span>Market</span></div>
+        <div onclick="openTool('sovereign')" class="nav-item" id="nav-sovereign"><i class="fa-solid fa-user-gear text-lg"></i><span>Identity</span></div>
     </footer>
 
-    <!-- 🛠️ ECOSYSTEM ENGINE SYSTEM EXECUTION -->
     <script>
         let currentBalance = 100.00;
+
+        function openTool(toolId) {
+            console.log("Navigating to: " + toolId);
+            document.getElementById('hub-overlay').style.display = 'none';
+
+            // 1. Reset all viewports (Physical and Class)
+            const allViewports = document.querySelectorAll('.tool-viewport');
+            allViewports.forEach(viewport => {
+                viewport.classList.remove('active');
+                viewport.style.display = 'none'; 
+            });
+
+            // 2. Show the requested tool
+            const target = document.getElementById(toolId + '-viewport');
+            if (target) {
+                target.style.display = 'block';
+                setTimeout(() => { target.classList.add('active'); }, 10);
+            }
+
+            // 3. Update Nav UI
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + toolId);
+            if (activeNav) activeNav.classList.add('active');
+        }
+
+        function toggleHub() {
+            const hub = document.getElementById('hub-overlay');
+            hub.style.display = (hub.style.display === 'flex') ? 'none' : 'flex';
+            if (hub.style.display === 'flex') hub.style.zIndex = "20000";
+        }
 
         function revealOath() { 
             document.getElementById('auth-gate').style.display = 'none'; 
@@ -494,63 +293,32 @@
         }
 
         function unlockEmpire() { 
-            document.getElementById('oath-gate').style.display = 'none'; 
             localStorage.setItem('nawi_citizen_status', 'verified'); 
+            document.getElementById('oath-gate').style.display = 'none'; 
+            openTool('home');
         }
 
-        function toggleHub() {
-            const hub = document.getElementById('hub-overlay');
-            if(hub.style.display === 'flex') {
-                hub.style.display = 'none';
-            } else {
-                hub.style.display = 'flex';
-            }
-        }
-
-        function openTool(toolId) {
-            // Deactivate all viewports
-            document.querySelectorAll('.tool-viewport').forEach(v => v.classList.remove('active'));
-            // Reset standard navigation elements
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            // Activate selection interface
-            const target = document.getElementById(toolId + '-viewport');
-            if(target) {
-                target.classList.add('active');
-            }
-            
-            const nav = document.getElementById('nav-' + toolId);
-            if(nav) {
-                nav.classList.add('active');
-            }
-            
-            // Clean dynamic overlay configurations
-            document.getElementById('hub-overlay').style.display = 'none';
-        }
-
-        function buyItem(price, itemName) {
+        function buyItem(price, item) {
             if(currentBalance >= price) {
                 currentBalance -= price;
                 document.getElementById('balance').innerText = currentBalance.toFixed(2);
-                alert(`Escrow Secured: ${itemName} registration initialized.\nLedger Updated Successfully.`);
-            } else {
-                alert("Transaction Blocked: Insufficient Balance.");
-            }
+                alert(`Escrow Secured: ${item} registered.`);
+            } else { alert("Insufficient Balance."); }
         }
 
         function saveProfile() {
-            const newName = document.getElementById('input-name').value;
-            if(newName) {
-                document.getElementById('profile-name').innerText = newName;
-                alert("System Identity Protocol Updated.");
+            const val = document.getElementById('input-name').value;
+            if(val) {
+                document.getElementById('profile-name').innerText = val;
+                alert("Identity Synced.");
             }
         }
 
-        // Initialize session tokens based on verified protocol clearance
         window.onload = () => { 
             if (localStorage.getItem('nawi_citizen_status') === 'verified') { 
                 document.getElementById('auth-gate').style.display = 'none'; 
                 document.getElementById('oath-gate').style.display = 'none'; 
+                openTool('home');
             } 
         };
     </script>
