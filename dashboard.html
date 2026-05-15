@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SOVEREIGN DASHBOARD | NAWI-EMPIRE</title>
     
+    <!-- UI Stack -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     
     <style>
         :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; --glass: rgba(255, 255, 255, 0.03); }
@@ -19,7 +21,7 @@
             border-radius: 24px;
         }
 
-        /* --- TOOL GRID STYLING --- */
+        /* --- THE CORE PILLAR MATRIX --- */
         .pillar-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -31,7 +33,7 @@
             background: var(--matte);
             border: 1px solid #1a1a1a;
             border-radius: 20px;
-            padding: 20px;
+            padding: 24px 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -44,54 +46,57 @@
 
         .pillar-card:hover:not(.locked) {
             border-color: var(--gold);
-            transform: translateY(-5px);
-            background: rgba(212, 175, 55, 0.05);
+            transform: translateY(-4px);
+            background: rgba(212, 175, 55, 0.03);
         }
 
-        .pillar-card i { font-size: 22px; margin-bottom: 10px; }
-        .pillar-card span { font-weight: 900; font-size: 9px; text-transform: uppercase; tracking-widest: 0.1em; color: #666; }
-        .pillar-card:hover span { color: white; }
+        .pillar-card i { font-size: 24px; margin-bottom: 12px; transition: 0.3s; }
+        .pillar-card span { font-weight: 900; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #666; transition: 0.3s; }
+        .pillar-card:hover:not(.locked) span { color: white; }
 
-        .locked { opacity: 0.2; filter: grayscale(1); cursor: not-allowed; }
+        .locked { opacity: 0.25; filter: grayscale(1); cursor: not-allowed; }
         
-        /* Progress System */
-        .progress-bar { height: 4px; background: #111; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--gold); transition: width 1s ease; width: 0%; }
+        /* Progress Dynamics */
+        .progress-bar { height: 5px; background: #111; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gold); transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
 
-        /* Bottom Nav Bridge */
+        /* Navigation Bridge */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 75px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
             background: #050505; border-top: 1px solid #1a1a1a;
             display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; text-decoration: none; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; text-decoration: none; transition: 0.3s; }
+        .nav-item:hover { color: #888; }
         .nav-item.active { color: var(--gold); }
-        .nav-item span { font-size: 8px; font-weight: 900; margin-top: 5px; }
+        .nav-item span { font-size: 8px; font-weight: 900; margin-top: 6px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body class="pb-28">
 
+    <!-- Global Secure Header -->
     <header class="p-6 flex justify-between items-center border-b border-zinc-900 sticky top-0 z-40 bg-black/80 backdrop-blur-md">
         <div>
             <h1 id="username" class="text-lg font-black uppercase tracking-tighter">Scanning Node...</h1>
-            <div class="flex items-center gap-2">
-                <span id="citizen-level" class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Initial Sync</span>
+            <div class="flex items-center gap-2 mt-0.5">
+                <span id="citizen-level" class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Initial Handshake</span>
                 <i class="fa-solid fa-circle-check text-blue-500 text-[10px] hidden" id="v-badge"></i>
             </div>
         </div>
         <div class="text-right">
-            <p class="text-[8px] text-zinc-500 uppercase font-black">Empire Reserve</p>
-            <h2 id="coin-balance" class="text-lg font-black text-amber-500">0.00 <i class="fa-solid fa-coins"></i></h2>
+            <p class="text-[8px] text-zinc-500 uppercase font-black tracking-widest">Empire Reserve</p>
+            <h2 id="coin-balance" class="text-lg font-black text-amber-500">0.00 <i class="fa-solid fa-coins ml-0.5"></i></h2>
         </div>
     </header>
 
     <main class="p-4 max-w-5xl mx-auto">
         
+        <!-- Activation Gate -->
         <div class="glass-widget p-6 mb-8">
             <div class="flex justify-between items-end mb-4">
                 <div>
-                    <h3 class="text-[9px] font-black uppercase tracking-widest text-amber-500">Pillar 1 Activation</h3>
-                    <p id="requirement-text" class="text-[11px] text-zinc-500 mt-1">Submit 3 designs to unlock the P2P Marketplace.</p>
+                    <h3 class="text-[9px] font-black uppercase tracking-widest text-amber-500">Pillar 1 Gate Activation</h3>
+                    <p id="requirement-text" class="text-[11px] text-zinc-500 mt-1">Submit 3 digital assets to authorize the P2P Marketplace.</p>
                 </div>
                 <span id="post-stats" class="text-white font-black text-xs">0 / 3</span>
             </div>
@@ -100,10 +105,11 @@
             </div>
         </div>
 
-        <div class="pillar-grid">
+        <!-- System Node Directory (Grid Setup) -->
+        <div class="pillar-grid mb-6">
             
             <a href="market.html" id="pillar-market" class="pillar-card locked">
-                <i class="fa-solid fa-shop text-zinc-600 icon-ref"></i>
+                <i class="fa-solid fa-shop text-zinc-600"></i>
                 <span>Marketplace</span>
             </a>
 
@@ -127,7 +133,7 @@
                 <span>Live Stream</span>
             </a>
 
-            <a href="music.html" class="pillar-card highlight">
+            <a href="music.html" class="pillar-card">
                 <i class="fa-solid fa-music text-amber-500"></i>
                 <span>Music Hub</span>
             </a>
@@ -141,36 +147,44 @@
                 <i class="fa-solid fa-utensils text-amber-500"></i>
                 <span>Empire Kitchen</span>
             </a>
+        </div>
 
-            <a href="create-post.html" class="pillar-card border-amber-500/20 col-span-2 md:col-span-1">
-                <i class="fa-solid fa-plus text-amber-500"></i>
-                <span>Create Post</span>
+        <!-- Action Command Suite -->
+        <div class="grid grid-cols-2 gap-3 mb-10">
+            <a href="create-post.html" class="pillar-card !flex-row gap-3 border-zinc-800 bg-zinc-950/40">
+                <i class="fa-solid fa-plus text-amber-500 !m-0 text-sm"></i>
+                <span class="text-white">Create Post</span>
             </a>
 
-            <a href="wallet.html" class="pillar-card col-span-2 md:col-span-1">
-                <i class="fa-solid fa-wallet text-amber-500"></i>
-                <span>Wallet Vault</span>
+            <a href="wallet.html" class="pillar-card !flex-row gap-3 border-amber-500/20 bg-zinc-950/40">
+                <i class="fa-solid fa-wallet text-amber-500 !m-0 text-sm"></i>
+                <span class="text-white">Wallet Vault</span>
             </a>
         </div>
 
-        <div class="mt-10">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4 px-2">Sovereign Ledger Status</h2>
-            <div class="glass-widget overflow-x-auto">
+        <!-- Ledger Monitoring Matrix -->
+        <div class="mt-8">
+            <div class="mb-4 flex justify-between items-end px-1">
+                <h2 class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Sovereign Ledger Matrix</h2>
+                <span class="text-[8px] text-zinc-600 font-bold uppercase tracking-wider">Node Terminal: Aurora-231</span>
+            </div>
+            
+            <div class="glass-widget overflow-x-auto border border-zinc-900">
                 <table class="w-full text-left text-[11px]">
-                    <thead class="bg-white/5 uppercase text-[8px] text-amber-500">
+                    <thead class="bg-white/[0.02] border-b border-zinc-900 uppercase text-[8px] text-amber-500 tracking-wider">
                         <tr>
-                            <th class="p-4">Pillar</th>
-                            <th class="p-4">Asset</th>
-                            <th class="p-4">P2P Status</th>
-                            <th class="p-4 text-right">Value</th>
+                            <th class="p-4 font-black">Pillar Module</th>
+                            <th class="p-4 font-black">Asset Target</th>
+                            <th class="p-4 font-black">P2P Security</th>
+                            <th class="p-4 font-black text-right">Value (EMPR)</th>
                         </tr>
                     </thead>
-                    <tbody id="ledger-body" class="divide-y divide-zinc-900">
+                    <tbody id="ledger-body" class="divide-y divide-zinc-950 text-zinc-300">
                         <tr>
-                            <td class="p-4 text-zinc-600">---</td>
-                            <td class="p-4 text-zinc-400 italic">Connecting to Aurora-231...</td>
-                            <td class="p-4 text-amber-500 font-bold">SYNCING</td>
-                            <td class="p-4 text-right">0.00</td>
+                            <td class="p-4 text-zinc-600 font-mono">---</td>
+                            <td class="p-4 text-zinc-500 italic">Connecting to Sovereign Node architecture...</td>
+                            <td class="p-4"><span class="text-[8px] font-black bg-zinc-900 text-amber-500 px-2 py-0.5 rounded border border-amber-500/10">SYNCING</span></td>
+                            <td class="p-4 text-right font-bold text-zinc-500">0.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -178,25 +192,27 @@
         </div>
     </main>
 
+    <!-- Global Persistent Dock -->
     <footer class="bottom-nav">
         <a href="index.html" class="nav-item">
-            <i class="fa-solid fa-house"></i>
+            <i class="fa-solid fa-house text-sm"></i>
             <span>HOME</span>
         </a>
         <a href="market.html" class="nav-item">
-            <i class="fa-solid fa-compass"></i>
+            <i class="fa-solid fa-compass text-sm"></i>
             <span>EXPLORE</span>
         </a>
         <a href="dashboard.html" class="nav-item active">
-            <i class="fa-solid fa-chart-line"></i>
+            <i class="fa-solid fa-chart-line text-sm"></i>
             <span>DASHBOARD</span>
         </a>
         <a href="profile.html" class="nav-item">
-            <i class="fa-solid fa-user"></i>
+            <i class="fa-solid fa-user text-sm"></i>
             <span>PROFILE</span>
         </a>
     </footer>
 
+    <!-- Controllers -->
     <script src="nawi_empire_v1.js"></script>
     <script>
         const currentUserID = localStorage.getItem('user-id') || 'NAWI-EMPIRE001';
@@ -211,8 +227,9 @@
                 const data = await response.json();
 
                 if(data) {
+                    // Update user identities
                     document.getElementById('username').innerText = data.username || "Citizen Node";
-                    document.getElementById('coin-balance').innerHTML = `${(data.walletBalance || 0).toLocaleString()} <i class="fa-solid fa-coins"></i>`;
+                    document.getElementById('coin-balance').innerHTML = `${(data.walletBalance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} <i class="fa-solid fa-coins ml-0.5"></i>`;
                     
                     const postCount = data.posts ? data.posts.length : 0;
                     document.getElementById('post-stats').innerText = `${postCount} / 3`;
@@ -220,7 +237,7 @@
                     const progress = Math.min((postCount / 3) * 100, 100);
                     document.getElementById('level-progress').style.width = progress + "%";
 
-                    // Unlock logic for Node 001 or high-activity users
+                    // Authorization and Unlocking Gates
                     if(postCount >= 3 || currentUserID === "NAWI-EMPIRE001") {
                         const mBtn = document.getElementById('pillar-market');
                         mBtn.classList.remove('locked');
@@ -228,15 +245,34 @@
                         document.getElementById('citizen-level').innerText = "Level 1 • Authorized Citizen";
                     }
 
-                    // CEO Identity Masking & Verification
+                    // CEO Protocol Execution & Authority Masking
                     if(currentUserID === "NAWI-EMPIRE001") {
                         document.getElementById('v-badge').classList.remove('hidden');
                         document.getElementById('citizen-level').innerText = "System Founder • Node 001";
-                        document.getElementById('citizen-level').style.color = "#3b82f6"; // Blue for Authority
+                        document.getElementById('citizen-level').style.color = "#3b82f6";
+                    }
+
+                    // Dynamic Ledger Mapping
+                    if (data.ledger && data.ledger.length > 0) {
+                        const ledgerBody = document.getElementById('ledger-body');
+                        ledgerBody.innerHTML = data.ledger.map(tx => `
+                            <tr>
+                                <td class="p-4 font-mono text-amber-500 font-bold">Pillar 0${tx.pillar}</td>
+                                <td class="p-4 font-bold text-white uppercase text-[10px]">${tx.description}</td>
+                                <td class="p-4">
+                                    <span class="text-[8px] font-black px-2 py-0.5 rounded border ${
+                                        tx.status === 'Verified' ? 'bg-emerald-950/50 text-emerald-400 border-emerald-500/20' : 'bg-amber-950/50 text-amber-400 border-amber-500/20'
+                                    }">${tx.status.toUpperCase()}</span>
+                                </td>
+                                <td class="p-4 text-right font-black ${tx.type === 'credit' ? 'text-emerald-400' : 'text-zinc-400'}">
+                                    ${tx.type === 'credit' ? '+' : '-'}${tx.amount.toFixed(2)}
+                                </td>
+                            </tr>
+                        `).join('');
                     }
                 }
             } catch (err) {
-                console.warn("Manual P2P Sync Required.");
+                console.warn("Manual P2P Sync Required on Aurora-231.");
             }
         }
     </script>
