@@ -13,7 +13,7 @@
         :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; }
         body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
 
-        /* --- 🛠️ TOOL VIEWPORT SYSTEM --- */
+        /* --- 🛠️ VIEWPORT SYSTEM --- */
         .tool-viewport {
             position: fixed; inset: 0; top: 70px; bottom: 75px;
             background: var(--black); z-index: 500; display: none;
@@ -50,7 +50,7 @@
             width: 64px; height: 64px; background: white; color: black;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 26px; font-weight: 900; z-index: 16000; border: 4px solid var(--black);
-            cursor: pointer;
+            cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .bottom-nav {
@@ -59,7 +59,7 @@
             display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
 
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
         .nav-item span { font-size: 8px; font-weight: 900; margin-top: 5px; text-transform: uppercase; }
 
@@ -68,7 +68,7 @@
             padding: 20px; display: flex; flex-direction: column; align-items: center;
             transition: 0.3s;
         }
-        .tool-card:active { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+        .tool-card:active { transform: scale(0.95); border-color: var(--gold); }
 
         .master-plus {
             width: 55px; height: 55px; background: var(--gold); border-radius: 50%;
@@ -92,7 +92,8 @@
         <div class="p-10 border border-amber-500 rounded-3xl text-center bg-black/90 w-[90%]">
             <h2 class="text-xl font-black text-amber-500 mb-6 uppercase">The 7 Pillars Oath</h2>
             <div class="h-40 overflow-y-auto text-left text-[10px] text-zinc-500 mb-6 border-y border-zinc-800 py-4">
-                <p class="mb-2 text-white">1. Uphold the P2P Ledger.</p>
+                <p class="mb-4 text-white">I, a Citizen of NAWI-EMPIRE, swear to:</p>
+                <p class="mb-2">1. Uphold the P2P Ledger.</p>
                 <p class="mb-2">2. Respect the Elite Funder Hierarchy.</p>
                 <p class="mb-2">3. Protect the Empire assets.</p>
                 <p>4. Follow platform rules above personal gain.</p>
@@ -106,7 +107,7 @@
         <div class="flex items-center gap-4">
             <div class="text-right">
                 <span class="text-[7px] text-zinc-500 block uppercase font-bold">Empire Reserve</span>
-                <span class="text-amber-500 font-black text-xs">0.00 <i class="fa-solid fa-coins"></i></span>
+                <span class="text-amber-500 font-black text-xs"><span id="balance">100.00</span> <i class="fa-solid fa-coins"></i></span>
             </div>
             <div class="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-bold">01</div>
         </div>
@@ -114,80 +115,104 @@
 
     <main id="home-viewport" class="tool-viewport active">
         <div class="space-y-4 pt-4">
-            <div class="bg-zinc-900 aspect-square rounded-3xl overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover">
-                <div class="absolute top-4 right-4 bg-black/50 px-3 py-1 rounded text-[9px] font-black uppercase">Recruit Stream</div>
+            <div class="bg-zinc-900 aspect-square rounded-3xl overflow-hidden relative border border-zinc-800">
+                <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover opacity-50">
+                <div class="absolute inset-0 flex flex-col justify-center items-center text-center">
+                    <h2 class="text-4xl font-black font-['Cinzel'] text-white">NODE 001</h2>
+                    <p class="text-amber-500 text-[10px] tracking-[0.4em] uppercase font-black">System Sovereign</p>
+                </div>
             </div>
-            <p class="text-sm font-bold text-amber-500 uppercase tracking-widest">Pillar 1: System Online</p>
-            <p class="text-xs text-zinc-400">Welcome, Sovereign. Build your influence to unlock Elite access.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                    <p class="text-[8px] text-zinc-500 uppercase font-bold">Pillar Status</p>
+                    <p class="text-xs font-black text-green-500">7/7 ONLINE</p>
+                </div>
+                <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                    <p class="text-[8px] text-zinc-500 uppercase font-bold">Citizen Rank</p>
+                    <p class="text-xs font-black">FOUNDER</p>
+                </div>
+            </div>
         </div>
     </main>
 
-    <div id="explore-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Explore Empire</h1>
-        <div class="grid grid-cols-2 gap-2">
-            <div class="aspect-square bg-zinc-900 rounded-xl"></div>
-            <div class="aspect-square bg-zinc-900 rounded-xl"></div>
-            <div class="aspect-square bg-zinc-900 rounded-xl"></div>
-            <div class="aspect-square bg-zinc-900 rounded-xl"></div>
-        </div>
-    </div>
-
     <div id="market-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Marketplace</h1>
-        <div class="space-y-4">
-            <div class="tool-card w-full flex-row justify-between">
-                <span>Citizen Asset 001</span>
-                <span class="text-amber-500 font-bold">10.00 <i class="fa-solid fa-coins"></i></span>
+        <h1 class="text-amber-500 font-black mb-6 uppercase tracking-widest">Marketplace</h1>
+        <div class="space-y-3">
+            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 flex justify-between items-center">
+                <div>
+                    <p class="font-bold text-sm">Sovereign Skin Pack</p>
+                    <p class="text-[9px] text-zinc-500 uppercase">Legacy Asset</p>
+                </div>
+                <button onclick="buyItem(50)" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">50.00 <i class="fa-solid fa-coins"></i></button>
             </div>
-        </div>
-    </div>
-
-    <div id="kitchen-viewport" class="tool-viewport text-center">
-        <i class="fa-solid fa-utensils text-4xl text-amber-500 mt-20 mb-6"></i>
-        <h1 class="text-white font-black mb-2 uppercase">Elite Kitchen</h1>
-        <p class="text-zinc-500 text-xs">Access Restricted to Master Funders.</p>
-    </div>
-
-    <div id="games-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Game Node</h1>
-        <div class="aspect-video bg-zinc-900 rounded-3xl flex items-center justify-center border border-zinc-800">
-            <span class="text-zinc-600 font-black tracking-widest">LOADING MODULE...</span>
-        </div>
-    </div>
-
-    <div id="studio-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Digital Studio</h1>
-        <div class="p-10 border border-dashed border-zinc-800 rounded-3xl text-center">
-            <i class="fa-solid fa-wand-magic-sparkles text-zinc-700 text-3xl mb-4"></i>
-            <p class="text-xs text-zinc-500">Upload Assets to Begin Creation</p>
+            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 flex justify-between items-center">
+                <div>
+                    <p class="font-bold text-sm">Pillar Node Access</p>
+                    <p class="text-[9px] text-zinc-500 uppercase">Expansion Module</p>
+                </div>
+                <button onclick="buyItem(25)" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">25.00 <i class="fa-solid fa-coins"></i></button>
+            </div>
         </div>
     </div>
 
     <div id="music-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Music Hub</h1>
-        <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900 flex items-center gap-4">
-            <div class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center text-black"><i class="fa-solid fa-play"></i></div>
-            <div>
-                <div class="text-xs font-bold">Empire Anthem</div>
-                <div class="text-[9px] text-zinc-500 uppercase">Sovereign Beats</div>
+        <h1 class="text-amber-500 font-black mb-6 uppercase tracking-widest text-center">Empire Beats</h1>
+        <div class="bg-zinc-900 rounded-3xl p-8 text-center border border-zinc-800">
+            <div class="w-40 h-40 bg-amber-500 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-amber-500/20">
+                <i class="fa-solid fa-compact-disc text-black text-6xl animate-spin-slow"></i>
+            </div>
+            <h3 class="font-black text-xl mb-1">Empire Anthem</h3>
+            <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-8">Sovereign Audio Node</p>
+            <div class="flex justify-center gap-10 items-center">
+                <i class="fa-solid fa-backward text-xl text-zinc-600"></i>
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black shadow-lg">
+                    <i class="fa-solid fa-play text-2xl ml-1"></i>
+                </div>
+                <i class="fa-solid fa-forward text-xl text-zinc-600"></i>
             </div>
         </div>
     </div>
 
-    <div id="live-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase">Standard Live</h1>
-        <div class="bg-red-600/10 border border-red-600/20 p-4 rounded-xl mb-4 flex justify-between items-center">
-            <span class="text-red-500 font-black text-[10px]">🔴 NO ACTIVE STREAMS</span>
+    <div id="sovereign-viewport" class="tool-viewport">
+        <div class="text-center mb-8">
+            <div class="w-24 h-24 bg-zinc-900 rounded-full border-2 border-amber-500 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                <i class="fa-solid fa-crown text-3xl text-amber-500"></i>
+            </div>
+            <h2 class="text-xl font-black uppercase tracking-widest" id="profile-name">NAWI-EMPIRE001</h2>
+            <p class="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">Master Authority</p>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                <label class="text-[8px] text-zinc-500 uppercase block mb-1">CEO Identity</label>
+                <input type="text" id="input-name" placeholder="NAWI-EMPIRE001" class="bg-transparent border-none text-white w-full outline-none font-black text-sm">
+            </div>
+            <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                <label class="text-[8px] text-zinc-500 uppercase block mb-1">Social Handle</label>
+                <input type="text" id="input-social" placeholder="7 Pillars" class="bg-transparent border-none text-white w-full outline-none font-black text-sm">
+            </div>
+            <button onclick="saveProfile()" class="w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px] mt-4 tracking-widest">Update Authority</button>
         </div>
     </div>
 
-    <div id="sovereign-viewport" class="tool-viewport">
-        <h1 class="text-amber-500 font-black mb-4 uppercase tracking-widest">Sovereign Authority</h1>
-        <div class="tool-card w-full mb-4">
-            <div class="w-20 h-20 bg-zinc-900 rounded-full border-2 border-amber-500 mb-4"></div>
-            <div class="font-black">NAWI-EMPIRE001</div>
-            <div class="text-[10px] text-zinc-500">Node Rank: 01</div>
+    <div id="games-viewport" class="tool-viewport flex flex-col items-center justify-center text-center">
+        <i class="fa-solid fa-gamepad text-5xl text-amber-500 mb-4"></i>
+        <h1 class="text-white font-black uppercase">Game Node</h1>
+        <p class="text-zinc-500 text-xs max-w-[200px]">Synchronizing multiplayer environment for Node 01...</p>
+    </div>
+
+    <div id="studio-viewport" class="tool-viewport flex flex-col items-center justify-center text-center">
+        <i class="fa-solid fa-wand-magic-sparkles text-5xl text-amber-500 mb-4"></i>
+        <h1 class="text-white font-black uppercase">Digital Studio</h1>
+        <button class="mt-6 border border-dashed border-zinc-700 px-8 py-10 rounded-3xl text-zinc-500 text-[10px] uppercase font-bold">Drop Assets Here</button>
+    </div>
+
+    <div id="explore-viewport" class="tool-viewport">
+        <h1 class="text-amber-500 font-black mb-6 uppercase tracking-widest">The Grid</h1>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 animate-pulse"></div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 animate-pulse"></div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 animate-pulse"></div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 animate-pulse"></div>
         </div>
     </div>
 
@@ -198,12 +223,11 @@
         </div>
         <div class="hub-grid">
             <div onclick="openTool('market')" class="tool-card cursor-pointer"><i class="fa-solid fa-shop text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Market</span></div>
-            <div onclick="openTool('kitchen')" class="tool-card cursor-pointer"><i class="fa-solid fa-utensils text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Kitchen</span></div>
             <div onclick="openTool('games')" class="tool-card cursor-pointer"><i class="fa-solid fa-gamepad text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Games</span></div>
             <div onclick="openTool('studio')" class="tool-card cursor-pointer"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Studio</span></div>
             <div onclick="openTool('music')" class="tool-card cursor-pointer"><i class="fa-solid fa-music text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Music</span></div>
-            <div onclick="openTool('live')" class="tool-card cursor-pointer"><i class="fa-solid fa-video text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Live</span></div>
-            <div onclick="openTool('sovereign')" class="tool-card col-span-2 flex-row gap-4"><i class="fa-solid fa-user-gear text-amber-500"></i><span class="text-[9px] font-black uppercase">Profile Settings</span></div>
+            <div onclick="openTool('explore')" class="tool-card cursor-pointer"><i class="fa-solid fa-compass text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Explore</span></div>
+            <div onclick="openTool('sovereign')" class="tool-card cursor-pointer"><i class="fa-solid fa-user-gear text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Settings</span></div>
         </div>
     </div>
 
@@ -217,14 +241,17 @@
             <i class="fa-solid fa-compass"></i><span>Explore</span>
         </div>
         <div onclick="toggleHub()" class="master-plus"><i class="fa-solid fa-plus"></i></div>
-        <div class="nav-item"><i class="fa-solid fa-comment"></i><span>Inbox</span></div>
+        <div onclick="openTool('market')" class="nav-item" id="nav-market">
+            <i class="fa-solid fa-shop"></i><span>Market</span>
+        </div>
         <div onclick="openTool('sovereign')" class="nav-item" id="nav-sovereign">
             <i class="fa-solid fa-user-gear"></i><span>Sovereign</span>
         </div>
     </footer>
 
     <script>
-        // --- 🛡️ SECURITY CONTROLS ---
+        let currentBalance = 100.00;
+
         function revealOath() { 
             document.getElementById('auth-gate').style.display = 'none'; 
             document.getElementById('oath-gate').style.display = 'flex'; 
@@ -235,36 +262,42 @@
             localStorage.setItem('nawi_citizen_status', 'verified'); 
         }
 
-        // --- ⚡ INTERFACE CONTROLS ---
         function toggleHub() {
             const hub = document.getElementById('hub-overlay');
-            const isVisible = hub.style.display === 'flex';
-            hub.style.display = isVisible ? 'none' : 'flex';
+            hub.style.display = (hub.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // SPA Navigation Logic
         function openTool(toolId) {
-            // 1. Hide all viewports
-            const viewports = document.querySelectorAll('.tool-viewport');
-            viewports.forEach(v => v.classList.remove('active'));
-
-            // 2. Show target viewport
+            document.querySelectorAll('.tool-viewport').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             const target = document.getElementById(toolId + '-viewport');
-            if (target) {
-                target.classList.add('active');
-            }
-
-            // 3. Update Nav Active State
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            const activeNav = document.getElementById('nav-' + toolId);
-            if (activeNav) activeNav.classList.add('active');
-
-            // 4. Auto-close Hub
+            if(target) target.classList.add('active');
+            
+            const nav = document.getElementById('nav-' + toolId);
+            if(nav) nav.classList.add('active');
+            
             document.getElementById('hub-overlay').style.display = 'none';
         }
 
-        // Initialize session
+        function buyItem(price) {
+            if(currentBalance >= price) {
+                currentBalance -= price;
+                document.getElementById('balance').innerText = currentBalance.toFixed(2);
+                alert("Asset Acquired. Ledger Updated.");
+            } else {
+                alert("Insufficient Reserve.");
+            }
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('input-name').value;
+            if(newName) {
+                document.getElementById('profile-name').innerText = newName;
+                alert("Authority Identity Synchronized.");
+            }
+        }
+
         window.onload = () => { 
             if (localStorage.getItem('nawi_citizen_status') === 'verified') { 
                 document.getElementById('auth-gate').style.display = 'none'; 
