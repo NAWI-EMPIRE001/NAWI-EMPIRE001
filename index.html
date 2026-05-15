@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NAWI-EMPIRE | Sovereign Ecosystem</title>
     
+    <!-- UI Stack Modules -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet">
@@ -42,7 +43,7 @@
             .master-grid { grid-template-columns: 280px 1fr 320px; }
         }
 
-        /* --- 🛠️ UPDATED TOOL GRID STYLING --- */
+        /* --- 🛠️ SYSTEM WORKSPACE DASHBOARD --- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -80,19 +81,25 @@
 
         .tool-box.highlight { border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.02); }
 
-        /* --- 🍳 KITCHEN & DASHBOARD ELEMENTS --- */
+        /* --- 🍳 CORE 7 HUB VISUAL COMMAND SHORTCUT --- */
         .node-7-hub {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            width: 60px; height: 60px; background: white; color: black;
+            position: fixed; bottom: 95px; right: 20px;
+            width: 56px; height: 56px; background: white; color: black;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: 900; z-index: 8000;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); border: 4px solid var(--black);
-            cursor: pointer;
+            font-size: 20px; font-weight: 900; z-index: 8000;
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15); border: 3px solid var(--black);
+            cursor: pointer; text-decoration: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .node-7-hub:hover {
+            background: var(--gold);
+            color: black;
+            transform: scale(1.1) rotate(7deg);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
         }
 
-        /* Bottom Nav Bridge */
+        /* --- ⚓ GLOBAL PERSISTENT NAVIGATION --- */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 75px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
             background: #050505; border-top: 1px solid #1a1a1a;
             display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
@@ -108,8 +115,9 @@
         }
     </style>
 </head>
-<body>
+<body class="pb-28">
 
+    <!-- Auth Security Gate -->
     <div id="auth-gate">
         <div class="authority-card">
             <div class="text-[10px] font-black text-amber-500 tracking-[0.4em] mb-4">MANDATE UNLOCKED</div>
@@ -120,6 +128,7 @@
         </div>
     </div>
 
+    <!-- Oath Security Gate -->
     <div id="oath-gate" class="oath-overlay" style="display:none;">
         <div class="authority-card">
             <h2 class="text-xl font-black text-amber-500 font-['Cinzel'] mb-6">CITIZEN OATH</h2>
@@ -133,6 +142,7 @@
         </div>
     </div>
 
+    <!-- System Header -->
     <header class="alpha-header">
         <div class="logo-section font-black text-amber-500 tracking-[0.3em] text-sm">NAWI-EMPIRE</div>
         <div class="empire-reserve text-right">
@@ -141,10 +151,12 @@
         </div>
     </header>
 
+    <!-- Master Workspace Grid -->
     <div class="master-grid">
         <main class="p-4">
             <div class="text-[10px] font-black text-zinc-500 mb-6 tracking-widest uppercase">Citizen Node: Level 0 Recruit</div>
             
+            <!-- 7 Pillars Operational Grid Modules -->
             <div class="dashboard-grid">
                 <a href="market.html" class="tool-box">
                     <i class="fa-solid fa-shop"></i>
@@ -184,6 +196,7 @@
                 </a>
             </div>
 
+            <!-- Transaction Ledger Workspace -->
             <div class="mt-12">
                 <div class="text-[10px] font-black text-zinc-600 mb-4 tracking-widest uppercase">Recent P2P Transactions</div>
                 <div class="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800 flex justify-between items-center">
@@ -194,6 +207,10 @@
         </main>
     </div>
 
+    <!-- Active 7 Pillars Floating Master Command Shortcut Link -->
+    <a href="seven-pillars.html" class="node-7-hub" title="Open 7 Pillars Command Node">7</a>
+
+    <!-- Global Persistent Navigation Dock -->
     <footer class="bottom-nav">
         <a href="index.html" class="nav-item active">
             <i class="fa-solid fa-house"></i>
@@ -214,12 +231,30 @@
         </a>
     </footer>
 
+    <!-- Controllers System Logic -->
     <script src="nawi_empire_v1.js"></script>
     <script>
-        function revealOath() { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('oath-gate').style.display = 'flex'; }
-        function checkOathScroll(el) { if (el.scrollHeight - el.scrollTop <= el.clientHeight + 20) { const btn = document.getElementById('oath-btn'); btn.disabled = false; btn.className = "w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px]"; } }
-        function unlockEmpire() { document.getElementById('oath-gate').style.display = 'none'; localStorage.setItem('nawi_citizen_status', 'verified'); }
-        window.onload = () => { if (localStorage.getItem('nawi_citizen_status') === 'verified') { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('oath-gate').style.display = 'none'; } };
+        function revealOath() { 
+            document.getElementById('auth-gate').style.display = 'none'; 
+            document.getElementById('oath-gate').style.display = 'flex'; 
+        }
+        function checkOathScroll(el) { 
+            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 20) { 
+                const btn = document.getElementById('oath-btn'); 
+                btn.disabled = false; 
+                btn.className = "w-full bg-amber-500 text-black py-4 rounded-2xl font-black uppercase text-[11px]"; 
+            } 
+        }
+        function unlockEmpire() { 
+            document.getElementById('oath-gate').style.display = 'none'; 
+            localStorage.setItem('nawi_citizen_status', 'verified'); 
+        }
+        window.onload = () => { 
+            if (localStorage.getItem('nawi_citizen_status') === 'verified') { 
+                document.getElementById('auth-gate').style.display = 'none'; 
+                document.getElementById('oath-gate').style.display = 'none'; 
+            } 
+        };
     </script>
 </body>
 </html>
