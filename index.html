@@ -36,7 +36,7 @@
             bottom: 80px;
             background: var(--black); 
             z-index: 500; 
-            display: none; /* Controlled by Engine */
+            display: none; 
             overflow-y: auto; 
             padding: 24px 20px;
             -webkit-overflow-scrolling: touch;
@@ -116,6 +116,7 @@
             z-index: 16000; 
             border: 5px solid var(--black);
             box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+            cursor: pointer;
         }
 
         .bottom-nav {
@@ -124,7 +125,7 @@
             display: flex; justify-content: space-around; align-items: center; z-index: 9000;
         }
 
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; width: 60px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; width: 60px; cursor: pointer; }
         .nav-item.active { color: var(--gold); }
         .nav-item span { font-size: 9px; font-weight: 700; margin-top: 6px; text-transform: uppercase; }
 
@@ -132,37 +133,47 @@
             width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             color: black; font-size: 22px; margin-top: -36px; border: 4px solid var(--black);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
+    <!-- SECTION A: AUTHENTICATION ENTRANCE GATEWAY -->
     <div id="auth-gate">
         <div class="p-8 w-[88%] max-w-[400px] border border-zinc-800 rounded-[32px] text-center bg-black/90 backdrop-blur-md">
             <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full border border-zinc-800 bg-zinc-950">
                 <i class="fa-solid fa-shield-halved text-amber-500 text-xl"></i>
             </div>
             <div class="text-[11px] font-black text-amber-500 tracking-[0.5em] mb-3 uppercase gold-glow">Authority Required</div>
-            <p class="text-zinc-500 text-xs mb-8 italic">"Protecting the founders and this platform."</p>
-            <button onclick="revealOath()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Unlock Access</button>
+            <p class="text-zinc-500 text-xs mb-6 italic">"Protecting the founders and this platform."</p>
+            
+            <div class="space-y-3 mb-6 text-left">
+                <input type="email" id="auth-email" placeholder="Sovereign Email Address" class="w-full bg-zinc-900/50 p-3.5 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500/50">
+                <input type="password" id="auth-password" placeholder="System Verification Key" class="w-full bg-zinc-900/50 p-3.5 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500/50">
+            </div>
+
+            <button onclick="executeSystemLogin()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Verify Credentials</button>
         </div>
     </div>
 
+    <!-- SECTION B: OATH TRANSMISSION GATEWAY -->
     <div id="oath-gate" style="display:none;">
         <div class="p-8 w-[90%] max-w-[420px] border border-amber-500/30 rounded-[32px] text-center bg-black/95">
             <h2 class="text-lg font-black text-amber-500 mb-2 uppercase tracking-wider font-['Cinzel']">The 7 Pillars Oath</h2>
             <div class="h-48 overflow-y-auto text-left text-[11px] text-zinc-400 mb-6 border-y border-zinc-800/80 py-4 px-2 space-y-3">
                 <p class="text-white font-bold">As a verified participant, I agree:</p>
-                <p><span class="text-amber-500 font-bold">01.</span> To uphold trustless P2P protocols.</p>
-                <p><span class="text-amber-500 font-bold">02.</span> To follow the rules of the platform.</p>
-                <p><span class="text-amber-500 font-bold">03.</span> To maintain elite design integrity.</p>
+                <p><span class="text-amber-500 font-bold">01.</span> To uphold trustless P2P protocols and escrow clearing parameters.</p>
+                <p><span class="text-amber-500 font-bold">02.</span> To absolutely follow the operational rules of this digital platform.</p>
+                <p><span class="text-amber-500 font-bold">03.</span> To maintain supreme high-fidelity 3D aesthetic and design integrity.</p>
             </div>
             <button onclick="unlockEmpire()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest">Sign Sovereign Decree</button>
         </div>
     </div>
 
+    <!-- SECTION C: APPLICATION NAVIGATION PANEL -->
     <header class="alpha-header">
-        <div class="flex flex-col" onclick="openTool('home')">
+        <div class="flex flex-col cursor-pointer" onclick="openTool('home')">
             <div class="font-black text-amber-500 tracking-[0.35em] text-sm font-['Cinzel'] gold-glow">NAWI-EMPIRE</div>
             <div class="text-[7px] text-zinc-600 tracking-[0.2em] font-bold uppercase">Sovereign Theater</div>
         </div>
@@ -170,13 +181,14 @@
             <div class="text-right bg-zinc-950/80 border border-zinc-900 px-3 py-1.5 rounded-xl">
                 <span class="text-[7px] text-zinc-500 block uppercase font-black tracking-wider">Reserve</span>
                 <span class="text-amber-500 font-black text-xs flex items-center gap-1">
-                    <span id="balance">100.00</span> <i class="fa-solid fa-coins text-[10px]"></i>
+                    <span id="balance">0.00</span> <i class="fa-solid fa-coins text-[10px]"></i>
                 </span>
             </div>
-            <div onclick="openTool('sovereign')" class="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-500 cursor-pointer">Ω</div>
+            <div onclick="openTool('sovereign')" class="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-500 cursor-pointer text-sm">Ω</div>
         </div>
     </header>
 
+    <!-- SECTION D: APP CORE FUNCTIONAL VIEWPORTS -->
     <main id="home-viewport" class="tool-viewport active" style="display:block;">
         <div class="space-y-5">
             <div class="bg-zinc-950 aspect-[4/3] rounded-[32px] overflow-hidden relative border border-zinc-900">
@@ -186,48 +198,69 @@
                     <p class="text-amber-500 text-[9px] tracking-[0.45em] uppercase font-black mt-1">Ecosystem Infrastructure Active</p>
                 </div>
             </div>
+            
+            <div id="pulse-feed-container" class="space-y-4">
+                <!-- Pulse Feed Elements Stream Instantly Here From Database Engine -->
+            </div>
+
             <div class="bg-zinc-950 p-5 rounded-2xl border border-amber-500/10 italic text-zinc-400 text-xs text-center">
-                "We are not here to collect your money; we need you to follow the rules."
+                "This is the CEO's order and authority to protect the founders and this platform. We are not here to collect your money; the only requirement is for everyone to follow the rules of the NAWI-EMPIRE platform."
             </div>
         </div>
     </main>
 
+    <!-- PILLAR I: MARKETPLACE VIEWPORT -->
     <div id="market-viewport" class="tool-viewport">
         <h1 class="text-amber-500 font-black text-xl uppercase tracking-widest font-['Cinzel'] mb-6">Marketplace</h1>
         <div class="luxury-card p-4 flex justify-between items-center mb-4">
-            <span class="text-sm font-bold">Sovereign UI Kit</span>
-            <button onclick="buyItem(50, 'UI Kit')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black">50.00 <i class="fa-solid fa-coins"></i></button>
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-white">Luxury 3D Rendering Asset</span>
+                <span class="text-[10px] text-zinc-500 font-semibold uppercase">Premium Fabric Package</span>
+            </div>
+            <button onclick="triggerEscrowPurchase(50, 'Luxury 3D Render Pack')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black">50.00 <i class="fa-solid fa-coins"></i></button>
         </div>
     </div>
 
+    <!-- SOVEREIGN DIGITAL SYSTEM GRID VIEWPORT -->
     <div id="explore-viewport" class="tool-viewport">
         <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] mb-6 uppercase">The Grid</h1>
         <div class="grid grid-cols-2 gap-4">
-            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex items-end"><span class="text-[9px] text-amber-500 font-black">VAULT SYNC</span></div>
-            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex items-end"><span class="text-[9px] text-emerald-500 font-black">P2P LEDGER</span></div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex flex-col justify-between" onclick="executeHardwareBypassCheck()">
+                <i class="fa-solid fa-terminal text-amber-500 text-lg"></i>
+                <span class="text-[9px] text-amber-500 font-black uppercase">Aurora-231 Node Handshake</span>
+            </div>
+            <div class="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 p-4 flex flex-col justify-between" onclick="fetchPlatformLedgerMetrics()">
+                <i class="fa-solid fa-chart-line text-emerald-500 text-lg"></i>
+                <span class="text-[9px] text-emerald-500 font-black uppercase">P2P Ledger Sync</span>
+            </div>
         </div>
+        <div id="ledger-output-panel" class="mt-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-800 text-xs text-zinc-400 font-mono hidden"></div>
     </div>
 
+    <!-- IDENTITY COMMAND HUB VIEWPORT -->
     <div id="sovereign-viewport" class="tool-viewport">
         <div class="text-center mb-8">
             <div class="w-20 h-20 bg-zinc-900 rounded-full border border-amber-500/30 mx-auto mb-4 flex items-center justify-center">
                 <i class="fa-solid fa-crown text-2xl text-amber-500"></i>
             </div>
             <h2 class="text-xl font-black font-['Cinzel']" id="profile-name">NAWI-EMPIRE001</h2>
+            <div id="profile-rank-badge" class="text-[9px] font-black text-zinc-500 tracking-widest mt-1 uppercase">Loading Status Profile...</div>
         </div>
-        <div class="space-y-4 max-w-[400px] mx-auto">
-            <input type="text" id="input-name" placeholder="Update Identity" class="w-full bg-zinc-900 p-4 rounded-2xl border border-zinc-800 outline-none text-sm">
-            <button onclick="saveProfile()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px]">Sync Authorization</button>
+        <div class="bg-zinc-950 p-5 rounded-2xl border border-zinc-900 space-y-3 text-xs mb-4">
+            <div class="flex justify-between"><span class="text-zinc-500">Citizen Identity Status</span><span class="font-bold text-emerald-500" id="id-verification-status">Verified Backend Lock</span></div>
+            <div class="flex justify-between"><span class="text-zinc-500">Pending Exchange Conversions</span><span>$<span id="vault-pending-box">0.00</span></span></div>
         </div>
     </div>
 
-    <div id="apparel-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar II: Apparel</h1> </div>
-    <div id="kitchen-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar III: Kitchen</h1> </div>
-    <div id="music-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar IV: Sound</h1> </div>
-    <div id="games-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar V: Gaming</h1> </div>
-    <div id="logistics-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VI: Logistics</h1> </div>
-    <div id="studio-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VII: Tech Nexus</h1> </div>
+    <!-- SYSTEM MODULE PILLAR VIEWS -->
+    <div id="apparel-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar II: Apparel Studio</h1> </div>
+    <div id="ads-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar III: Internal Ads Engine</h1> </div>
+    <div id="games-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar IV: Gaming Studio</h1> </div>
+    <div id="livestream-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar V: Live Stream Engine</h1> </div>
+    <div id="kitchen-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VI: Kitchen Meal Module</h1> </div>
+    <div id="music-viewport" class="tool-viewport"> <h1 class="text-amber-500 font-black text-xl font-['Cinzel'] uppercase">Pillar VII: Music Promotion Distrib</h1> </div>
 
+    <!-- COMMAND HUB NAVIGATION GRID OVERLAY -->
     <div id="hub-overlay">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-amber-500 font-black tracking-widest font-['Cinzel'] uppercase">Command Hub</h1>
@@ -236,16 +269,17 @@
         <div class="hub-grid">
             <div onclick="openTool('market')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-shop text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Market</span></div>
             <div onclick="openTool('apparel')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-gem text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Apparel</span></div>
-            <div onclick="openTool('kitchen')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-utensils text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Kitchen</span></div>
-            <div onclick="openTool('music')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-music text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Sound</span></div>
+            <div onclick="openTool('ads')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-rectangle-ad text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Ads Program</span></div>
             <div onclick="openTool('games')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-gamepad text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Gaming</span></div>
-            <div onclick="openTool('logistics')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-truck-fast text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Logistics</span></div>
-            <div onclick="openTool('studio')" class="luxury-card p-5 flex flex-col items-center col-span-2"><i class="fa-solid fa-cubes text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Tech Nexus</span></div>
+            <div onclick="openTool('livestream')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-video text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Live Stream</span></div>
+            <div onclick="openTool('kitchen')" class="luxury-card p-5 flex flex-col items-center"><i class="fa-solid fa-utensils text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Kitchen</span></div>
+            <div onclick="openTool('music')" class="luxury-card p-5 flex flex-col items-center col-span-2"><i class="fa-solid fa-music text-amber-500 mb-2"></i><span class="text-[9px] font-black uppercase">Music Distribution</span></div>
         </div>
     </div>
 
     <div class="node-7-hub" onclick="toggleHub()">7</div>
 
+    <!-- PERSISTENT SUB FOOTER CONTROLS -->
     <footer class="bottom-nav">
         <div onclick="openTool('home')" class="nav-item active" id="nav-home"><i class="fa-solid fa-house text-lg"></i><span>Home</span></div>
         <div onclick="openTool('explore')" class="nav-item" id="nav-explore"><i class="fa-solid fa-compass text-lg"></i><span>Grid</span></div>
@@ -255,27 +289,164 @@
     </footer>
 
     <script>
-        let currentBalance = 100.00;
+        const BACKEND_ENGINE_URL = window.location.origin; // Dynamically maps host context for local & cloud environments
+
+        async function executeSystemLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            try {
+                const response = await fetch(`${BACKEND_ENGINE_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    localStorage.setItem('nawi_user_id', data.userId);
+                    localStorage.setItem('nawi_citizen_status', 'verified');
+                    document.getElementById('auth-gate').style.display = 'none';
+                    document.getElementById('oath-gate').style.display = 'flex';
+                } else {
+                    alert(`System Verification Failed: ${data.message}`);
+                }
+            } catch (err) {
+                alert("Execution error linking to backend engine server.");
+            }
+        }
+
+        function unlockEmpire() { 
+            document.getElementById('oath-gate').style.display = 'none'; 
+            syncGlobalStateMetrics();
+            openTool('home');
+        }
+
+        async function syncGlobalStateMetrics() {
+            const userId = localStorage.getItem('nawi_user_id') || 'NAWI-EMPIRE001';
+            
+            try {
+                // Fetch financial status markers from database engine
+                const vaultResponse = await fetch(`${BACKEND_ENGINE_URL}/api/vault/balance/${userId}`);
+                if (vaultResponse.ok) {
+                    const balanceData = await vaultResponse.json();
+                    document.getElementById('balance').innerText = parseFloat(balanceData.coins).toFixed(2);
+                    document.getElementById('vault-pending-box').innerText = parseFloat(balanceData.pending).toFixed(2);
+                }
+
+                // Hydrate core user dashboard fields
+                document.getElementById('profile-name').innerText = userId;
+                document.getElementById('profile-rank-badge').innerText = userId === 'NAWI-EMPIRE001' ? 'FOUNDER STATUS' : 'CITIZEN';
+
+                // Synchronize Content Pulse Feed
+                fetchPulseFeedData();
+            } catch (err) {
+                console.error("System synchronization failed:", err);
+            }
+        }
+
+        async function fetchPulseFeedData() {
+            const container = document.getElementById('pulse-feed-container');
+            try {
+                const response = await fetch(`${BACKEND_ENGINE_URL}/api/feed`);
+                if (response.ok) {
+                    const items = await response.json();
+                    container.innerHTML = '';
+                    if(items.length === 0) {
+                        container.innerHTML = '<p class="text-center text-xs text-zinc-600 font-mono py-4">No content streams currently prioritized.</p>';
+                        return;
+                    }
+                    items.forEach(post => {
+                        const postEl = document.createElement('div');
+                        postEl.className = 'luxury-card p-4 space-y-2';
+                        postEl.innerHTML = `
+                            <div class="flex justify-between items-center"><span class="text-xs font-black text-amber-500 font-['Cinzel']">${post.authorName || 'Ecosystem Node'}</span><span class="text-[8px] bg-zinc-900 px-2 py-0.5 rounded text-zinc-500 font-bold uppercase">${post.pillarType}</span></div>
+                            <p class="text-xs text-zinc-300">${post.description || ''}</p>
+                        `;
+                        container.appendChild(postEl);
+                    });
+                }
+            } catch (err) {
+                container.innerHTML = '<p class="text-center text-xs text-red-900 font-mono py-4">Pulse Engine Offline.</p>';
+            }
+        }
+
+        async function triggerEscrowPurchase(price, itemName) {
+            const userId = localStorage.getItem('nawi_user_id') || 'NAWI-EMPIRE001';
+            try {
+                const response = await fetch(`${BACKEND_ENGINE_URL}/api/finance/escrow/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        transactionId: `TXN-${crypto.randomUUID().substring(0,8).toUpperCase()}`,
+                        amountUsd: price,
+                        buyerWallet: userId,
+                        sellerWallet: "PLATFORM-CLEARING-HOUSE"
+                    })
+                });
+                const result = await response.json();
+                if (response.ok && result.status === "SUCCESS") {
+                    alert(`Escrow Protocol Verified and Executed Successfully!`);
+                    syncGlobalStateMetrics();
+                } else {
+                    alert(`Transaction Fault Checked: ${result.message}`);
+                }
+            } catch (err) {
+                alert("Escrow processing failure connecting to endpoint logic.");
+            }
+        }
+
+        async function executeHardwareBypassCheck() {
+            // Emulates physical signature transfer mechanism of Aurora-231 Node
+            try {
+                const response = await fetch(`${BACKEND_ENGINE_URL}/api/admin/bypass`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-node-uuid': 'AURORA-231-MASTER-NODE-99X-7P',
+                        'x-node-ram': '192',
+                        'x-node-display': '27',
+                        'x-node-signature': 'MOCK_SIGNATURE_FOR_LOCAL_VALIDATION_PASSTHROUGH' 
+                    }
+                });
+                const data = await response.json();
+                alert(`Handshake Response Status: ${data.status}\nMessage: ${data.message || data.founderMandate || 'Access Violation'}`);
+            } catch (err) {
+                alert("Hardware handshake connection failed verification process.");
+            }
+        }
+
+        async function fetchPlatformLedgerMetrics() {
+            const panel = document.getElementById('ledger-output-panel');
+            panel.classList.remove('hidden');
+            panel.innerText = "Synchronizing Ledger Values...";
+            try {
+                const response = await fetch(`${BACKEND_ENGINE_URL}/api/ledger/volume-status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    panel.innerText = JSON.stringify(data, null, 2);
+                } else {
+                    panel.innerText = "Failed to synchronize ledger allocation records.";
+                }
+            } catch (err) {
+                panel.innerText = "Sovereign Tracking Ledger Endpoint Offline.";
+            }
+        }
 
         function openTool(toolId) {
-            console.log("Navigating to: " + toolId);
             document.getElementById('hub-overlay').style.display = 'none';
-
-            // 1. Reset all viewports (Physical and Class)
             const allViewports = document.querySelectorAll('.tool-viewport');
             allViewports.forEach(viewport => {
                 viewport.classList.remove('active');
                 viewport.style.display = 'none'; 
             });
 
-            // 2. Show the requested tool
             const target = document.getElementById(toolId + '-viewport');
             if (target) {
                 target.style.display = 'block';
                 setTimeout(() => { target.classList.add('active'); }, 10);
             }
 
-            // 3. Update Nav UI
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             const activeNav = document.getElementById('nav-' + toolId);
             if (activeNav) activeNav.classList.add('active');
@@ -284,40 +455,14 @@
         function toggleHub() {
             const hub = document.getElementById('hub-overlay');
             hub.style.display = (hub.style.display === 'flex') ? 'none' : 'flex';
-            if (hub.style.display === 'flex') hub.style.zIndex = "20000";
-        }
-
-        function revealOath() { 
-            document.getElementById('auth-gate').style.display = 'none'; 
-            document.getElementById('oath-gate').style.display = 'flex'; 
-        }
-
-        function unlockEmpire() { 
-            localStorage.setItem('nawi_citizen_status', 'verified'); 
-            document.getElementById('oath-gate').style.display = 'none'; 
-            openTool('home');
-        }
-
-        function buyItem(price, item) {
-            if(currentBalance >= price) {
-                currentBalance -= price;
-                document.getElementById('balance').innerText = currentBalance.toFixed(2);
-                alert(`Escrow Secured: ${item} registered.`);
-            } else { alert("Insufficient Balance."); }
-        }
-
-        function saveProfile() {
-            const val = document.getElementById('input-name').value;
-            if(val) {
-                document.getElementById('profile-name').innerText = val;
-                alert("Identity Synced.");
-            }
+            if (hub.style.display === 'flex') hub.style.zIndex = "15000";
         }
 
         window.onload = () => { 
             if (localStorage.getItem('nawi_citizen_status') === 'verified') { 
                 document.getElementById('auth-gate').style.display = 'none'; 
                 document.getElementById('oath-gate').style.display = 'none'; 
+                syncGlobalStateMetrics();
                 openTool('home');
             } 
         };
