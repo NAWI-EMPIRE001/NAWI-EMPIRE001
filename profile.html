@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PROFILE | NAWI-EMPIRE</title>
     
-    <!-- External Assets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; --neon: #00ff41; }
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 100px; }
+        :root { --gold: #D4AF37; --black: #050505; --matte: #0A0A0A; --green: #00ff64; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 100px; overflow-x: hidden; }
 
-        /* Profile Header */
+        /* --- EXECUTIVE LAYOUT GLASS TIER --- */
+        .premium-card {
+            background: linear-gradient(145deg, #0f0f0f 0%, #050505 100%);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+        }
+
         .avatar-frame {
             width: 120px; height: 120px;
             border: 2px solid var(--gold);
@@ -25,127 +31,165 @@
             position: relative;
         }
 
-        /* Sovereign Showcase Grid */
+        /* --- STUDIO PORTFOLIO SHOWCASE GRID --- */
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            margin-top: 20px;
+            gap: 4px;
+            margin-top: 10px;
         }
         .portfolio-item {
             aspect-ratio: 1/1;
-            background: #111;
-            border: 1px solid #1a1a1a;
-            position: relative;
+            background: #0d0d0d;
+            border: 1px solid #151515;
+            border-radius: 8px;
             overflow: hidden;
         }
 
-        /* Settings Drawer */
+        /* --- SETTINGS DRAWER OVERVIEW --- */
         #settingsDrawer {
             position: fixed; top: 0; left: -100%;
             width: 85%; max-width: 350px; height: 100%;
             background: var(--matte); border-right: 1px solid var(--gold);
             z-index: 100; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 30px 20px;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.8);
+        }
+        
+        /* --- SECRET COMMAND TERMINAL SHIELD --- */
+        .hidden-terminal {
+            display: none;
+            background: linear-gradient(180deg, #0c0c0c 0%, #020202 100%);
+            border: 2px dashed var(--gold);
+            animation: borderGlow 4s infinite alternate;
         }
 
-        /* Master Auth Overlay */
-        #masterAuth {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.98); z-index: 999;
-            flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px);
+        @keyframes borderGlow {
+            0% { border-color: rgba(212, 175, 55, 0.2); box-shadow: 0 0 10px rgba(212, 175, 55, 0.05); }
+            100% { border-color: rgba(212, 175, 55, 0.7); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
         }
 
-        .auth-input {
-            background: #000; border: 1px solid var(--gold);
-            color: var(--gold); text-align: center;
-            font-size: 2rem; letter-spacing: 15px;
-            width: 200px; padding: 15px; border-radius: 15px; outline: none;
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8 flex flex-col items-center justify-start min-h-screen">
 
-    <!-- 1. SETTINGS DRAWER (WALLET & VERIFICATION) -->
     <div id="settingsDrawer">
         <div class="flex justify-between items-center mb-10">
-            <span class="text-[10px] font-black text-amber-500 tracking-[0.3em]">SYSTEM SETTINGS</span>
-            <i class="fa-solid fa-xmark text-zinc-700 text-xl" onclick="toggleSettings()"></i>
+            <span class="text-[10px] font-black text-amber-500 tracking-[0.3em] uppercase">System Settings</span>
+            <i class="fa-solid fa-xmark text-zinc-600 text-xl cursor-pointer hover:text-white" onclick="ProfileController.toggleSettings()"></i>
         </div>
         
-        <div class="bg-zinc-900/50 p-5 rounded-2xl border-l-4 border-amber-500 mb-6">
-            <label class="text-[8px] text-zinc-500 uppercase font-black">Empire Wallet</label>
+        <div class="bg-zinc-900/40 p-5 rounded-2xl border-l-4 border-amber-500 mb-6">
+            <label class="text-[8px] text-zinc-500 uppercase font-black tracking-widest">Empire Wallet balance</label>
             <p id="wallet-balance" class="text-2xl font-black text-white mt-1">0.00 🪙</p>
-            <button class="w-full mt-4 bg-amber-500 text-black py-3 rounded-xl font-black text-[10px] uppercase">Withdraw Assets</button>
+            <button onclick="window.location.href='/p2p-bridge'" class="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition">Withdraw Assets</button>
         </div>
 
-        <div class="bg-zinc-900/50 p-5 rounded-2xl border-l-4 border-zinc-700">
-            <label class="text-[8px] text-zinc-500 uppercase font-black">Identity Verification</label>
-            <p class="text-[10px] text-zinc-400 mt-2">Upload NIN or Govt ID to unlock Pillar 7 Commercial Rights.</p>
-            <button class="w-full mt-4 border border-zinc-700 text-zinc-400 py-3 rounded-xl font-black text-[10px] uppercase">Upload ID</button>
-        </div>
-    </div>
-
-    <!-- 2. MAIN PROFILE VIEW -->
-    <header class="p-6 flex justify-between items-center">
-        <i class="fa-solid fa-bars-staggered text-amber-500 text-xl" onclick="toggleSettings()"></i>
-        <span class="text-[10px] font-black text-zinc-600 tracking-[0.3em]">IDENTITY VAULT</span>
-        <i class="fa-solid fa-gear text-zinc-700"></i>
-    </header>
-
-    <div class="text-center pt-4">
-        <!-- The Master Trigger (Long Press 3s) -->
-        <div class="avatar-frame" id="masterTrigger">
-            <img src="default-avatar.png" class="w-full h-full rounded-full object-cover grayscale" id="profile-img">
-        </div>
-
-        <div class="mt-6">
-            <div class="flex items-center justify-center gap-2">
-                <h1 id="display-username" class="text-xl font-black uppercase tracking-tighter">Citizen Node</h1>
-                <i class="fa-solid fa-circle-check text-blue-500 hidden" id="v-badge"></i>
-            </div>
-            <p id="display-rank" class="text-amber-500 text-[9px] font-black uppercase tracking-widest mt-1">Apprentice Designer</p>
-        </div>
-
-        <!-- Professional Reputation Stats -->
-        <div class="flex justify-center gap-10 mt-8 border-y border-zinc-900 py-6">
-            <div class="text-center">
-                <span id="asset-count" class="block font-black text-lg">0</span>
-                <span class="text-[8px] text-zinc-600 uppercase font-bold">Renders</span>
-            </div>
-            <div class="text-center">
-                <span id="trade-count" class="block font-black text-lg">0</span>
-                <span class="text-[8px] text-zinc-600 uppercase font-bold">P2P Trades</span>
-            </div>
-            <div class="text-center">
-                <span class="block font-black text-lg text-green-500">100%</span>
-                <span class="text-[8px] text-zinc-600 uppercase font-bold">Reputation</span>
-            </div>
+        <div class="bg-zinc-900/40 p-5 rounded-2xl border-l-4 border-zinc-700">
+            <label class="text-[8px] text-zinc-500 uppercase font-black tracking-widest">Identity Verification</label>
+            <p class="text-[10px] text-zinc-400 mt-2">Upload NIN or Passport credentials to unlock platform commercial nodes.</p>
+            <button onclick="alert('Redirecting to Border Control Verification Node...')" class="w-full mt-4 border border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition">Upload ID Docs</button>
         </div>
     </div>
 
-    <!-- Sovereign Stylist Showcase -->
-    <div class="px-2 mt-2">
-        <div class="flex justify-between items-center px-4 py-4">
-            <span class="text-[9px] font-black text-amber-500 tracking-widest uppercase border-l-2 border-amber-500 pl-3">Studio Showcase</span>
-            <i class="fa-solid fa-table-cells-large text-zinc-700"></i>
+    <div class="w-full max-w-md relative">
+        
+        <header class="w-full py-4 flex justify-between items-center mb-4">
+            <i class="fa-solid fa-bars-staggered text-amber-500 text-xl cursor-pointer" onclick="ProfileController.toggleSettings()"></i>
+            <span class="text-[10px] font-black text-zinc-600 tracking-[0.3em] uppercase">Identity Vault</span>
+            <i class="fa-solid fa-gear text-zinc-600 cursor-pointer" onclick="ProfileController.toggleSettings()"></i>
+        </header>
+
+        <div class="w-full premium-card p-6 relative overflow-hidden mb-6">
+            <div class="absolute -right-10 -top-10 text-zinc-900/20 opacity-25 pointer-events-none font-['Cinzel'] text-9xl font-black">N</div>
+
+            <div class="flex justify-between items-center mb-6">
+                <span id="display-rank" class="text-[9px] bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-1 rounded-full font-black tracking-widest uppercase">
+                    Apprentice Designer
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-coins text-amber-500 text-xs"></i>
+                    <span id="display-coins" class="text-xs font-black font-mono text-zinc-300">0 🪙</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center text-center mt-4 mb-6">
+                <div class="relative group no-select">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-amber-500 to-yellow-600 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                    <div class="avatar-frame cursor-pointer active:scale-95 transition transform duration-150" id="masterTrigger">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=256&auto=format&fit=crop" 
+                             class="w-full h-full rounded-full object-cover relative border-2 border-zinc-900 grayscale" id="profile-img">
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-center gap-2 mt-4">
+                    <h1 id="display-username" class="text-xl font-black uppercase tracking-tight">Citizen Node</h1>
+                    <i class="fa-solid fa-circle-check text-blue-500 hidden" id="v-badge"></i>
+                </div>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">Ecosystem Infrastructure Developer</p>
+            </div>
+
+            <div class="flex justify-center gap-10 mt-6 border-y border-zinc-900 py-4">
+                <div class="text-center">
+                    <span id="asset-count" class="block font-black text-base text-zinc-200">0</span>
+                    <span class="text-[8px] text-zinc-600 uppercase font-black tracking-wider">Renders</span>
+                </div>
+                <div class="text-center">
+                    <span id="trade-count" class="block font-black text-base text-zinc-200">0</span>
+                    <span class="text-[8px] text-zinc-600 uppercase font-black tracking-wider">P2P Trades</span>
+                </div>
+                <div class="text-center">
+                    <span class="block font-black text-base text-emerald-400">100%</span>
+                    <span class="text-[8px] text-zinc-600 uppercase font-black tracking-wider">Reputation</span>
+                </div>
+            </div>
         </div>
-        <div class="portfolio-grid" id="portfolio-display">
-            <!-- Dynamic Assets Injected Here -->
+
+        <div class="w-full mb-6">
+            <div class="flex justify-between items-center py-2 mb-2">
+                <span class="text-[9px] font-black text-amber-500 tracking-widest uppercase border-l-2 border-amber-500 pl-3">Studio Showcase</span>
+                <i class="fa-solid fa-table-cells-large text-zinc-700 text-sm"></i>
+            </div>
+            <div class="portfolio-grid" id="portfolio-display">
+                </div>
+        </div>
+
+        <div id="executive-terminal" class="w-full hidden-terminal rounded-3xl p-6 mb-8 no-select">
+            <div class="flex items-center gap-3 border-b border-amber-500/20 pb-4 mb-4">
+                <i class="fa-solid fa-crown text-amber-500 text-xl"></i>
+                <div>
+                    <h3 class="text-amber-500 font-black font-['Cinzel'] tracking-widest text-sm uppercase">Sovereign Overlord Node</h3>
+                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest font-mono">Status: Linked to Aurora-231 Core Matrix</p>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-zinc-400 italic mb-4 leading-relaxed">
+                "Always tell the founders that this is my order and my authority to protect them and this platform, we're not here to collect your money, the only thing that we need is for them to follow the rules of this platform."
+            </p>
+
+            <div class="space-y-2 mt-4">
+                <div class="bg-zinc-950 border border-zinc-900 p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500">System Escalations Queue</span>
+                    <span class="text-[9px] font-black font-mono text-amber-500 bg-amber-500/10 px-2 py-1 rounded">AWAITING MASTER SIGNATURE</span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <button onclick="window.location.href='/api/master/pending-withdrawals?adminId=NAWI-EMPIRE001'" class="bg-amber-500 hover:bg-amber-600 text-black font-black text-[9px] uppercase tracking-widest py-3 rounded-xl shadow-lg transition">
+                        Authorize Claim Queue
+                    </button>
+                    <button onclick="ProfileController.triggerEcosystemReset()" class="bg-zinc-900 hover:bg-red-950 text-red-500 border border-zinc-800 font-black text-[9px] uppercase tracking-widest py-3 rounded-xl transition">
+                        System State Cache Flush
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 3. MASTER AUTH OVERLAY -->
-    <div id="masterAuth">
-        <i class="fa-solid fa-user-shield text-amber-500 text-5xl mb-6"></i>
-        <h2 class="text-amber-500 font-black text-xs tracking-widest uppercase mb-8">Node 001 Authority</h2>
-        <input type="password" id="masterKey" class="auth-input" maxlength="4" placeholder="••••">
-        <button onclick="verifyMaster()" class="mt-8 bg-amber-500 text-black px-12 py-4 rounded-2xl font-black text-xs uppercase">Verify Sovereign</button>
-        <p onclick="closeMasterAuth()" class="mt-8 text-zinc-600 text-[10px] font-black uppercase cursor-pointer">Cancel Session</p>
-    </div>
-
-    <!-- 4. BOTTOM NAVIGATION (ALL PILLARS) -->
     <nav class="fixed bottom-0 left-0 w-full bg-black/90 border-t border-zinc-900 flex justify-around p-5 z-50 backdrop-blur-xl">
         <a href="index.html" class="text-zinc-600"><i class="fa-solid fa-house text-xl"></i></a>
         <a href="market.html" class="text-zinc-600"><i class="fa-solid fa-store text-xl"></i></a>
@@ -154,72 +198,119 @@
         <a href="profile.html" class="text-amber-500"><i class="fa-solid fa-user text-xl"></i></a>
     </nav>
 
-    <script src="nawi_empire_v1.js"></script>
     <script>
-        const currentUserID = localStorage.getItem('user-id') || 'NAWI-EMPIRE001';
-        let pressTimer;
+        const ProfileController = {
+            longPressTimer: null,
+            requiredDuration: 3000, 
+            masterId: "NAWI-EMPIRE001",
+            masterSecretKey: "THE_7_FINAL_SEAL",
+            currentUserID: localStorage.getItem('user-id') || 'NAWI-EMPIRE001',
 
-        // Long press trigger for Master Mode (3 Seconds)
-        const trigger = document.getElementById('masterTrigger');
-        trigger.addEventListener('mousedown', startPress);
-        trigger.addEventListener('touchstart', startPress);
-        trigger.addEventListener('mouseup', endPress);
-        trigger.addEventListener('touchend', endPress);
+            init: function() {
+                this.bindGatekeeperEvents();
+                this.syncProfile();
+            },
 
-        function startPress() {
-            pressTimer = setTimeout(() => {
-                document.getElementById('masterAuth').style.display = 'flex';
-                if(navigator.vibrate) navigator.vibrate(100);
-            }, 3000);
-        }
-        function endPress() { clearTimeout(pressTimer); }
-        function closeMasterAuth() { document.getElementById('masterAuth').style.display = 'none'; }
+            bindGatekeeperEvents: function() {
+                const triggerItem = document.getElementById('masterTrigger');
 
-        function verifyMaster() {
-            const key = document.getElementById('masterKey').value;
-            if(key === "0001") {
-                window.location.href = "master-console.html"; // Your private command center
-            } else {
-                alert("ACCESS DENIED: NODE UNAUTHORIZED");
-            }
-        }
+                triggerItem.addEventListener('mousedown', (e) => this.startCounter(e));
+                triggerItem.addEventListener('mouseup', () => this.cancelCounter());
+                triggerItem.addEventListener('mouseleave', () => this.cancelCounter());
 
-        function toggleSettings() {
-            const drawer = document.getElementById('settingsDrawer');
-            drawer.style.left = (drawer.style.left === "0px") ? "-100%" : "0px";
-        }
+                triggerItem.addEventListener('touchstart', (e) => this.startCounter(e));
+                triggerItem.addEventListener('touchend', () => this.cancelCounter());
+                triggerItem.addEventListener('touchcancel', () => this.cancelCounter());
+            },
 
-        async function syncProfile() {
-            try {
-                const response = await fetch('https://nawi-empire1.onrender.com/api/get-profile', {
-                    headers: { 'user-id': currentUserID }
-                });
-                const data = await response.json();
-                
-                if(data) {
-                    document.getElementById('display-username').innerText = data.username || "Citizen Node";
-                    document.getElementById('wallet-balance').innerText = `${(data.walletBalance || 0).toLocaleString()} 🪙`;
-                    document.getElementById('asset-count').innerText = data.posts ? data.posts.length : 0;
-                    
-                    if(currentUserID === "NAWI-EMPIRE001") {
-                        document.getElementById('v-badge').classList.remove('hidden');
-                        document.getElementById('display-rank').innerText = "SYSTEM FOUNDER • NODE 001";
-                    }
-
-                    // Render Portfolio
-                    const grid = document.getElementById('portfolio-display');
-                    grid.innerHTML = data.posts.map(post => `
-                        <div class="portfolio-item">
-                            <img src="${post.imageUrl}" class="w-full h-full object-cover" onerror="this.src='gold-placeholder.png'">
-                        </div>
-                    `).join('');
+            startCounter: function(event) {
+                if (event.type === 'touchstart' || event.button === 0) {
+                    this.longPressTimer = setTimeout(() => this.executeSecretPassChallenge(), this.requiredDuration);
+                    if(navigator.vibrate) navigator.vibrate(50);
                 }
-            } catch (err) {
-                console.log("Syncing Profile Data...");
-            }
-        }
+            },
 
-        window.onload = syncProfile;
+            cancelCounter: function() {
+                if (this.longPressTimer) {
+                    clearTimeout(this.longPressTimer);
+                    this.longPressTimer = null;
+                }
+            },
+
+            executeSecretPassChallenge: function() {
+                this.cancelCounter();
+                
+                const identityInput = prompt("ENTER OVERLORD ACCESS CREDENTIAL IDENTITY:");
+                if (identityInput !== this.masterId) return;
+
+                const authenticationKey = prompt("AUTHORIZE IDENTITY SEALS MATRIX:");
+                if (authenticationKey === this.masterSecretKey) {
+                    
+                    document.getElementById('executive-terminal').style.display = 'block';
+                    document.getElementById('display-username').innerText = "NAWI-EMPIRE001";
+                    document.getElementById('display-username').className = "text-xl font-black uppercase tracking-widest text-amber-500 font-['Cinzel']";
+                    document.getElementById('display-rank').innerText = "SYSTEM FOUNDER • NODE 001";
+                    document.getElementById('profile-img').classList.remove('grayscale');
+                    
+                    alert("Welcome back, [7 pillars]. Sovereign administrative console exposed.");
+                    document.getElementById('executive-terminal').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert("ACCESS DENIED: MATRIX SEAL CODE MISMATCH");
+                }
+            },
+
+            toggleSettings: function() {
+                const drawer = document.getElementById('settingsDrawer');
+                drawer.style.left = (drawer.style.left === "0px" || drawer.style.left === "") ? "-100%" : "0px";
+            },
+
+            syncProfile: async function() {
+                try {
+                    const response = await fetch('https://nawi-empire1.onrender.com/api/get-profile', {
+                        headers: { 'user-id': this.currentUserID }
+                    });
+                    const data = await response.json();
+                    
+                    if(data) {
+                        document.getElementById('display-username').innerText = data.username || "Citizen Node";
+                        document.getElementById('wallet-balance').innerText = `${(data.walletBalance || 0).toLocaleString()} 🪙`;
+                        document.getElementById('display-coins').innerText = `${(data.walletBalance || 0).toLocaleString()} EMPR`;
+                        document.getElementById('asset-count').innerText = data.posts ? data.posts.length : 0;
+                        document.getElementById('trade-count').innerText = data.tradesCount || 0;
+                        
+                        if(this.currentUserID === this.masterId) {
+                            document.getElementById('v-badge').classList.remove('hidden');
+                            document.getElementById('display-rank').innerText = "SYSTEM FOUNDER • NODE 001";
+                            document.getElementById('profile-img').classList.remove('grayscale');
+                        }
+
+                        // Render Dynamic Portfolio Cards safely
+                        const grid = document.getElementById('portfolio-display');
+                        if (data.posts && data.posts.length > 0) {
+                            grid.innerHTML = data.posts.map(post => `
+                                <div class="portfolio-item">
+                                    <img src="${post.imageUrl}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=120'">
+                                </div>
+                            `).join('');
+                        } else {
+                            grid.innerHTML = `<div class="col-span-3 text-center py-8 text-xs text-zinc-600 uppercase font-bold tracking-widest">No active portfolio renders logged</div>`;
+                        }
+                    }
+                } catch (err) {
+                    console.log("Local sync framework active. Populating cache profiles...");
+                }
+            },
+
+            triggerEcosystemReset: function() {
+                if(confirm("Execute optimization pipeline flush across nodes?")) {
+                    alert("Ecosystem clearance handshake sent to Render instance cluster.");
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ProfileController.init();
+        });
     </script>
 </body>
 </html>
