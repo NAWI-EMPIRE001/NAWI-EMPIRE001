@@ -2,7 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Activation - NAWI-EMPIRE</title>
+    
+    <style>
+        body {
+            background-color: #0b0c10; /* Deep Obsidian */
+            color: #c5a059; /* Polished Gold Accents */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        main {
+            background: linear-gradient(145deg, #1f2833, #151a21); /* Titanium/Industrial Panel */
+            border: 1px solid #c5a059; /* Gold Border */
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #ffffff;
+            margin-top: 0;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .status-tag {
+            background-color: #451212; /* Deep alert red background */
+            color: #ff4d4d;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        blockquote {
+            background-color: rgba(197, 160, 89, 0.05);
+            border-left: 3px solid #c5a059;
+            margin: 20px 0;
+            padding: 15px;
+            color: #e5e5e5;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        video {
+            width: 100%;
+            height: 200px;
+            background-color: #000000;
+            border-radius: 8px;
+            border: 1px dashed #c5a059;
+            margin-top: 10px;
+            object-fit: cover;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            background: #0b0c10;
+            border: 1px solid #1f2833;
+            padding: 10px;
+            border-radius: 6px;
+            color: #ffffff;
+            margin-top: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(90deg, #c5a059, #e5c17d);
+            color: #0b0c10;
+            border: none;
+            padding: 14px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #858d99;
+            line-height: 1.4;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c5a059, transparent);
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
 
@@ -10,7 +129,7 @@
         <section>
             <div>
                 <h2>🔒 SYSTEM SECURITY ACTIVATION</h2>
-                <p>Ecosystem Node: <strong>PENDING LOCK</strong></p>
+                <p class="status-tag">Ecosystem Node: PENDING LOCK</p>
             </div>
             
             <hr>
@@ -25,13 +144,11 @@
             <div>
                 <h3>Record/Upload Your 10-Second Identity Video</h3>
                 
-                <video autoplay playsinline muted></video>
+                <video id="preview" autoplay playsinline muted></video>
                 
-                <form>
+                <form id="uploadForm">
                     <label for="identity-video">Select Front Camera Capture:</label>
                     <input type="file" id="identity-video" accept="video/*" capture="user" required>
-                    
-                    <br><br>
                     
                     <button type="submit">ACTIVATE PROFILE NODES</button>
                 </form>
@@ -44,6 +161,31 @@
             </footer>
         </section>
     </main>
+
+    <script>
+        // Automatically request front camera preview stream on page load
+        const videoElement = document.getElementById('preview');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(function(stream) {
+                    videoElement.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.log("Direct camera preview streaming paused or unavailable.");
+                });
+        }
+
+        // Handle the submission event cleanly
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('identity-video');
+            
+            if(fileInput.files.length > 0) {
+                alert("Security Payload Logged. Initializing core 7 Pillar nodes...");
+                // Internal platform routing takes place here to transition to the main dashboard layout
+            }
+        });
+    </script>
 
 </body>
 </html>
