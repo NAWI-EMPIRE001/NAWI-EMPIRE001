@@ -1,10 +1,13 @@
 {
+  "platform_watermark": "PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001",
   "_id": "Unique_Citizen_ID",
+  "userId": "Unique_Citizen_ID_String",
+  "email": "citizen_email@example.com",
   "identity": {
     "sovereign_name": "Username",
-    "legacy_rank": "Citizen", 
+    "legacy_rank": "Citizen",
     "id_verified": false,
-    "joined_date": "2026-04-25"
+    "joined_date": "2026-05-20"
   },
   "metrics": {
     "follower_count": 0,
@@ -22,7 +25,25 @@
     "empire_coins": 0,
     "total_earned_to_date": 0,
     "pending_conversion": 0.00,
-    "last_mint_date": "2026-04-25"
+    "welcome_bonus_used": false,
+    "last_mint_date": "2026-05-20"
+  },
+  "watermarked_assets": {
+    "video_streams": [
+      {
+        "video_id": "STREAM_ID_EXAMPLE",
+        "title": "Live Stream Session Title",
+        "asset_url": "https://storage.nawi-empire.com/videos/stream.mp4",
+        "download_watermark_hash": "NAWI-EMPIRE001-SECURE-MEDIA"
+      }
+    ],
+    "downloadable_products": [
+      {
+        "product_id": "PRODUCT_ID_EXAMPLE",
+        "file_name": "digital_asset.zip",
+        "download_licence": "PROTECTED_BY_DIAMONDBACK231"
+      }
+    ]
   },
   "security": {
     "is_banned": false,
