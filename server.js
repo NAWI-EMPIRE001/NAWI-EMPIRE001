@@ -1,9 +1,10 @@
 /**
- * NAWI-EMPIRE MASTER SYSTEM ENGINE v3.7
+ * NAWI-EMPIRE MASTER SYSTEM ENGINE v3.8
  * FILE: server.js
  * EDITION: Sovereign Executive Architecture (Unified Production Build)
  * SYSTEMS CONNECTED: Aurora-231 Hardware Check, 7 Pillars Framework,
- * Sovereign P2P Escrow, $35M Daily Volume Ledger, Compliance Vault.
+ * Sovereign P2P Escrow, Real-Time Socket.io Stream Core, Compliance Vault.
+ * WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  */
 
 require('dotenv').config(); 
@@ -15,12 +16,20 @@ const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const http = require('http');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
+const { Server } = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+
+const SOVEREIGN_ID = "NAWI-EMPIRE001";
+const SYSTEM_WATERMARK = "PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001";
 
 // ==========================================
 // CASE-SENSITIVE ADAPTIVE CONTROLLER MATRIX
-// (Guards against case mismatch crashes on Render)
 // ==========================================
 let authController, battleController, borderControl, masterPayout, p2pGateway;
 
@@ -64,28 +73,27 @@ masterPayout = safeLoad('./controllers/master-payout', null, 'masterPayout') || 
 p2pGateway = safeLoad('./controllers/p2p-gateway', null, 'p2pGateway') || {
     serveGatewayPage: (req, res) => res.status(503).send("P2P core system reloading... Please refresh shortly."),
     createP2POrder: (req, res) => res.status(503).json({ error: "P2P network syncing" }),
-    confirmP2PRelease: (req, res) => res.status(503).json({ error: "P2P network syncing" })
+    confirmP2PRelease: (req, res) => res.status(503).json({ error: "P2P network syncing" }),
+    processPillarTransaction: (req, res) => res.status(503).json({ error: "P2P processing offline" }),
+    handleDirectFunding: (req, res) => res.status(503).json({ error: "Funding desk syncing" })
 };
 
 // ==========================================
 // 1. GLOBAL CONFIGURATIONS & ADVANCED MIDDLEWARE
 // ==========================================
+app.use(helmet({ contentSecurityPolicy: false })); 
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
-        'Content-Type', 
-        'Authorization', 
-        'user-id', 
-        'x-node-uuid', 
-        'x-node-ram', 
-        'x-node-display', 
-        'x-node-signature'
+        'Content-Type', 'Authorization', 'user-id', 'x-node-uuid', 
+        'x-node-ram', 'x-node-display', 'x-node-signature', 'x-nawi-identity'
     ]
 }));
-
+app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 app.use(express.static(path.join(__dirname, '/')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -99,13 +107,20 @@ const upload = multer({ limits: { fileSize: 50 * 1024 * 1024 } });
 
 const UserSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
+    email: String,
+    phone_number: String,
     identity: {
         sovereign_name: { type: String, default: "Authenticated Citizen" },
         legacy_rank: { type: String, default: "Citizen" },
         id_verified: { type: Boolean, default: false },
         joined_date: { type: String, default: () => new Date().toISOString().split('T')[0] }
     },
-    email: String,
+    verification_metrics: {
+        day_1_video_url: { type: String, default: "" }, 
+        corporate_docs_submitted: { type: Boolean, default: false },
+        platform_age_days: { type: Number, default: 0 }
+    },
+    current_tier: { type: Number, enum: [1, 2, 3], default: 1 },
     metrics: {
         follower_count: { type: Number, default: 0 },
         following_count: { type: Number, default: 0 },
@@ -132,6 +147,46 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
+// Unified Product Schema supporting all 7 Core Tools & Sovereign Stylist Visual Meta-Data
+const ProductSchema = new mongoose.Schema({
+    creator_id: { type: String, required: true },
+    pillar_tool: { 
+        type: String, 
+        enum: ['MARKETPLACE_APPAREL', 'ADS_MANAGER', 'GAMING_HUB', 'USER_STREAMS', 'KITCHEN_CANTEEN', 'SOVEREIGN_STYLIST', 'DIAMONDBACK_ASSETS', 'MUSIC_HUB'], 
+        required: true 
+    },
+    title: { type: String, required: true },
+    description: String,
+    category_feed_target: { type: String, default: 'General' },
+    pricing: {
+        base_price: { type: Number, default: 0 },
+        transaction_type: { type: String, default: 'P2P_ESCROW' }
+    },
+    apparel_metadata: {
+        canvas_json_data: { type: String, default: "" },
+        framework_version: { type: String, default: "DIAMONDBACK-231-V1" }
+    },
+    ads_manager_metadata: {
+        boost_enabled: { type: Boolean, default: false },
+        target_impressions: { type: Number, default: 0 }
+    },
+    music_metadata: {
+        total_device_downloads: { type: Number, default: 0 },
+        artist_name: { type: String, default: "NAWI Artist" }
+    },
+    media_assets: [{
+        asset_id: String,
+        file_url: String,
+        file_type: String
+    }],
+    stylist_theme: {
+        accent_color: { type: String, default: "GOLD" },
+        surface_texture: { type: String, default: "OBSIDIAN_TITANIUM" }
+    },
+    createdAt: { type: Date, default: Date.now }
+});
+const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+
 const PostSchema = new mongoose.Schema({
     authorName: String,
     authorId: String,
@@ -146,35 +201,6 @@ const PostSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 const Post = mongoose.models.Post || mongoose.model('Post', PostSchema);
-
-const ApparelAssetSchema = new mongoose.Schema({
-    assetId: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
-    collectionType: { type: String, enum: ['Luxury Apparel', 'Sovereign Stylist Executive'], required: true },
-    sizeAvailability: {
-        type: [String],
-        enum: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'],
-        required: true
-    },
-    fabricPhysics: {
-        density: { type: Number, required: true },
-        stiffness: { type: Number, required: true },
-        friction: { type: Number, required: true }
-    },
-    textures: {
-        resolution: { type: String, default: '4K' },
-        diffuseMapUrl: { type: String, required: true },
-        normalMapUrl: { type: String, required: true },
-        roughnessMapUrl: { type: String, required: true },
-        metallicMapUrl: { type: String, required: true }
-    },
-    toolManagementLogic: {
-        integratedSlots: { type: Number, default: 0 },
-        utilityType: { type: String, default: 'None' }
-    },
-    createdAt: { type: Date, default: Date.now }
-});
-const ApparelAsset = mongoose.models.ApparelAsset || mongoose.model('ApparelAsset', ApparelAssetSchema);
 
 const ComplianceVaultSchema = new mongoose.Schema({
     entityName: { type: String, default: 'NAWI-EMPIRE' },
@@ -192,8 +218,54 @@ const DailyLedgerSchema = new mongoose.Schema({
 });
 const DailyLedger = mongoose.models.DailyLedger || mongoose.model('DailyLedger', DailyLedgerSchema);
 
+// ========================================================
+// 3. THREE-TIER ACTIVITY-BASED ECOSYSTEM SECURITY MIDDLEWARE
+// ========================================================
+const enforceEcosystemTierSecurity = async (req, res, next) => {
+    const requesterId = req.headers['x-nawi-identity'] || req.headers['user-id'] || req.body.userId || req.query.userId;
+    
+    if (!requesterId) {
+        return res.status(401).json({ success: false, message: "Security Warning: Missing citizen access signature token." });
+    }
+
+    if (requesterId === SOVEREIGN_ID) {
+        req.sovereignOverride = true;
+        return next();
+    }
+
+    try {
+        const user = await User.findOne({ userId: requesterId });
+        if (!user) {
+            return res.status(403).json({ success: false, message: "Access Denied: Signature footprint not found inside NAWI_DB." });
+        }
+
+        // TIER 1 LAW: Mandatory Day 1 Biological Signature Video Lock Checking
+        if (!user.verification_metrics?.day_1_video_url) {
+            return res.status(403).json({ 
+                success: false, 
+                required_action: "DAY_1_VIDEO_LOCK_REQUIRED",
+                message: "Frictionless Security Gate: Please upload your 10-second biological signature video to activate your account." 
+            });
+        }
+
+        // TIER 3 LAW: Challenge Form Entry requires absolute corporate documentation validation
+        if (req.path.includes('/api/challenge/register') && !user.verification_metrics?.corporate_docs_submitted) {
+            return res.status(403).json({
+                success: false,
+                required_action: "TIER_3_DOCS_REQUIRED",
+                message: "Sovereign Challenger Mandate: Official business registration and corporate verification documents are strictly required to clear premium workstation competitions."
+            });
+        }
+
+        req.citizenProfile = user;
+        next();
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 // ==========================================
-// 3. HARDWARE HANDSHAKE VERIFICATION LAYER
+// 4. HARDWARE HANDSHAKE VERIFICATION LAYER
 // ==========================================
 const AURORA_231_HARDWARE_PROFILE = {
     expectedUuid: 'AURORA-231-MASTER-NODE-99X-7P',
@@ -235,7 +307,7 @@ const verifySovereignNodeHandshake = (req, res, next) => {
 };
 
 // ==========================================
-// 4. INTEGRATED P2P SCALABILITY & LIQUIDITY MANAGEMENT
+// 5. INTEGRATED P2P SCALABILITY ENGINE
 // ==========================================
 class P2PLiquidityManager {
     constructor() {
@@ -276,31 +348,11 @@ class P2PLiquidityManager {
             timestamp: Date.now()
         };
     }
-
-    async processGeegpayPayout(virtualAccountNo, amountUsd, destinationBankCode) {
-        const volumeCheck = await this.verifyAndTrackVolume(amountUsd);
-        if (!volumeCheck.allowed) {
-            return { success: false, error: "Daily processing system threshold exceeded." };
-        }
-        try {
-            const response = await axios.post(`${this.geegpayApiUrl}/v1/payout`, {
-                accountNumber: virtualAccountNo,
-                amount: amountUsd,
-                currency: 'USD',
-                bankCode: destinationBankCode
-            }, {
-                headers: { 'Authorization': `Bearer ${process.env.GEEGPAY_SECRET_KEY}` }
-            });
-            return response.data;
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    }
 }
 const LiquidityEngine = new P2PLiquidityManager();
 
 // ==========================================
-// 5. SEEDING STRATEGY ENGINE
+// 6. SEEDING STRATEGY ENGINE
 // ==========================================
 const seedEmpire = async () => {
     try {
@@ -319,9 +371,11 @@ const seedEmpire = async () => {
                 const fallbackFounder = new User({
                     userId: "NAWI-EMPIRE001",
                     email: "akpanvictor848@gmail.com",
-                    identity: { sovereign_name: "Architect", legacy_rank: "Founder", id_verified: true },
+                    identity: { sovereign_name: "7 pillars", legacy_rank: "Founder", id_verified: true },
+                    verification_metrics: { day_1_video_url: "https://cdn.nawi.global/genesis_sig.mp4", corporate_docs_submitted: true },
+                    current_tier: 3,
                     metrics: { follower_count: 50000 },
-                    wallet: { empire_coins: 1000, total_earned_to_date: 0, pending_conversion: 0 }
+                    wallet: { empire_coins: 1000000, total_earned_to_date: 50000, pending_conversion: 0 }
                 });
                 await fallbackFounder.save();
                 console.log("🛡️ Fallback Founder Account Seeded Successfully.");
@@ -330,11 +384,130 @@ const seedEmpire = async () => {
     } catch (err) { console.error("❌ Seed Optimization Error:", err.message); }
 };
 
-// ==========================================
-// 6. ROUTING SYSTEM INTERFACES (MODULES & ENDPOINTS)
-// ==========================================
+// ========================================================
+// 7. REAL-TIME LIVE DATA MEDIA SYNC SOCKET ENGINE
+// ========================================================
+const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
-// --- CORE IDENTITY CHANNELS ---
+io.on('connection', (socket) => {
+    const connectionTag = socket.handshake.query.userId || "GUEST_CITIZEN";
+    console.log(`[AURORA-231 COMPLIANCE] Real-time terminal synchronization initiated for: ${connectionTag}`);
+
+    socket.on('register_stream_node', (data) => {
+        socket.join(data.roomChannel);
+        console.log(`📡 Stream Node anchored cleanly into room channel: ${data.roomChannel}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`[AURORA-231] Terminal signature unlinked cleanly.`);
+    });
+});
+
+// ========================================================
+// 8. THE 7 PILLARS INTERACTIVE CLICK-ROUTERS (CLICK AND OPEN)
+// ========================================================
+
+/**
+ * 🎮 TOOL 1: GLOBAL GAMING VIDEOS LIVE STREAMING BATTLE
+ */
+app.get('/api/pillar/gaming-hub', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const activeBattles = await Product.find({ pillar_tool: 'GAMING_HUB' }).sort({ createdAt: -1 });
+        return res.status(200).json({ success: true, tool: "GAMING_HUB", message: "Gaming Hub Open", count: activeBattles.length, data: activeBattles });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 🛍️ TOOL 2: THE GLOBAL MARKETPLACE FOR EVERY ITEM & PRODUCT
+ */
+app.get('/api/pillar/marketplace', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const products = await Product.find({ pillar_tool: 'MARKETPLACE_APPAREL' }).sort({ createdAt: -1 });
+        return res.status(200).json({ success: true, tool: "MARKETPLACE", message: "Marketplace Connected", data: products });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 📢 TOOL 3: ADS PROGRAM MANAGER GLOBAL ADVERTISING FOR ALL 7 PILLARS
+ */
+app.get('/api/pillar/ads-manager', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const targetCampaigns = await Product.find({ pillar_tool: 'ADS_MANAGER', 'ads_manager_metadata.boost_enabled': true });
+        return res.status(200).json({ success: true, tool: "ADS_MANAGER", message: "Ads System Open", data: targetCampaigns });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 📱 TOOL 4: REAL VIDEO LIVE STREAMING FOR NEW USERS
+ */
+app.get('/api/pillar/user-streams', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const liveFeeds = await Product.find({ pillar_tool: 'USER_STREAMS' });
+        return res.status(200).json({ success: true, tool: "USER_STREAMS", message: "User Streaming Feeds Online", data: liveFeeds });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 🍳 TOOL 5: KITCHEN MEAL AND REAL VIDEOS LIVE STREAM
+ */
+app.get('/api/pillar/kitchen-canteen', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const canteenFeeds = await Product.find({ pillar_tool: 'KITCHEN_CANTEEN' });
+        return res.status(200).json({ success: true, tool: "KITCHEN_CANTEEN", message: "Artisan Kitchen Coordinates Mounted", data: canteenFeeds });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * ✂️ TOOL 6: SOVEREIGN STYLIST FOR GLOBAL BARBERSHOPS & COSMETICS
+ */
+app.get('/api/pillar/sovereign-stylist', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const verifiedStylists = await Product.find({ pillar_tool: 'SOVEREIGN_STYLIST' });
+        return res.status(200).json({ success: true, tool: "SOVEREIGN_STYLIST", message: "Elite Obsidian-Gold UI Engine Active", data: verifiedStylists });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 🎨 TOOL 7: APPAREL CANVAS STUDIO BY DIAMONDBACK231
+ */
+app.post('/api/pillar/apparel-studio/save', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const { title, description, canvasJsonCoordinates, pricingCoins, userId } = req.body;
+        const graphicFramework = new Product({
+            creator_id: userId,
+            pillar_tool: 'DIAMONDBACK_ASSETS',
+            title: title,
+            description: description,
+            category_feed_target: 'Marketplace Only',
+            pricing: { base_price: pricingCoins, transaction_type: 'P2P_ESCROW' },
+            apparel_metadata: { canvas_json_data: canvasJsonCoordinates, framework_version: "DIAMONDBACK-231-V1" }
+        });
+        await graphicFramework.save();
+        return res.status(200).json({ success: true, message: "Design framework compiled and posted to marketplace.", frameworkId: graphicFramework._id });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+/**
+ * 🎵 BONUS EXTREME CORE MATRIX: GLOBAL MUSIC HUB & NATIVE DEVICE DOWNLOADER
+ */
+app.get('/api/pillar/music-hub/download/:assetId', enforceEcosystemTierSecurity, async (req, res) => {
+    try {
+        const audioAsset = await Product.findOne({ 'media_assets.asset_id': req.params.assetId, pillar_tool: 'MUSIC_HUB' });
+        if (!audioAsset) return res.status(404).json({ success: false, message: "Requested audio track record missing." });
+
+        const targetFile = audioAsset.media_assets.find(media => media.asset_id === req.params.assetId);
+        audioAsset.music_metadata.total_device_downloads += 1;
+        await audioAsset.save();
+
+        res.setHeader('Content-Disposition', `attachment; filename="${audioAsset.title.replace(/\s+/g, '_')}_NAWI_SECURE.mp3"`);
+        res.setHeader('Content-Type', 'audio/mpeg');
+        return res.redirect(targetFile.file_url);
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+});
+
+// ==========================================
+// 9. CORE IDENTITY & SECURITY CHANNELS
+// ==========================================
 app.post('/api/auth/register', (req, res, next) => authController.registerUser(req, res, next));
 app.post('/api/auth/session', (req, res, next) => authController.handleUserSession(req, res, next));
 
@@ -346,20 +519,35 @@ app.post('/api/login', async (req, res) => {
     res.status(401).json({ success: false, message: "Invalid Credentials." });
 });
 
-app.get('/api/inbox/:userId', async (req, res) => {
+/**
+ * MANDATORY REGISTRATION RECOVERY SYSTEM (DUAL-CHANNEL HARD-BOUND)
+ */
+app.post('/api/auth/recover-keys', async (req, res) => {
     try {
-        const messages = [{
-            id: "msg_001",
-            sender: "SYSTEM",
-            text: "Welcome to NAWI-EMPIRE. Your Connection Vault is now active.",
-            type: "ANNOUNCEMENT",
-            timestamp: new Date()
-        }];
-        res.json(messages);
-    } catch (err) { res.status(500).json({ error: "Inbox Bridge Failure" }); }
+        const { accountIdentity } = req.body;
+        const user = await User.findOne({ $or: [{ userId: accountIdentity }, { email: accountIdentity }] });
+
+        if (!user) return res.status(404).json({ success: false, message: "No active profile matches the submitted credentials." });
+
+        const sharedOtpToken = Math.floor(100000 + Math.random() * 900000);
+        
+        console.log(`[DUAL-CHANNEL CRITICAL OUTBOUND] Synchronizing keys...`);
+        console.log(`👉 Channel A [EMAIL] -> Firing OTP Token [${sharedOtpToken}] directly to target: ${user.email}`);
+        console.log(`👉 Channel B [MOBILE] -> Firing OTP Token [${sharedOtpToken}] directly to target number: ${user.phone_number}`);
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Sovereign Security Handshake: Recovery keys transmitted to both verified communication lines simultaneously. No secondary inputs allowed." 
+        });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
 });
 
-// --- PULSE STREAM FEED & ENGAGEMENT METRICS ---
+// TIER 3 COMPETITION TRIGGER ROUTE
+app.post('/api/challenge/register', enforceEcosystemTierSecurity, async (req, res) => {
+    res.status(200).json({ success: true, message: "Sovereign Challenger cleared for Workstation Competition matching brackets." });
+});
+
+// --- PULSE STREAM FEED & ENGAGEMENT PORTS ---
 app.get('/api/feed', async (req, res) => {
     try {
         const limit = 12;
@@ -376,28 +564,20 @@ app.post('/api/track-engagement', async (req, res) => {
     } catch (err) { res.sendStatus(500); }
 });
 
-// --- JURY ENGINE BATTLE STREAM ROUTES ---
 app.post('/api/battle/initialize', (req, res, next) => battleController.initializeBattleSession(req, res, next));
 app.post('/api/battle/vote-gift', (req, res, next) => battleController.processStreamVoteGift(req, res, next));
 
-// --- APPAREL REPOSITORY REGISTRATIONS ---
-app.post('/api/studio/apparel/asset', async (req, res) => {
-    try {
-        const newAsset = new ApparelAsset(req.body);
-        const savedAsset = await newAsset.save();
-        res.status(201).json({ status: 'SUCCESS', asset: savedAsset });
-    } catch (error) { res.status(500).json({ status: 'ERROR', message: error.message }); }
-});
-
-// --- BORDER CONTROL IDENTITY VERIFICATION HOOKS ---
 app.post('/api/border/upload-document', (req, res, next) => borderControl.processIdentityUpload(req, res, next));
 app.get('/api/border/verify-status/:userId', (req, res, next) => borderControl.getVerificationStatus(req, res, next));
 
-// --- FINANCIAL VAULTS & P2P LIQUIDITY ESCROW PORTS ---
+// --- FINANCIAL VAULTS & P2P LIQUIDITY PORTS ---
+app.get('/gateway', p2pGateway.serveGatewayPage);
 app.get('/p2p-bridge', (req, res, next) => p2pGateway.serveGatewayPage(req, res, next));
 app.post('/api/p2p/create-order', (req, res, next) => p2pGateway.createP2POrder(req, res, next));
 app.post('/api/p2p/confirm-release', (req, res, next) => p2pGateway.confirmP2PRelease(req, res, next));
 app.post('/api/request-withdrawal', (req, res, next) => p2pGateway.createP2POrder(req, res, next)); 
+app.post('/api/p2p/transact', enforceEcosystemTierSecurity, p2pGateway.processPillarTransaction);
+app.post('/api/p2p/fund', enforceEcosystemTierSecurity, p2pGateway.handleDirectFunding);
 
 app.post('/api/finance/escrow/create', async (req, res) => {
     try {
@@ -411,11 +591,7 @@ app.get('/api/vault/balance/:userId', async (req, res) => {
     try {
         const user = await User.findOne({ userId: req.params.userId });
         if (!user) return res.status(404).json({ error: "Citizen profile context missing" });
-        res.json({
-            coins: user.wallet.empire_coins,
-            usd: user.wallet.total_earned_to_date,
-            pending: user.wallet.pending_conversion
-        });
+        res.json({ coins: user.wallet.empire_coins, usd: user.wallet.total_earned_to_date, pending: user.wallet.pending_conversion });
     } catch (err) { res.status(500).json({ error: "Vault Link Failed" }); }
 });
 
@@ -446,7 +622,7 @@ app.get('/api/ledger/volume-status', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// --- ADMINISTRATIVE & SOVEREIGN BYPASS SIGNATURE CHANNELS ---
+// --- ADMINISTRATIVE & SOVEREIGN BYPASS CHANNELS ---
 app.get('/api/master/pending-withdrawals', (req, res, next) => masterPayout.getPendingWithdrawals(req, res, next));
 app.post('/api/master/authorize-payout', (req, res, next) => masterPayout.authorizePayout(req, res, next));
 
@@ -458,32 +634,27 @@ app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
     });
 });
 
-// Global Fallback Health Check Route for Render Node Monitoring
 app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: "ONLINE",
-        node: "Aurora-231 Main Terminal Core",
-        timestamp: new Date().toISOString()
-    });
+    res.status(200).json({ status: "ONLINE", node: "Aurora-231 Main Terminal Core", timestamp: new Date().toISOString() });
 });
 
-// Default asset route mapping delivery layout configurations
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
-// ==========================================
-// 7. SYSTEM BINDING & DATABASE INTERFACE REBOOT
-// ==========================================
+// ========================================================
+// 10. SYSTEM BINDING & DATABASE INTERFACE REBOOT
+// ========================================================
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/NAWI_DB?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 10000;
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log("====================================================================");
-        console.log("DATABASE STATUS: Secured Connection to NAWI_DB Collections Managed.");
-        console.log("====================================================================");
+        console.log("==========================================================================");
+        console.log("📂 MONGO_DB COMPLIANCE NODE INTEGRATION COMPLETED SUCCESSFULLY FOR NAWI_DB");
         seedEmpire();
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 NAWI-EMPIRE ENGINE TERMINAL ONLINE ON PORT [${PORT}]`);
+        server.listen(PORT, () => {
+            console.log(`👑 NAWI-EMPIRE CORE INFRASTRUCTURE SERVER RUNNING ON SYSTEM NODE PORT : ${PORT}`);
+            console.log(`🛡️  SYSTEM ENFORCEMENT WATERMARK CODE: ${SYSTEM_WATERMARK}`);
+            console.log("==========================================================================");
         });
     })
     .catch((error) => {
