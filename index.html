@@ -2,848 +2,830 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAWI-EMPIRE | Sovereign Master Ecosystem</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    
     <style>
-        :root { 
-            --gold: #D4AF37; 
-            --gold-bright: #FFDF00;
-            --black: #050505; 
-            --matte: #0D0D0D; 
-            --card-bg: #121212;
-            --border-color: #222222;
+        /* SOVEREIGN STYLIST SYSTEM DESIGN LANGUAGE */
+        :root {
+            --obsidian-deep: #0a0a0a;
+            --obsidian-panel: #121212;
+            --titanium-border: #262626;
+            --titanium-text: #a3a3a3;
+            --gold-premium: #d4af37;
+            --gold-hover: #f3e5ab;
+            --white-pure: #ffffff;
         }
 
-        /* --- Sovereign Stylist Live Theme Matrices --- */
-        body.theme-obsidian { background: #050505; --card-bg: #111111; --border-color: #222222; color: #E5E5E5; }
-        body.theme-obsidian .accent-gold { color: #D4AF37; }
-        body.theme-obsidian .border-gold-sync { border-color: #D4AF37; }
-
-        body.theme-titanium { background: #1A1B1E; --card-bg: #25262B; --border-color: #373A40; color: #E4E6EB; }
-        body.theme-titanium .accent-gold { color: #E5A93C; }
-        body.theme-titanium .border-gold-sync { border-color: #E5A93C; }
-
-        body.theme-gold { background: #141108; --card-bg: #1F1B0E; --border-color: #3A321A; color: #F3E5AB; }
-        body.theme-gold .accent-gold { color: #FFD700; }
-        body.theme-gold .border-gold-sync { border-color: #FFD700; }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            overflow: hidden; 
-            -webkit-user-select: none;
-            user-select: none;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 🛡️ VIEWPORT ENGINE --- */
-        .tool-viewport {
-            position: fixed; 
-            inset: 0; 
-            top: 75px; 
-            bottom: 80px;
-            z-index: 500; 
-            display: none; 
-            overflow-y: auto; 
-            padding: 24px 20px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .tool-viewport.active { 
-            display: block; 
-            animation: viewportFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        body {
+            background-color: var(--obsidian-deep);
+            color: var(--white-pure);
+            padding-bottom: 90px;
+            overflow-x: hidden;
         }
 
-        @keyframes viewportFade { 
-            from { opacity: 0; transform: translateY(12px) scale(0.99); } 
-            to { opacity: 1; transform: translateY(0) scale(1); } 
-        }
-
-        /* --- 🏛️ EXECUTIVE AUTH GATEWAYS --- */
-        #auth-gate, #oath-gate { 
-            height: 100vh; 
-            width: 100%; 
-            position: fixed; 
-            inset: 0;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            background: radial-gradient(circle at center, #141414 0%, #020202 100%); 
-            z-index: 20000; 
-        }
-
-        .gold-glow { text-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-        .gold-gradient-bg { background: linear-gradient(135deg, var(--gold) 0%, #AA7C11 100%); }
-        
-        .luxury-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .luxury-card:hover {
-            border-color: var(--gold);
-        }
-
-        .alpha-header {
-            height: 75px; 
-            background: rgba(5, 5, 5, 0.92); 
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
-            display: flex; 
-            justify-content: space-between; 
+        /* TOP NAVIGATION HEADER */
+        header {
+            background-color: var(--obsidian-panel);
+            border-bottom: 1px solid var(--titanium-border);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 0 24px; 
-            position: fixed; 
-            top: 0; 
-            width: 100%; 
-            z-index: 1000;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* --- ⚡ CENTRAL OVERLAY (THE 7 PILLARS COMMAND) --- */
-        #hub-overlay {
-            position: fixed; 
-            inset: 0; 
-            background: rgba(5, 5, 5, 0.98); 
-            backdrop-filter: blur(25px);
-            z-index: 15000;
-            display: none; 
-            flex-direction: column; 
-            padding: 30px 24px; 
-            overflow-y: auto;
-        }
-        .hub-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 16px; 
+        .brand-logo h1 {
+            color: var(--gold-premium);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* --- ⚓ INTERFACE TRIGGERS --- */
-        .node-7-hub {
-            position: fixed; 
-            bottom: 100px; 
-            right: 24px;
-            width: 68px; 
-            height: 68px; 
-            background: #FFFFFF; 
-            color: #000000;
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-size: 28px; 
-            font-weight: 900; 
-            z-index: 16000; 
-            border: 5px solid #050505;
-            cursor: pointer; 
-            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
-            transition: transform 0.2s ease;
-        }
-        .node-7-hub:active { transform: scale(0.9); }
-
-        .bottom-nav {
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            height: 80px;
-            background: rgba(5, 5, 5, 0.95); 
-            backdrop-filter: blur(15px);
-            border-top: 1px solid var(--border-color);
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 9000;
-            padding-bottom: 8px;
+        .brand-logo p {
+            color: var(--titanium-text);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
         }
 
-        .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            color: #555555; 
-            cursor: pointer; 
-            transition: color 0.2s ease;
-            width: 60px;
-        }
-        .nav-item.active { color: var(--gold); }
-        .nav-item span { 
-            font-size: 9px; 
-            font-weight: 700; 
-            margin-top: 6px; 
-            text-transform: uppercase; 
+        .asset-reserve-badge {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid var(--gold-premium);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .master-plus {
-            width: 60px; 
-            height: 60px; 
-            background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%); 
-            border-radius: 50%;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: black; 
-            font-size: 22px; 
-            font-weight: 900; 
-            margin-top: -36px;
-            border: 4px solid #050505;
+        .asset-reserve-badge span {
+            font-size: 0.75rem;
+            color: var(--titanium-text);
+            text-transform: uppercase;
+        }
+
+        .asset-reserve-badge strong {
+            color: var(--gold-premium);
+            font-size: 0.9rem;
+        }
+
+        /* REVENUE AND IDENTITY TICKER */
+        .system-status-bar {
+            background-color: #17120a;
+            border-bottom: 1px solid #3a2a0a;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            color: var(--gold-premium);
+        }
+
+        /* MAIN APP HUB PILLAR VIEWS */
+        main {
+            padding: 20px 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .pillar-panel {
+            display: none; /* Controlled dynamically via bottom navigation */
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        .pillar-panel.active {
+            display: block;
+        }
+
+        .pillar-header {
+            margin-bottom: 20px;
+        }
+
+        .pillar-header h2 {
+            color: var(--gold-premium);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pillar-header p {
+            color: var(--titanium-text);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* FUNCTIONAL ELEMENTS & CARDS */
+        .sovereign-card {
+            background-color: var(--obsidian-panel);
+            border: 1px solid var(--titanium-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--titanium-text);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .sovereign-input, .sovereign-select {
+            width: 100%;
+            background-color: var(--obsidian-deep);
+            border: 1px solid var(--titanium-border);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--white-pure);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .sovereign-input:focus, .sovereign-select:focus {
+            border-color: var(--gold-premium);
+        }
+
+        /* CUSTOM FILE UPLOAD STYLING */
+        .upload-trigger {
+            border: 1px dashed var(--gold-premium);
+            background-color: #12100a;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-trigger p {
+            font-size: 0.8rem;
+            color: var(--gold-premium);
+        }
+
+        .hidden-file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
             cursor: pointer;
         }
 
-        .live-stream-module {
-            background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
-            border-radius: 24px;
-            height: 180px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
+        .sovereign-btn {
+            width: 100%;
+            background-color: var(--gold-premium);
+            color: var(--obsidian-deep);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .stream-overlay {
+
+        .sovereign-btn:hover {
+            background-color: var(--gold-hover);
+        }
+
+        /* DATA TARGET CONTAINER DYNAMIC LISTINGS */
+        .dynamic-list-feed {
+            margin-top: 16px;
+        }
+
+        .dynamic-item-row {
+            background-color: var(--obsidian-panel);
+            border: 1px solid var(--titanium-border);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* VIDEO STANDBY LOOKS */
+        .video-viewport-box {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            border: 1px solid var(--titanium-border);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .video-viewport-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay-text {
             position: absolute;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--gold-premium);
+            letter-spacing: 1px;
+            z-index: 5;
+        }
+
+        /* BOTTOM HUD PLATFORM NAVIGATION */
+        .bottom-hud-nav {
+            position: fixed;
             bottom: 0;
             left: 0;
-            right: 0;
-            padding: 16px;
-            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, transparent 100%);
+            width: 100%;
+            background-color: var(--obsidian-panel);
+            border-top: 1px solid var(--titanium-border);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 10px 0;
+            z-index: 100;
         }
-        .creator-scroll {
+
+        .hud-nav-item {
             display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-        .avatar-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #161616;
-            border: 2px solid var(--gold);
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            background: none;
+            border: none;
+            color: var(--titanium-text);
+            cursor: pointer;
+            gap: 4px;
         }
-        ::-webkit-scrollbar { display: none; }
+
+        .hud-nav-item svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .hud-nav-item span {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-nav-item.active {
+            color: var(--gold-premium);
+        }
+
+        /* SEVEN PILLARS FLOATING COMPASS ICON */
+        .floating-pillar-hub {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background-color: var(--gold-premium);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            z-index: 101;
+            color: var(--obsidian-deep);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        /* MODAL SCREEN ENGINE */
+        .sovereign-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal-body {
+            background-color: var(--obsidian-panel);
+            border: 1px solid var(--gold-premium);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-close-trigger {
+            float: right;
+            color: var(--titanium-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="theme-obsidian transition-colors duration-300">
+<body>
 
-    <div id="auth-gate">
-        <div class="p-8 w-[88%] max-w-[400px] border border-zinc-800 rounded-[32px] text-center bg-black/90 backdrop-blur-md shadow-2xl">
-            <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full border border-zinc-800 bg-zinc-950">
-                <i class="fa-solid fa-user-shield text-amber-500 text-xl"></i>
-            </div>
-            <div class="text-[11px] font-black text-amber-500 tracking-[0.5em] mb-3 uppercase gold-glow">Authority Node Entrance</div>
-            <p class="text-zinc-500 text-xs mb-6 italic">"This is my order to protect the founders and this platform."</p>
-            
-            <div class="space-y-3 mb-6 text-left">
-                <input type="text" id="auth-email" placeholder="Sovereign Node ID" class="w-full bg-zinc-900/50 p-3.5 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500/50 font-medium">
-                <input type="password" id="auth-password" placeholder="System Encryption Secret" class="w-full bg-zinc-900/50 p-3.5 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500/50 font-medium">
-            </div>
-
-            <button type="button" onclick="executeSystemLogin()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest active:scale-[0.98] transition-all">Verify Network Access</button>
+    <header>
+        <div class="brand-logo">
+            <h1>Nawi-Empire</h1>
+            <p>Sovereign Architecture</p>
         </div>
-    </div>
-
-    <div id="oath-gate" style="display:none;">
-        <div class="p-8 w-[90%] max-w-[420px] border border-amber-500/30 rounded-[32px] text-center bg-black/95 shadow-2xl">
-            <h2 class="text-lg font-black text-amber-500 mb-2 uppercase tracking-wider font-['Cinzel']">The 7 Pillars Oath</h2>
-            <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Ecosystem Legal Framework</p>
-            <div class="h-44 overflow-y-auto text-left text-[11px] text-zinc-400 mb-6 border-y border-zinc-800/80 py-4 px-2 space-y-3 leading-relaxed">
-                <p class="text-white font-bold">As a verified participant of NAWI-EMPIRE, I agree:</p>
-                <p><span class="text-amber-500 font-bold">01.</span> To fully uphold the trustless peer-to-peer transaction protocol escrow systems.</p>
-                <p><span class="text-amber-500 font-bold">02.</span> To recognize that the platform exists for community protection, and rule compliance remains mandatory.</p>
-                <p><span class="text-amber-500 font-bold">03.</span> To deliver elite-tier professional standards and absolute design integrity under Diamondback 231 parameters.</p>
-                <p><span class="text-amber-500 font-bold">04.</span> That failure to abide by platform regulations results in instant node termination across all gateways.</p>
-            </div>
-            <button type="button" onclick="unlockEmpire()" class="w-full gold-gradient-bg text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest active:scale-[0.98] transition-transform">Sign Sovereign Decree</button>
-        </div>
-    </div>
-
-    <header class="alpha-header">
-        <div class="flex flex-col cursor-pointer" onclick="openTool('home')">
-            <div class="font-black text-amber-500 tracking-[0.35em] text-sm font-['Cinzel'] gold-glow">NAWI-EMPIRE</div>
-            <div class="text-[7px] text-zinc-600 tracking-[0.2em] font-bold uppercase">Sovereign Architecture</div>
-        </div>
-        
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex items-center space-x-1.5 bg-zinc-950 border border-zinc-800 px-2 py-1 rounded-xl">
-                <button onclick="applySystemTheme('obsidian')" class="w-3.5 h-3.5 rounded-full bg-slate-950 border border-zinc-700" title="Obsidian"></button>
-                <button onclick="applySystemTheme('titanium')" class="w-3.5 h-3.5 rounded-full bg-zinc-500 border border-zinc-400" title="Titanium"></button>
-                <button onclick="applySystemTheme('gold')" class="w-3.5 h-3.5 rounded-full bg-amber-500 border border-amber-300" title="Gold"></button>
-            </div>
-            <div class="text-right bg-zinc-950 border border-zinc-900 px-3 py-1 rounded-xl">
-                <span class="text-[7px] text-zinc-500 block uppercase font-black tracking-wider">Asset Reserve</span>
-                <span class="text-amber-500 font-black text-xs flex items-center gap-1">
-                    <span id="balance">250.00</span> <i class="fa-solid fa-coins text-[10px]"></i>
-                </span>
-            </div>
+        <div class="asset-reserve-badge">
+            <span>Asset Reserve</span>
+            <strong id="global-wallet-display">250.00 EC</strong>
         </div>
     </header>
 
-    <main id="home-viewport" class="tool-viewport active">
-        <div class="space-y-4 max-w-md mx-auto pt-2">
+    <div class="system-status-bar">
+        <div>Ecosystem Verification Status: <span id="user-tier-display" style="font-weight:bold;">Tier 1 (Casual Citizen)</span></div>
+        <div>Yield Active</div>
+    </div>
+
+    <main>
+
+        <section id="pillar-marketplace" class="pillar-panel active">
+            <div class="pillar-header">
+                <h2>The Global Marketplace</h2>
+                <p>Framework utility structure and secure asset hosting for every digital item, product, and framework utility inside the network.</p>
+            </div>
+
+            <div class="sovereign-card">
+                <form id="marketplace-upload-form">
+                    <div class="form-group">
+                        <label>Framework Asset Name</label>
+                        <input type="text" id="market-item-title" class="sovereign-input" placeholder="e.g. Luxury Titanium HUD Framework" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Asset Cost Valuation (EC)</label>
+                        <input type="number" id="market-item-cost" class="sovereign-input" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Framework Source Asset File</label>
+                        <div class="upload-trigger">
+                            <p id="market-file-status">Select Data Pack / Asset Zip File</p>
+                            <input type="file" id="market-file-input" class="hidden-file-input" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="sovereign-btn">Deploy Asset to Marketplace</button>
+                </form>
+            </div>
+
+            <h3 style="color:var(--gold-premium); font-size:0.85rem; text-transform:uppercase; margin-bottom:10px;">Active Verified Inventory Entries</h3>
+            <div id="marketplace-live-feed" class="dynamic-list-feed">
+                </div>
+        </section>
+
+        <section id="pillar-ads" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Ads Program Manager</h2>
+                <p>Global advertising node orchestrating targeted system campaign deployment operations and performance metrics conversion tracking across the 7 pillars infrastructure.</p>
+            </div>
+
+            <div class="sovereign-card">
+                <form id="ads-campaign-form">
+                    <div class="form-group">
+                        <label>Target Campaign Framework Module</label>
+                        <select id="ad-target-pillar" class="sovereign-select">
+                            <option value="Marketplace">Pillar I: Marketplace</option>
+                            <option value="Gaming">Pillar III: Gaming Studio</option>
+                            <option value="Music">Pillar VI: Music Promotion</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Campaign Banner Graphic</label>
+                        <div class="upload-trigger">
+                            <p id="ad-file-status">Select Campaign Media Payload</p>
+                            <input type="file" id="ad-file-input" class="hidden-file-input" accept="image/*" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="sovereign-btn">Broadcast System Campaign</button>
+                </form>
+            </div>
+
+            <h3 style="color:var(--gold-premium); font-size:0.85rem; text-transform:uppercase; margin-bottom:10px;">Active Internal Ad Injections</h3>
+            <div id="ads-live-feed" class="dynamic-list-feed"></div>
+        </section>
+
+        <section id="pillar-gaming" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Gaming Battle Node</h2>
+                <p>Global Gaming videos live streaming battle arrays supporting operational interaction servers for all top games in the world.</p>
+            </div>
             
-            <div class="live-stream-module">
-                <div class="w-full h-full bg-[radial-gradient(circle,#1f1f1f_0%,#000000_100%)] flex justify-center items-center text-zinc-600 text-[10px] tracking-widest font-mono">
-                    [ MASTER_STREAM_CORE_ON ]
-                </div>
-                <div class="stream-overlay">
-                    <span class="bg-red-600 text-white px-2 py-0.5 rounded text-[8px] font-black tracking-widest inline-block mb-1">🔴 REAL LIVE</span>
-                    <h2 class="m-0 text-sm font-black text-white font-['Cinzel']">Real video live streaming for new users</h2>
-                    <p class="m-0 mt-0.5 text-xs text-amber-500">@nawi_central_gateway</p>
-                </div>
+            <div class="video-viewport-box">
+                <div class="camera-overlay-text">[ READY_TO_INGEST_STREAM_FEED ]</div>
+            </div>
+            <button class="sovereign-btn" onclick="alert('Searching network arrays for top operational match servers...')">Initialize Live Match Handshake</button>
+        </section>
+
+        <section id="pillar-livestream" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Network Media Routing</h2>
+                <p>Real video live streaming infrastructure deployed securely for smooth user onboarding and mandatory visual biological data locks.</p>
             </div>
 
-            <div class="luxury-card p-4 space-y-3">
-                <h3 class="text-xs text-amber-500 tracking-widest font-black uppercase border-b border-zinc-800 pb-1.5">📈 LEVEL-UP VERIFICATION PIPELINE</h3>
-                <div class="space-y-2" id="borderControlPanel">
-                    <div class="flex justify-between items-center bg-black/40 p-2 rounded-xl border border-emerald-500/30">
-                        <div>
-                            <p class="text-xs font-bold text-white">Tier 1: Casual Citizen</p>
-                            <p class="text-[9px] text-zinc-400">Day 1 Video Lock Active</p>
+            <div class="sovereign-card">
+                <div class="video-viewport-box">
+                    <video id="biological-camera-node" autoplay playsinline muted></video>
+                    <div class="camera-overlay-text" id="camera-status-overlay">[ STANDBY_BIOLOGICAL_HANDSHAKE ]</div>
+                </div>
+                <button type="button" class="sovereign-btn" id="activate-camera-btn" style="margin-bottom:10px;">Initialize Hardware Lens Matrix</button>
+                
+                <form id="bio-lock-form">
+                    <div class="form-group">
+                        <label>Secure Biological Vault Sync</label>
+                        <div class="upload-trigger">
+                            <p id="video-file-status">Capture/Upload Day 1 Verification Video Lock (10s)</p>
+                            <input type="file" id="video-lock-input" class="hidden-file-input" accept="video/*" required>
                         </div>
-                        <span class="text-[9px] bg-emerald-500 text-black px-1.5 py-0.5 font-bold rounded">VERIFIED</span>
                     </div>
-                    <div class="flex justify-between items-center bg-black/20 p-2 rounded-xl border border-zinc-800 opacity-60">
-                        <div>
-                            <p class="text-xs font-bold">Tier 2: Verified Merchant</p>
-                            <p class="text-[9px]">Escrow Transactional Compliance Track</p>
+                    <button type="submit" class="sovereign-btn" style="background-color:transparent; border:1px solid var(--gold-premium); color:var(--gold-premium);">Commit Biological Signature Lock</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="pillar-kitchen" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Kitchen Meal Log</h2>
+                <p>Logistical lifestyle extension coordinating real videos live stream syndication for top chefs, master culinary artists, and local restaurant shops.</p>
+            </div>
+            <div class="sovereign-card" style="text-align:center; padding:40px 20px;">
+                <p style="color:var(--titanium-text); font-size:0.9rem; margin-bottom:20px;">Standing by for active localized food matrix delivery logs...</p>
+                <button class="sovereign-btn" onclick="alert('Fetching active chef streaming arrays...')">Scan Local Live Culinary Feeds</button>
+            </div>
+        </section>
+
+        <section id="pillar-music" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Global Music Hub</h2>
+                <p>Specialized audio distribution and promotion center working like Audiomack or Apple Music where users download files directly, and artists upload track recordings seamlessly.</p>
+            </div>
+
+            <div class="sovereign-card">
+                <form id="music-upload-form">
+                    <div class="form-group">
+                        <label>Track / Composition Title</label>
+                        <input type="text" id="track-title" class="sovereign-input" placeholder="e.g. Sovereign Symphony (Core Theme)" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Artist Platform Index</label>
+                        <input type="text" id="track-artist" class="sovereign-input" placeholder="e.g. 7 Pillars Orchestra" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Audio Master Payload</label>
+                        <div class="upload-trigger">
+                            <p id="music-file-status">Drop .mp3, .wav File Pack</p>
+                            <input type="file" id="music-file-input" class="hidden-file-input" accept="audio/*" required>
                         </div>
-                        <span class="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">MONITORED</span>
                     </div>
-                </div>
+                    <button type="submit" class="sovereign-btn">Distribute Audio to Network Pool</button>
+                </form>
             </div>
 
-            <div class="bg-zinc-950 border border-zinc-900 rounded-2xl p-3">
-                <div class="creator-scroll">
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('market')">
-                        <div class="avatar-circle text-amber-500"><i class="fa-solid fa-shop text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">I. MARKET</span>
+            <h3 style="color:var(--gold-premium); font-size:0.85rem; text-transform:uppercase; margin-bottom:10px;">Active Public Distribution Audio Feeds</h3>
+            <div id="music-live-feed" class="dynamic-list-feed"></div>
+        </section>
+
+        <section id="pillar-content" class="pillar-panel">
+            <div class="pillar-header">
+                <h2>Content Creation Feed</h2>
+                <p>Structural hub for user text and media updates, public interactions, activity verification, and network metric distribution loops.</p>
+            </div>
+            
+            <div class="sovereign-card">
+                <form id="content-post-form">
+                    <div class="form-group">
+                        <label>Network Feed Update</label>
+                        <input type="text" id="post-text-input" class="sovereign-input" placeholder="Share master metrics or system updates..." required>
                     </div>
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('ads')">
-                        <div class="avatar-circle text-amber-500"><i class="fa-solid fa-rectangle-ad text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">II. ADS</span>
-                    </div>
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('games')">
-                        <div class="avatar-circle text-amber-500"><i class="fa-solid fa-gamepad text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">III. BATTLE</span>
-                    </div>
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('kitchen')">
-                        <div class="avatar-circle text-amber-500"><i class="fa-solid fa-utensils text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">IV. KITCHEN</span>
-                    </div>
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('music')">
-                        <div class="avatar-circle text-amber-500"><i class="fa-solid fa-music text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">V. MUSIC</span>
-                    </div>
-                    <div class="min-w-[75px] flex flex-col items-center gap-1 cursor-pointer" onclick="openTool('apparel')">
-                        <div class="avatar-circle text-amber-400"><i class="fa-solid fa-gem text-xs"></i></div>
-                        <span class="text-[7px] font-bold text-zinc-400">VI. APPAREL</span>
-                    </div>
-                </div>
+                    <button type="submit" class="sovereign-btn">Transmit Feed Payload</button>
+                </form>
             </div>
 
-            <div class="bg-black border border-zinc-900 p-3 rounded-2xl font-mono text-[10px] text-emerald-400 space-y-1">
-                <div class="flex justify-between items-center text-[9px] text-zinc-500 uppercase font-bold border-b border-zinc-900 pb-1">
-                    <span>System Sync Interface Log</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                </div>
-                <div id="terminal-display" class="h-16 overflow-y-auto">
-                    [SYSTEM READY] Handshake active. Safe physical vectors established.
-                </div>
-            </div>
+            <div id="content-live-feed" class="dynamic-list-feed"></div>
+        </section>
 
-            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900 text-center relative">
-                <div class="text-amber-500 font-black text-[8px] tracking-widest uppercase mb-1">Public Authority Protocol</div>
-                <p class="text-zinc-400 text-[10px] leading-relaxed italic">
-                    "We're not here to collect your money, the only thing that we need is for them to follow the rules of this platform."
-                </p>
-            </div>
-        </div>
     </main>
 
-    <div id="market-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">The Global Marketplace</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar I • Secure Asset Escrow</p>
-                </div>
+    <div class="floating-pillar-hub" id="compass-hub-trigger">7</div>
+
+    <nav class="bottom-hud-nav">
+        <button class="hud-nav-item active" onclick="routeToPillar('pillar-marketplace', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
+            <span>Market</span>
+        </button>
+        <button class="hud-nav-item" onclick="routeToPillar('pillar-ads', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7v-2h10v2zm0-3H7V9h10v2z"/></svg>
+            <span>Ads</span>
+        </button>
+        <button class="hud-nav-item" onclick="routeToPillar('pillar-livestream', this)">
+            <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1.45 1-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            <span>Live</span>
+        </button>
+        <button class="hud-nav-item" onclick="routeToPillar('pillar-music', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            <span>Music</span>
+        </button>
+        <button class="hud-nav-item" id="identity-hud-trigger">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span>Identity</span>
+        </button>
+    </nav>
+
+    <div class="sovereign-modal" id="system-compass-modal">
+        <div class="modal-body">
+            <span class="modal-close-trigger" onclick="closeAllModals()">&times;</span>
+            <h2 style="color:var(--gold-premium); margin-bottom:14px; text-transform:uppercase; font-size:1.1rem;">Ecosystem Structural Pillars</h2>
+            <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-marketplace')">Pillar I: Marketplace (Global)</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-ads')">Pillar II: Ads Program Manager</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-gaming')">Pillar III: Gaming Battle Node</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-livestream')">Pillar IV: Network Media Routing</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-kitchen')">Pillar V: Kitchen Meal Log</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-music')">Pillar VI: Global Music Hub</button>
+                <button class="sovereign-btn" style="text-align:left; background:#121212; border:1px solid #262626; color:#fff;" onclick="jumpToModalPillar('pillar-content')">Pillar VII: Content Creation Feed</button>
             </div>
+        </div>
+    </div>
+
+    <div class="sovereign-modal" id="identity-verification-modal">
+        <div class="modal-body">
+            <span class="modal-close-trigger" onclick="closeAllModals()">&times;</span>
+            <h2 style="color:var(--gold-premium); text-transform:uppercase; font-size:1.1rem; margin-bottom:6px;">Sovereign Verification Matrix</h2>
+            <p style="color:var(--titanium-text); font-size:0.75rem; margin-bottom:16px;">Advance verification track to unlock elite system mechanics.</p>
             
-            <p class="text-xs text-zinc-400">The global marketplace for every item, product, and framework utility structure inside the network.</p>
-            
-            <div class="luxury-card p-4 flex justify-between items-center">
-                <div>
-                    <p class="font-bold text-xs text-zinc-200">Sovereign Visual Template Asset</p>
-                    <p class="text-[8px] text-zinc-500 uppercase">P2P Escrow Verified</p>
-                </div>
-                <button onclick="triggerEscrowPurchase(60, 'Sovereign Visual Asset')" class="bg-white text-black px-3 py-2 rounded-xl text-[9px] font-black uppercase">60.00 EC</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ads-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Ads Program Manager</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar II • Campaign Engine</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">Global advertising node orchestrating system campaign operations and conversion metrics tracking across all 7 pillars tools layout infrastructure.</p>
-            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900 text-center">
-                <i class="fa-solid fa-chart-bar text-2xl text-zinc-700 mb-2"></i>
-                <p class="text-xs text-zinc-400">No campaigns currently registered on this node track.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="games-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Gaming Battle Node</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar III • Real-time Application</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">Global Gaming videos live streaming battle arrays supporting operational servers for all top games in the world.</p>
-            <button onclick="triggerBattleHandshake()" class="w-full gold-gradient-bg text-black font-black text-[10px] tracking-widest py-3 rounded-xl uppercase">Initialize Live Match Handshake</button>
-        </div>
-    </div>
-
-    <div id="stream-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Network Media routing</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar IV • Real Video Hub</p>
-                </div>
-            </div>
-            <div class="aspect-video bg-zinc-950 border border-zinc-900 rounded-2xl flex items-center justify-center text-xs text-zinc-600 font-mono">
-                [ CAMERA_NODE_STANDBY_HANDSHAKE ]
-            </div>
-            <p class="text-xs text-zinc-400">Real video live streaming infrastructure deployed securely for smooth user onboarding and visual biological data locks.</p>
-        </div>
-    </div>
-
-    <div id="kitchen-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Kitchen Meal Log</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar V • Hospitality Extensions</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">Kitchen Meal tracking arrays and real videos live stream syndication for top chefs, master culinary artists, and local restaurant shops.</p>
-            <div class="luxury-card p-4 text-center text-xs text-zinc-500 border-dashed">
-                Standing by for active food matrix delivery logs...
-            </div>
-        </div>
-    </div>
-
-    <div id="music-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Global Music Hub</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar VI • Distribution Matrix</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">A real music hub and promotion center working like Audiomack or Apple Music where users can safely download directly to their phone, and artists can seamlessly upload track recordings.</p>
-            
-            <div class="luxury-card p-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-play text-amber-500"></i>
-                    <div>
-                        <p class="text-xs font-bold text-white">Sovereign Symphony (Core Theme)</p>
-                        <p class="text-[8px] text-zinc-500">Empire Audio Node Pool</p>
+            <div class="sovereign-card" style="margin-bottom:12px; background:#000;">
+                <h4 style="color:#fff; font-size:0.8rem; text-transform:uppercase;">👑 Tier 3: Sovereign Challenger Track</h4>
+                <p style="color:var(--titanium-text); font-size:0.7rem; margin-top:4px; line-height:1.3;">Required to participate in high-tier platform challenges, such as the 27-inch high-performance smart workstation competition.</p>
+                
+                <form id="tier3-verification-form" style="margin-top:12px;">
+                    <div class="form-group">
+                        <label>Business Registration / Corporate Name</label>
+                        <input type="text" id="biz-reg-name" class="sovereign-input" placeholder="Registered Entity Legal Name" required>
                     </div>
-                </div>
-                <button onclick="alert('Downloading tracking file securely onto storage framework...')" class="border border-zinc-800 text-zinc-300 text-[9px] font-bold uppercase px-3 py-1.5 rounded-lg"><i class="fa-solid fa-download"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <div id="content-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Content Creation Feed</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Pillar VII • Public interaction Hub</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">The structural hub for user text posts, luxury media updates, immediate public timeline interactions, and activity state verification locks.</p>
-            <div class="bg-zinc-950 border border-zinc-900 rounded-2xl p-3">
-                <textarea placeholder="Share vector framework specs on the feed matrix..." class="w-full bg-transparent text-xs text-white outline-none h-16 resize-none"></textarea>
-                <div class="flex justify-end mt-2">
-                    <button onclick="alert('Post tracking broadcast synchronized across node arrays.')" class="bg-amber-500 text-black font-black text-[9px] px-4 py-1.5 rounded-lg uppercase">Broadcast Feed</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="apparel-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">Apparel Studio</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-widest">Diamondback 231 Engine</p>
-                </div>
-            </div>
-            <p class="text-xs text-zinc-400">Apparel studio for diamondback231 digital framework and creativity where users can easily create their own unique graphics design frameworks, design custom styles, and post directly onto the global marketplace.</p>
-            <div class="bg-zinc-950 p-6 border border-dashed border-amber-500/40 rounded-3xl text-center">
-                <i class="fa-solid fa-palette text-3xl text-amber-500 mb-3 block"></i>
-                <button onclick="alert('Launching custom vector framework model suite...')" class="bg-amber-500 text-black text-[9px] font-black tracking-widest uppercase px-5 py-2 rounded-xl">Initialize Studio Canvas</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="explore-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <div>
-                    <h1 class="text-amber-500 font-black text-lg uppercase tracking-wider font-['Cinzel']">The System Grid</h1>
-                    <p class="text-zinc-500 text-[8px] uppercase tracking-wider">Infrastructure Telemetry</p>
-                </div>
-            </div>
-            
-            <div class="luxury-card p-4 space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500 border-b border-zinc-900 pb-1.5">Ecosystem Asset Vault</h3>
-                <div class="bg-black/60 p-3 rounded-xl border border-zinc-800 text-center">
-                    <p class="text-[8px] uppercase text-zinc-500 tracking-widest">Liquid Network Yield Balance</p>
-                    <p class="text-xl font-black text-amber-500 mt-0.5"><span id="balance-display">250.00</span> <span class="text-[10px] text-white">EC</span></p>
-                </div>
-                <div class="space-y-2">
-                    <input type="number" id="transaction-amount" value="25" class="w-full bg-black border border-zinc-800 p-2 rounded-xl text-xs text-white font-mono" placeholder="Amount (USD / EC)">
-                    <input type="text" id="transaction-address" value="0x7pila_alpha_node_fiat_matrix" class="w-full bg-black border border-zinc-800 p-2 rounded-xl text-xs text-white font-mono" placeholder="Routing Target Address">
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                    <button onclick="triggerEcosystemDeposit()" class="bg-emerald-600 text-white font-black py-2 rounded-xl text-[9px] uppercase tracking-wider">📥 Deposit (p2p)</button>
-                    <button onclick="triggerEcosystemWithdrawal()" class="bg-amber-500 text-black font-black py-2 rounded-xl text-[9px] uppercase tracking-wider">📤 Withdraw (Payout)</button>
-                </div>
+                    <div class="form-group">
+                        <label>Upload Verification Documentation (PDF/Img)</label>
+                        <div class="upload-trigger">
+                            <p id="doc-file-status">Select Corporate Verification Artifacts</p>
+                            <input type="file" id="biz-doc-input" class="hidden-file-input" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="sovereign-btn" style="font-size:0.8rem; padding:10px;">Submit Corporate Verification</button>
+                </form>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-zinc-950 rounded-2xl border border-zinc-900 p-3 flex flex-col justify-between cursor-pointer h-24" onclick="executeHardwareBypassCheck()">
-                    <i class="fa-solid fa-terminal text-amber-500 text-sm"></i>
-                    <span class="text-[8px] text-amber-500 font-black uppercase tracking-wide">Aurora-231 Node</span>
-                </div>
-                <div class="bg-zinc-950 rounded-2xl border border-zinc-900 p-3 flex flex-col justify-between cursor-pointer h-24" onclick="fetchPlatformLedgerMetrics()">
-                    <i class="fa-solid fa-chart-line text-emerald-500 text-sm"></i>
-                    <span class="text-[8px] text-emerald-500 font-black uppercase tracking-wide">P2P Ledger Sync</span>
-                </div>
-            </div>
-            <div id="ledger-output-panel" class="p-3 bg-black rounded-2xl border border-zinc-900 text-[9px] text-zinc-400 font-mono hidden space-y-1"></div>
-        </div>
-    </div>
-
-    <div id="sovereign-viewport" class="tool-viewport">
-        <div class="max-w-md mx-auto space-y-4">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="openTool('home')" class="text-amber-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <h1 class="text-amber-500 font-black text-sm font-['Cinzel'] uppercase">Identity Console</h1>
-            </div>
-            <div class="text-center">
-                <div class="w-16 h-16 bg-zinc-950 rounded-full border border-amber-500/30 mx-auto mb-2 flex items-center justify-center">
-                    <i class="fa-solid fa-crown text-xl text-amber-500 gold-glow"></i>
-                </div>
-                <h2 class="text-base font-black uppercase font-['Cinzel'] text-zinc-100" id="profile-name">NAWI-EMPIRE</h2>
-                <div id="profile-rank-badge" class="text-[8px] font-black text-zinc-500 tracking-wider uppercase mt-0.5">Founder & Governance</div>
-            </div>
-            
-            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-900 space-y-2 text-[11px]">
-                <p class="text-zinc-500 uppercase font-bold text-[8px] tracking-wider mb-1">Sovereign Stylist All-Pillar Cosmetics Module</p>
-                <p class="text-zinc-400 leading-relaxed text-xs">Premium interface management engine configured specifically for all global barbershops, fashion salons, cosmetic hubs, and women's premium design streams across the entire platform ecosystem network.</p>
-            </div>
-
-            <div class="space-y-3">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-900">
-                    <label class="text-[8px] text-zinc-500 uppercase block font-black mb-0.5">Ecosystem Designation</label>
-                    <input type="text" id="input-name" placeholder="NAWI-EMPIRE" class="bg-transparent border-none text-zinc-200 w-full outline-none font-bold text-xs" readonly>
-                </div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-900">
-                    <label class="text-[8px] text-zinc-500 uppercase block font-black mb-0.5">Public Broadcast Identity</label>
-                    <input type="text" id="input-social" placeholder="7 Pillars" class="bg-transparent border-none text-zinc-200 w-full outline-none font-bold text-xs" readonly>
-                </div>
+            <div class="sovereign-card" style="background:#1a1a1a; border:1px solid #333;">
+                <h4 style="color:var(--gold-premium); font-size:0.8rem; text-transform:uppercase;">🔑 Dual-Channel OTP Recovery Hardlink</h4>
+                <p style="color:var(--titanium-text); font-size:0.7rem; margin-top:2px;">Security keys remain bound strictly to your registered hardware anchors.</p>
             </div>
         </div>
-    </div>
-
-    <div id="hub-overlay">
-        <div class="flex justify-between items-center mb-6">
-            <div class="flex flex-col">
-                <div class="text-amber-500 font-black text-sm tracking-widest uppercase font-['Cinzel']">7 Pillars Command Hub</div>
-                <div class="text-[8px] text-zinc-500 uppercase font-bold tracking-wide">Select Architectural Core Module</div>
-            </div>
-            <button onclick="toggleHub()" class="text-zinc-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="hub-grid">
-            <div onclick="openTool('market')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-shop text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">I. Market</span></div>
-            <div onclick="openTool('ads')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-rectangle-ad text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">II. Ads Node</span></div>
-            <div onclick="openTool('games')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-gamepad text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">III. Gaming</span></div>
-            <div onclick="openTool('stream')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-video text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">IV. Stream</span></div>
-            <div onclick="openTool('kitchen')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-utensils text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">V. Kitchen</span></div>
-            <div onclick="openTool('music')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-music text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">VI. Music Hub</span></div>
-            <div onclick="openTool('content')" class="luxury-card p-4 flex flex-col items-center cursor-pointer"><i class="fa-solid fa-rss text-amber-500 text-sm mb-2"></i><span class="text-[8px] font-black uppercase">VII. Feed Hub</span></div>
-            <div onclick="openTool('apparel')" class="luxury-card p-4 flex flex-col items-center cursor-pointer col-span-2 border-dashed border-amber-500/50"><i class="fa-solid fa-gem text-amber-500 text-sm mb-1"></i><span class="text-[8px] font-black uppercase text-amber-400">Apparel Framework Studio</span></div>
-        </div>
-    </div>
-
-    <div class="node-7-hub" id="master-hub-trigger" onclick="toggleHub()">7</div>
-
-    <footer class="bottom-nav">
-        <div onclick="openTool('home')" class="nav-item active" id="nav-home">
-            <i class="fa-solid fa-house text-base"></i><span>Home</span>
-        </div>
-        <div onclick="openTool('explore')" class="nav-item" id="nav-explore">
-            <i class="fa-solid fa-border-all text-base"></i><span>Grid</span>
-        </div>
-        <div onclick="toggleHub()" class="master-plus"><i class="fa-solid fa-plus"></i></div>
-        <div onclick="openTool('market')" class="nav-item" id="nav-market">
-            <i class="fa-solid fa-shop text-base"></i><span>Market</span>
-        </div>
-        <div onclick="openTool('sovereign')" class="nav-item" id="nav-sovereign">
-            <i class="fa-solid fa-user-shield text-base"></i><span>Identity</span>
-        </div>
-    </footer>
-
-    <div class="fixed bottom-2 left-0 right-0 text-center pointer-events-none z-[9999] select-none opacity-25 font-mono text-[8px] tracking-widest text-zinc-600" id="system-watermark">
-        SYSTEM ENFORCEMENT WATERMARK CODE: PROTECTED_BY_DIAMONDBACK231
     </div>
 
     <script>
-        const BACKEND_ENGINE_URL = window.location.origin;
-        let globalEcosystemBalance = 250.00;
+        // CORE PLATFORM DATA STORAGE POOLS
+        let marketplaceStorage = [
+            { id: 1, title: "Sovereign Visual Template Asset", cost: "60.00", file: "default_template.zip" }
+        ];
+        let adsStorage = [];
+        let musicStorage = [
+            { id: 1, title: "Sovereign Symphony (Core Theme)", artist: "Empire Audio Node Pool", file: "symphony.mp3" }
+        ];
+        let feedStorage = [];
+        
+        let accountBalance = 250.00;
+        let biologicalVerified = false;
 
-        /**
-         * SOVEREIGN STYLIST PREMIUM COSMETICS CORE SWITCH ENGINE
-         */
-        function applySystemTheme(themeName) {
-            document.body.className = 'transition-colors duration-300';
-            document.body.classList.add('theme-' + themeName);
-            logTerminalUpdate(`Sovereign Stylist modified structural visuals -> ${themeName.toUpperCase()}`);
-        }
-
-        /**
-         * AUTHCONTROLLER INTERFACE ROUTE VALIDATION HANDSHAKE
-         */
-        async function executeSystemLogin() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-
-            if (password === "NAWI-EMPIRE01" || email === "diamondback231") {
-                localStorage.setItem('nawi_user_id', 'diamondback231');
-                localStorage.setItem('nawi_designation', 'NAWI-EMPIRE001');
-                localStorage.setItem('nawi_citizen_status', 'verified');
-                document.getElementById('auth-gate').style.display = 'none';
-                document.getElementById('oath-gate').style.display = 'flex';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_ENGINE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
-                    localStorage.setItem('nawi_user_id', data.userId || 'diamondback231');
-                    localStorage.setItem('nawi_citizen_status', 'verified');
-                    document.getElementById('auth-gate').style.display = 'none';
-                    document.getElementById('oath-gate').style.display = 'flex';
-                } else {
-                    alert(`System Verification Rejection: ${data.message}`);
-                }
-            } catch (err) {
-                // Fallback architecture default bypass routing logic
-                localStorage.setItem('nawi_user_id', 'diamondback231');
-                localStorage.setItem('nawi_designation', 'NAWI-EMPIRE001');
-                localStorage.setItem('nawi_citizen_status', 'verified');
-                document.getElementById('auth-gate').style.display = 'none';
-                document.getElementById('oath-gate').style.display = 'flex';
-            }
-        }
-
-        function unlockEmpire() { 
-            localStorage.setItem('nawi_citizen_status', 'verified');
-            document.getElementById('oath-gate').style.display = 'none'; 
-            syncGlobalStateMetrics();
-            openTool('home');
-        }
-
-        function syncGlobalStateMetrics() {
-            const userId = localStorage.getItem('nawi_user_id') || 'diamondback231';
-            const displayId = localStorage.getItem('nawi_designation') || 'NAWI-EMPIRE001';
+        // ROUTING SYSTEM EXECUTION
+        function routeToPillar(pillarId, navElement) {
+            document.querySelectorAll('.pillar-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.hud-nav-item').forEach(item => item.classList.remove('active'));
             
-            document.getElementById('balance').innerText = globalEcosystemBalance.toFixed(2);
-            document.getElementById('balance-display').innerText = globalEcosystemBalance.toFixed(2);
-            document.getElementById('profile-name').innerText = userId;
-            document.getElementById('input-name').value = displayId;
-            document.getElementById('input-social').value = "7 Pillars";
+            document.getElementById(pillarId).classList.add('active');
+            if(navElement) navElement.classList.add('active');
         }
 
-        /**
-         * P2PGATEWAY DEPOSIT INTERFACE HANDSHAKE ROUTE
-         */
-        async function triggerEcosystemDeposit() {
-            const amount = document.getElementById('transaction-amount').value;
-            const ref = document.getElementById('transaction-address').value;
-            logTerminalUpdate(`Dispatched deposit parameter stream to p2pGateway: ${amount} EC`);
+        function jumpToModalPillar(pillarId) {
+            closeAllModals();
+            routeToPillar(pillarId, null);
+        }
 
-            try {
-                const response = await fetch(`${BACKEND_ENGINE_URL}/api/vault/deposit`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: "NAWI-EMPIRE001", depositAmount: amount, providerReference: ref })
-                });
-                const data = await response.json();
-                if(data.success) {
-                    globalEcosystemBalance = parseFloat(data.updatedEcosystemBalance);
-                    syncGlobalStateMetrics();
-                }
-            } catch (err) {
-                globalEcosystemBalance += parseFloat(amount || 0);
-                syncGlobalStateMetrics();
-                logTerminalUpdate(`[LOCAL SYNC OK] Local asset ledger storage array adjusted safely.`);
+        // TRIGGER CONTROL AND INTERACTIVE MODALS ENGINE
+        const compassHubTrigger = document.getElementById('compass-hub-trigger');
+        const systemCompassModal = document.getElementById('system-compass-modal');
+        const identityHudTrigger = document.getElementById('identity-hud-trigger');
+        const identityVerificationModal = document.getElementById('identity-verification-modal');
+
+        compassHubTrigger.addEventListener('click', () => systemCompassModal.style.display = 'flex');
+        identityHudTrigger.addEventListener('click', () => identityVerificationModal.style.display = 'flex');
+
+        function closeAllModals() {
+            systemCompassModal.style.display = 'none';
+            identityVerificationModal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == systemCompassModal || event.target == identityVerificationModal) {
+                closeAllModals();
             }
         }
 
-        /**
-         * MASTERPAYOUT WITHDRAWAL INTERFACE HANDSHAKE ROUTE
-         */
-        async function triggerEcosystemWithdrawal() {
-            const amount = document.getElementById('transaction-amount').value;
-            const address = document.getElementById('transaction-address').value;
-            logTerminalUpdate(`Dispatched settlement sequence parameter tracking array to masterPayout...`);
-
-            try {
-                await fetch(`${BACKEND_ENGINE_URL}/api/vault/withdraw`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amountUsd: amount, payoutAddress: address })
-                });
-            } catch (err) {
-                if (globalEcosystemBalance >= amount) {
-                    globalEcosystemBalance -= parseFloat(amount);
-                    syncGlobalStateMetrics();
-                    logTerminalUpdate(`[BYPASS EXECUTION] Order authenticated. Payout completed via structural override routing.`);
-                }
-            }
-        }
-
-        /**
-         * BATTLECONTROLLER ENGINE NODE ACTION HANDSHAKE
-         */
-        async function triggerBattleHandshake() {
-            logTerminalUpdate("Contacting battleController distributed servers tracks...");
-            try {
-                await fetch(`${BACKEND_ENGINE_URL}/api/gaming/battle`, { method: 'POST' });
-            } catch (err) {
-                logTerminalUpdate("[LIVE SYNC] Multiplayer matchmaking server handshake established successfully.");
-            }
-        }
-
-        async function triggerEscrowPurchase(price, itemName) {
-            if(globalEcosystemBalance < price) {
-                alert("Transaction Intercepted: Insufficient System Yield Balance.");
-                return;
-            }
-            globalEcosystemBalance -= price;
-            syncGlobalStateMetrics();
-            logTerminalUpdate(`Escrow lock engaged safely for product array: ${itemName}`);
-            alert(`Escrow secured: ${itemName} registration initialized.\nFull yield ownership guaranteed by compliance verification rules.`);
-        }
-
-        function executeHardwareBypassCheck() {
-            alert("Aurora-231 Handshake Signal Checked:\nSovereign 27-inch Workstation Hub Node active.");
-        }
-
-        async function fetchPlatformLedgerMetrics() {
-            const panel = document.getElementById('ledger-output-panel');
-            panel.classList.remove('hidden');
-            panel.innerHTML = `
-                <div>P2P Ledger Sync Status: <span class="text-emerald-400">[ONLINE]</span></div>
-                <div>Routing Hub Tracks: Geegpay / Binance Gateways Active</div>
-                <div>Rule Status: 100% compliant asset validation parameters detected.</div>
-            `;
-            logTerminalUpdate("borderControl verified clean rule trace history ledger analytics.");
-        }
-
-        /**
-         * CENTRAL OMNI ROUTING INTERFACE NAVIGATION MANAGER
-         */
-        function openTool(toolId, updateHash = true) {
-            document.getElementById('hub-overlay').style.display = 'none';
-            
-            const allViewports = document.querySelectorAll('.tool-viewport');
-            allViewports.forEach(viewport => {
-                viewport.classList.remove('active');
-                viewport.style.display = 'none'; 
+        // DYNAMIC RENDERING INTERFACES
+        function renderMarketplace() {
+            const feed = document.getElementById('marketplace-live-feed');
+            feed.innerHTML = '';
+            marketplaceStorage.forEach(item => {
+                feed.innerHTML += `
+                    <div class="dynamic-item-row">
+                        <div>
+                            <div style="font-weight:bold; font-size:0.9rem;">${item.title}</div>
+                            <div style="color:var(--titanium-text); font-size:0.7rem; text-transform:uppercase; margin-top:2px;">P2P Escrow Verified • ${item.file}</div>
+                        </div>
+                        <button class="sovereign-btn" style="width:auto; padding:6px 12px; font-size:0.75rem;" onclick="processPurchase('${item.cost}')">${item.cost} EC</button>
+                    </div>`;
             });
+        }
 
-            const target = document.getElementById(toolId + '-viewport');
-            if (target) {
-                target.style.display = 'block';
-                setTimeout(() => { target.classList.add('active'); }, 10);
-                logTerminalUpdate(`Opened application engine viewport: ${toolId.toUpperCase()}`);
+        function renderMusicHub() {
+            const feed = document.getElementById('music-live-feed');
+            feed.innerHTML = '';
+            musicStorage.forEach(track => {
+                feed.innerHTML += `
+                    <div class="dynamic-item-row">
+                        <div>
+                            <div style="font-weight:bold; font-size:0.9rem;">${track.title}</div>
+                            <div style="color:var(--gold-premium); font-size:0.75rem; margin-top:2px;">${track.artist}</div>
+                        </div>
+                        <button class="sovereign-btn" style="width:auto; padding:8px;" onclick="alert('Downloading master file array: ${track.file} to local memory storage link.')">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function renderAdsEngine() {
+            const feed = document.getElementById('ads-live-feed');
+            feed.innerHTML = adsStorage.length === 0 ? '<div style="color:var(--titanium-text); font-size:0.8rem; text-align:center; padding:12px;">No active targeted network payloads currently running.</div>' : '';
+            adsStorage.forEach(ad => {
+                feed.innerHTML += `
+                    <div class="dynamic-item-row" style="border-color:var(--gold-premium);">
+                        <div>
+                            <div style="font-weight:bold; font-size:0.85rem; color:var(--gold-premium);">[ CAMPAIGN ACTIVE ] Target: ${ad.pillar}</div>
+                            <div style="color:var(--titanium-text); font-size:0.7rem; margin-top:2px;">Payload Metric Hash: ${ad.file_name}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderContentFeed() {
+            const feed = document.getElementById('content-live-feed');
+            feed.innerHTML = '';
+            feedStorage.forEach(post => {
+                feed.innerHTML += `
+                    <div class="sovereign-card">
+                        <div style="font-size:0.75rem; color:var(--gold-premium); margin-bottom:6px; font-weight:bold;">Verified Network Identity Node</div>
+                        <p style="font-size:0.9rem; color:#fff;">${post.text}</p>
+                    </div>`;
+            });
+        }
+
+        // P2P ESCROW PROCESSING ENGINE
+        function processPurchase(cost) {
+            const pricing = parseFloat(cost);
+            if (accountBalance >= pricing) {
+                accountBalance -= pricing;
+                document.getElementById('global-wallet-display').innerText = accountBalance.toFixed(2) + " EC";
+                alert("P2P Escrow Transaction Confirmed. Secure Framework Token Added to Local Storage System Pipeline.");
             } else {
-                document.getElementById('home-viewport').style.display = 'block';
-                setTimeout(() => { document.getElementById('home-viewport').classList.add('active'); }, 10);
-            }
-
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            let targetNavId = 'nav-' + toolId;
-            if (['market', 'ads', 'games', 'stream', 'kitchen', 'music', 'content', 'apparel'].includes(toolId) && !document.getElementById(targetNavId)) {
-                targetNavId = 'nav-market';
-            }
-            const activeNav = document.getElementById(targetNavId);
-            if (activeNav) activeNav.classList.add('active');
-
-            if (updateHash) window.location.hash = toolId;
-        }
-
-        function toggleHub() {
-            const hub = document.getElementById('hub-overlay');
-            hub.style.display = (hub.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function logTerminalUpdate(textString) {
-            const displayNode = document.getElementById('terminal-display');
-            if (displayNode) {
-                displayNode.innerHTML += `<br>> ${textString}`;
-                displayNode.scrollTop = displayNode.scrollHeight;
+                alert("Insufficient Asset Reserves to process this secure token routing request.");
             }
         }
 
-        window.addEventListener('hashchange', () => {
-            const toolId = window.location.hash.replace('#', '') || 'home';
-            openTool(toolId, false);
+        // DETECT FILE INPUT LABEL UPDATES
+        function setupFileInputLabelUpdate(inputId, statusId, baseText) {
+            document.getElementById(inputId).addEventListener('change', function(e){
+                if(this.files.length > 0) {
+                    document.getElementById(statusId).innerText = "Payload Loaded: " + this.files[0].name;
+                    document.getElementById(statusId).style.color = "var(--white-pure)";
+                }
+            });
+        }
+        setupFileInputLabelUpdate('market-file-input', 'market-file-status');
+        setupFileInputLabelUpdate('ad-file-input', 'ad-file-status');
+        setupFileInputLabelUpdate('video-lock-input', 'video-file-status');
+        setupFileInputLabelUpdate('music-file-input', 'music-file-status');
+        setupFileInputLabelUpdate('biz-doc-input', 'doc-file-status');
+
+        // FORM TRANSACTION PROCESSING ENDACTION INGESTIONS
+        document.getElementById('marketplace-upload-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const title = document.getElementById('market-item-title').value;
+            const cost = parseFloat(document.getElementById('market-item-cost').value).toFixed(2);
+            const fileInput = document.getElementById('market-file-input').files[0].name;
+            
+            marketplaceStorage.push({ id: Date.now(), title, cost, file: fileInput });
+            renderMarketplace();
+            this.reset();
+            document.getElementById('market-file-status').innerText = "Select Data Pack / Asset Zip File";
         });
 
-        window.onload = () => { 
-            if (localStorage.getItem('nawi_citizen_status') === 'verified') { 
-                document.getElementById('auth-gate').style.display = 'none'; 
-                document.getElementById('oath-gate').style.display = 'none'; 
-                syncGlobalStateMetrics();
-                const initialTool = window.location.hash.replace('#', '') || 'home';
-                openTool(initialTool, false);
-            } 
-        };
+        document.getElementById('ads-campaign-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const pillar = document.getElementById('ad-target-pillar').value;
+            const file_name = document.getElementById('ad-file-input').files[0].name;
+            
+            adsStorage.push({ id: Date.now(), pillar, file_name });
+            renderAdsEngine();
+            this.reset();
+            document.getElementById('ad-file-status').innerText = "Select Campaign Media Payload";
+        });
+
+        document.getElementById('music-upload-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const title = document.getElementById('track-title').value;
+            const artist = document.getElementById('track-artist').value;
+            const file = document.getElementById('music-file-input').files[0].name;
+            
+            musicStorage.push({ id: Date.now(), title, artist, file });
+            renderMusicHub();
+            this.reset();
+            document.getElementById('music-file-status').innerText = "Drop .mp3, .wav File Pack";
+        });
+
+        document.getElementById('content-post-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const text = document.getElementById('post-text-input').value;
+            feedStorage.unshift({ text });
+            renderContentFeed();
+            this.reset();
+        });
+
+        document.getElementById('bio-lock-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            biologicalVerified = true;
+            document.getElementById('user-tier-display').innerText = "Tier 1 (Biological Lock Secured)";
+            alert("Biological Data Signature Saved. Daily Task Processing Ecosystem Yield Engaged Successfully.");
+        });
+
+        document.getElementById('tier3-verification-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            document.getElementById('user-tier-display').innerText = "Tier 3 (Sovereign Challenger Registered)";
+            closeAllModals();
+            alert("Corporate Verification Matrix Document Submitted. Your 27-inch Workstation Challenge Entry Node is now locked and fully registered.");
+        });
+
+        // HARDWARE USERMEDIA CAMERA INTERFACE ACCESS
+        document.getElementById('activate-camera-btn').addEventListener('click', async function() {
+            const video = document.getElementById('biological-camera-node');
+            const overlay = document.getElementById('camera-status-overlay');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+                overlay.innerText = "[ BIOMETRIC LENS ACTIVE ]";
+                overlay.style.color = "#00ff00";
+            } catch (err) {
+                alert("Hardware Camera Access Blocked or Not Found. Fallback to file attachment signature layer active.");
+                overlay.innerText = "[ LENS CORE ACCESSIBILITY ERROR ]";
+            }
+        });
+
+        // RE-INITIALIZE INTERFACES ON CORE LOADING
+        renderMarketplace();
+        renderMusicHub();
+        renderAdsEngine();
     </script>
 </body>
 </html>
