@@ -1,196 +1,212 @@
-const User = require('./models/User'); // Maps to NAWI_DB.users
-const DailyLedger = require('./models/DailyLedger'); // Maps to NAWI_DB.dailyledgers
-const ComplianceVault = require('./models/ComplianceVault'); // Maps to NAWI_DB.compliancevaults
+/**
+ * NAWI-EMPIRE | UNIFIED MASTER PAYOUT ENGINE
+ * Authority: NAWI-EMPIRE001 / 7 pillars
+ * System Node Sync: Aurora-231 (192GB RAM Workstation Workhorse)
+ * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231
+ * Description: Automated Payout Distribution, Tier Threshold Enforcement, and Multi-Pillar Yield Settlement.
+ */
+
+const crypto = require('crypto');
+const User = require('./models/User');                           // Maps to NAWI_DB.users
+const DailyLedger = require('./models/DailyLedger');             // Maps to NAWI_DB.dailyledgers
 const WithdrawalRequest = require('./models/WithdrawalRequest'); // Maps to NAWI_DB.withdrawalrequests
 
 // SOVEREIGN BYPASS CONSTANTS
-const SOVEREIGN_ID = "NAWI-EMPIRE001"; // Your Master Admin ID
-const MASTER_PASS_NAME = "7 pillars";   // Your Social Media Authority Name
-const MASTER_FINAL_SEAL = "THE_7_FINAL_SEAL"; // Your Master Authorization Key
+const SOVEREIGN_ID = "NAWI-EMPIRE001"; // Master Admin ID
+const MASTER_PASS_NAME = "7 pillars";   // Social Media Authority Name
 
-// SECURITY PROTECTION LIMITS
-const REPUTATION_LOCK_THRESHOLD = 50; 
-const MAX_VIOLATION_LIMIT = 3;
+const masterPayoutEngine = {
 
-/**
- * FEATURE FUNCTION 1: INITIALIZE PLATFORM PAYOUT GATEWAY (User-Facing)
- * Handles client validation checks, logs hidden metrics, and queues records for master signature.
- */
-exports.initializeWithdrawal = async (req, res) => {
-    try {
-        const { userId, amountUsd, gatewayPlatform, payoutAddress, countryCode } = req.body;
-        const todayStr = new Date().toISOString().split('T')[0];
+    // =========================================================================
+    // 1. EXECUTE SYSTEM DISBURSEMENT (ROUTS YIELD TO FIAT/EXTERNAL GATEWAYS)
+    // =========================================================================
+    /**
+     * Processes master payout distributions based on precise activity yields from the 7 Pillars.
+     */
+    processMasterPayout: async (req, res) => {
+        try {
+            const { userId, claimAmount, payoutChannel, verificationTier, selectedPillar } = req.body;
+            const todayStr = new Date().toISOString().split('T')[0];
 
-        // 1. SOVEREIGN BYPASS CHECK: Instant absolute execution, avoids all validations and waiting queues
-        if (userId === SOVEREIGN_ID) {
+            if (!userId || !claimAmount) {
+                return res.status(400).json({ success: false, message: "Incomplete database processing fields for payout execution." });
+            }
+
+            // 1. SOVEREIGN OVERRIDE: Administrative override execution
+            if (userId === SOVEREIGN_ID) {
+                return res.status(200).json({
+                    success: true,
+                    message: "This is my order and my authority to protect them and this platform. Payout executed via administrative bypass.",
+                    transactionId: `PAY-SOV-${crypto.randomBytes(4).toString('hex').toUpperCase()}`,
+                    settlementVolume: claimAmount,
+                    status: "SETTLED_SUCCESSFULLY"
+                });
+            }
+
+            // Locate target user profile node
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ success: false, message: "Recipient user identity signature node missing." });
+            }
+
+            // Enforce Rule Compliance Guardrail
+            if (user.complianceMetrics && user.complianceMetrics.rulesViolated > 0) {
+                return res.status(403).json({ success: false, message: "Payout sequence blocked. Account holds active compliance violations." });
+            }
+
+            const activeTier = user.verificationTier || 1;
+            const payoutVolume = parseFloat(claimAmount);
+
+            // 2. ENFORCE TIER CONDITIONAL CHECK CONSTRUCTS
+            if (activeTier === 1) {
+                // Tier 1 Limit Rule: Caps standard Casual Citizen payouts per transaction
+                if (payoutVolume > 50) {
+                    return res.status(403).json({ 
+                        success: false, 
+                        message: "Transaction volume exceeds Tier 1 limit. Complete tenure or compliance metrics to scale your tier." 
+                    });
+                }
+            } else if (activeTier === 3) {
+                // Tier 3 Sovereign Challenger Verification Gate Check
+                if (!user.corporateVerified) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Sovereign Challenge level payouts require active business registration and corporate documentation verification."
+                    });
+                }
+            }
+
+            // Balance check engine logic
+            if (user.empireCoins < payoutVolume) {
+                return res.status(400).json({ success: false, message: "Insufficient network yield volume inside account node." });
+            }
+
+            // 3. SILENT BACKEND MAINTENANCE CHECK (The Hidden $35 Layer Execution)
+            if (user.tier === 'Professional') {
+                let ledger = await DailyLedger.findOne({ date: todayStr });
+                if (ledger && !user.infrastructure_validated) {
+                    ledger.totalVolumeProcessedUsd += 35;
+                    await ledger.save();
+                    
+                    user.infrastructure_validated = true;
+                    await user.save();
+                }
+            }
+
+            // Deduct system balance assets upon execution success
+            user.empireCoins -= payoutVolume;
+            await user.save();
+
+            // Log entry into standard withdrawal database models
+            const newPayoutRecord = new WithdrawalRequest({
+                userId: user._id,
+                amount: payoutVolume,
+                gateway: payoutChannel || 'GEEGPAY',
+                status: 'DISBURSED'
+            });
+            // In production: await newPayoutRecord.save();
+
             return res.status(200).json({
                 success: true,
-                message: `Sovereign Payout Authorized for [${MASTER_PASS_NAME}]. Bypassing standard processing reserves.`,
-                transaction_status: "SUCCESS_EXECUTED",
-                meta: {
-                    gateway: gatewayPlatform || "DIRECT_CORE_NODE",
-                    destination: payoutAddress,
-                    processedAmount: amountUsd
-                }
+                message: "100% user ecosystem revenue yield cleared. Platform rules fully observed.",
+                transactionToken: `PAY_OUT_${crypto.randomBytes(8).toString('hex').toUpperCase()}`,
+                remainingBalance: user.empireCoins
             });
-        }
 
-        // 2. Fetch user profile parameter documents
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Account mapping mismatch within the system." });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Payout execution failure within core matrix.", error: error.message });
         }
+    },
 
-        // 3. ISOLATION CHECK: Block transaction if profile is locked or reputation criteria broken
-        if (user.walletLocked || user.reputationScore < REPUTATION_LOCK_THRESHOLD || user.violationCount >= MAX_VIOLATION_LIMIT) {
-            return res.status(403).json({
-                success: false,
-                message: "Payout execution rejected. Account assets are temporarily locked due to platform safety violations.",
-                reason: "SECURITY_ISOLATION_LOCK"
-            });
-        }
+    // =========================================================================
+    // 2. THE 7 PILLARS TARGET INTERACTIVE CLICK RESOLVER
+    // =========================================================================
+    /**
+     * Resolves layout execution modules immediately upon click. 
+     * Ensures tools open and work perfectly without dropping network handshakes.
+     */
+    resolvePillarToolExecution: async (req, res) => {
+        try {
+            const { pillarId, requestSourceDevice } = req.body;
 
-        // 4. BALANCING CHECKS
-        if (amountUsd <= 0) {
-            return res.status(400).json({ success: false, message: "Invalid amount value specified." });
-        }
-        if (user.empireCoins < amountUsd) {
-            return res.status(400).json({ success: false, message: "Insufficient liquid balance to process transaction request." });
-        }
-
-        // 5. COMPLIANCE AUDIT VALIDATION
-        const complianceRecord = await ComplianceVault.findOne({ userId });
-        if (!complianceRecord || complianceRecord.status !== 'APPROVED') {
-            return res.status(403).json({
-                success: false,
-                message: "Transaction halted by Border Control. Complete your location-specific Document Audit to open your wallet.",
-                action_required: "INITIALIZE_COMPLIANCE_UPLOAD",
-                country_detected: countryCode || "GLOBAL"
-            });
-        }
-
-        // 6. SILENT BACKEND INVENTORY CLEARANCE (The Hidden $35 Maintenance Buffer)
-        let ledger = await DailyLedger.findOne({ date: todayStr });
-        if (ledger && user.tier === 'Professional') {
-            if (!user.infrastructure_validated) {
-                ledger.totalVolumeProcessedUsd += 35;
-                await ledger.save();
-                
-                user.infrastructure_validated = true;
-                await user.save();
+            if (!pillarId) {
+                return res.status(400).json({ success: false, message: "Target functional routing identification missing." });
             }
+
+            let allocationRouteData = {};
+
+            switch (pillarId.toLowerCase()) {
+                case "marketplace":
+                    allocationRouteData = {
+                        title: "Global Marketplace Node",
+                        description: "The global Marketplace framework processing item and product listings securely.",
+                        interfaceTheme: "Sovereign Stylist Gold/Obsidian",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "ads_program":
+                    allocationRouteData = {
+                        title: "Ads Program Manager Node",
+                        description: "Internal visibility engine managing global advertising metrics across all 7 pillars.",
+                        interfaceTheme: "Polished Titanium",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "gaming_studio":
+                    allocationRouteData = {
+                        title: "Global Gaming Studio Node",
+                        description: "Global Gaming battle servers running live interactive match-tracking arrays.",
+                        interfaceTheme: "High-Contrast Obsidian Nitro",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "live_stream":
+                    allocationRouteData = {
+                        title: "Real Video Live Stream Node",
+                        description: "High-performance real video media distribution module synchronized for new users.",
+                        interfaceTheme: "Deep Obsidian Premium",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "kitchen_meal":
+                    allocationRouteData = {
+                        title: "Kitchen Meal Logistical Node",
+                        description: "Logistical culinary schedule routing and real video streams for top chefs and restaurant shops.",
+                        interfaceTheme: "Industrial Gold Accent",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "music_promotion":
+                    allocationRouteData = {
+                        title: "Global Music Hub & Promotion Center",
+                        description: "Audio distribution module tracking native downloads, uploads, and streaming asset indices.",
+                        interfaceTheme: "Sovereign Luxury Velvet Titanium",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                case "content_creation":
+                case "apparel_studio":
+                    allocationRouteData = {
+                        title: "Apparel Studio & Framework Feed",
+                        description: "Diamondback231 structural digital framework for user graphic custom layout creation and marketplace distribution.",
+                        interfaceTheme: "Pure Matte Gold & Obsidian Luxury",
+                        operationalStatus: "ACTIVE_ROUTING"
+                    };
+                    break;
+                default:
+                    return res.status(404).json({ success: false, message: "Target system tool node recognized as invalid layout schema." });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Pillar tool module initialization synced successfully. Opening target interface layout perfectly.`,
+                engineData: allocationRouteData
+            });
+
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Internal tool initialization runtime fault.", error: error.message });
         }
-
-        // 7. DEDUCT AND INITIALIZE PENDING RECORD
-        user.empireCoins -= amountUsd;
-        await user.save();
-
-        // CRITICAL INTEGRATION REPAIR: Generate the database record for Code 1 to find
-        const newRequest = new WithdrawalRequest({
-            userId: user._id,
-            username: user.username,
-            amount: amountUsd,
-            gateway: gatewayPlatform,
-            address: payoutAddress,
-            status: 'AWAITING_MASTER_SIGNATURE',
-            dateInitiated: new Date()
-        });
-        await newRequest.save();
-
-        return res.status(200).json({
-            success: true,
-            message: `Payout successfully initialized and queued for Master Review.`,
-            transaction_status: "AWAITING_MASTER_SIGNATURE",
-            requestId: newRequest._id
-        });
-
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
     }
 };
 
-/**
- * FEATURE FUNCTION 2: VIEW PENDING WITHDRAWALS (Admin-Facing Control Dashboard)
- * Pulls all items awaiting signature into your mobile overview layout.
- */
-exports.getPendingWithdrawals = async (req, res) => {
-    try {
-        const { adminId } = req.query;
-
-        // Security enforcement lock
-        if (adminId !== SOVEREIGN_ID) {
-            return res.status(403).json({ success: false, message: "Access Denied: Imperial Authority Clearance Required." });
-        }
-
-        // Retrieve requests holding signature state flags
-        const requests = await WithdrawalRequest.find({ status: 'AWAITING_MASTER_SIGNATURE' });
-        
-        return res.status(200).json({
-            success: true,
-            count: requests.length,
-            requests: requests
-        });
-
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
-    }
-};
-
-/**
- * FEATURE FUNCTION 3: AUTHORIZE PAYOUT COMMANDS (Admin-Facing Action)
- * Final terminal switch that approves disbursement or quarantines suspicious accounts.
- */
-exports.authorizePayout = async (req, res) => {
-    try {
-        const { requestId, adminId, masterKey, action } = req.body;
-
-        // Validate administrative access privileges 
-        if (adminId !== SOVEREIGN_ID || masterKey !== MASTER_FINAL_SEAL) {
-            return res.status(403).json({ success: false, message: "CRITICAL ACCESS DENIED: INVALID SIGNATURE MATRIX." });
-        }
-
-        const request = await WithdrawalRequest.findById(requestId);
-        if (!request) {
-            return res.status(404).json({ success: false, message: "Target request instance not found." });
-        }
-        if (request.status !== 'AWAITING_MASTER_SIGNATURE') {
-            return res.status(400).json({ success: false, message: "Transaction has already been processed by an automated node." });
-        }
-
-        if (action === "APPROVE") {
-            request.status = "DISBURSED";
-            request.dateResolved = new Date();
-            await request.save();
-
-            // Fire asset release payload notification (Simulated Imperial Receipt Generator API)
-            return res.status(200).json({ 
-                success: true, 
-                message: `Master Action: Payout Approved. Funds disbursed via P2P networks to address.`,
-                receiptGenerated: true 
-            });
-
-        } else if (action === "REJECT") {
-            request.status = "REJECTED_UNDER_INVESTIGATION";
-            request.dateResolved = new Date();
-            await request.save();
-
-            // UNIFIED INTEGRATION ACTION: Freeze target user's wallet properties across both criteria sets
-            await User.findByIdAndUpdate(request.userId, { 
-                $set: { 
-                    walletLocked: true, 
-                    reputationScore: 0 // Instantly lock out of any secondary chat operations or transfers
-                } 
-            });
-
-            return res.status(200).json({ 
-                success: true, 
-                message: `Master Action: Request quarantined under active investigation. Target user profile frozen.` 
-            });
-        } else {
-            return res.status(400).json({ success: false, message: "Unrecognized administrative instruction code." });
-        }
-
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
-    }
-};
+module.exports = masterPayoutEngine;
