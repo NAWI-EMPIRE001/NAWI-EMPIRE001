@@ -1,135 +1,772 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IMPERIAL SHOP | NAWI EMPIRE</title>
+    <title>NAWI-EMPIRE001 // Core System Marketplace</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --dark: #0a0a0a; --glass: rgba(255, 255, 255, 0.03); }
-        body { margin: 0; background: var(--black); color: white; font-family: 'Inter', sans-serif; padding-bottom: 80px; }
-        
-        /* --- HEADER --- */
-        .shop-header { padding: 40px 20px; text-align: center; border-bottom: 1px solid #111; background: linear-gradient(to bottom, #0c0c0c, var(--black)); }
-        .shop-header h1 { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin: 0; }
-        .balance-pill { display: inline-block; background: var(--glass); border: 1px solid #222; padding: 8px 15px; border-radius: 20px; font-size: 11px; margin-top: 15px; color: var(--gold); font-weight: 800; }
-
-        /* --- CATEGORY BAR --- */
-        .category-scroll { display: flex; overflow-x: auto; padding: 15px 20px; gap: 10px; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        .category-scroll::-webkit-scrollbar { display: none; }
-        .cat-btn { background: var(--dark); border: 1px solid #1a1a1a; color: #666; padding: 10px 20px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .cat-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.05); }
-
-        /* --- PRODUCT GRID --- */
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .product-card { background: var(--dark); border-radius: 20px; border: 1px solid #111; overflow: hidden; position: relative; animation: fadeInUp 0.5s ease forwards; }
-        .product-img { width: 100%; height: 140px; object-fit: cover; border-bottom: 1px solid #111; }
-        .product-info { padding: 12px; }
-        .product-name { font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #eee; }
-        .product-origin { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-        .product-price { font-size: 13px; color: var(--gold); font-weight: 900; margin: 10px 0; }
-        
-        .btn-buy { width: 100%; background: var(--gold); color: black; border: none; padding: 10px; border-radius: 10px; font-weight: 900; font-size: 10px; text-transform: uppercase; cursor: pointer; }
-
-        /* --- NAV BAR --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #111; }
-        .nav-item { color: #444; font-size: 18px; transition: 0.3s; }
-        .nav-item.active { color: var(--gold); }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Sovereign Stylist Structural Architecture Profile */
+        :root {
+            --obsidian-deep: #050505;
+            --obsidian-surface: #0a0a0a;
+            --titanium-dark: #1f1f23;
+            --titanium-glow: #52525b;
+            --polished-gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.12);
+        }
+        body {
+            background-color: var(--obsidian-deep);
+            color: #f4f4f5;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 75px; /* Safely accommodates fixed bottom ecosystem utility bar */
+        }
+        .gold-glow-focus:focus {
+            border-color: var(--polished-gold);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: var(--obsidian-deep);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--titanium-dark);
+            border-radius: 2px;
+        }
+        /* Fixed Background Structural Watermark */
+        .system-watermark {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(212, 175, 55, 0.08);
+            pointer-events: none;
+            z-index: 10;
+            font-family: monospace;
+        }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500/20 selection:text-white">
 
-    <div class="shop-header">
-        <h1>Imperial Kitchen</h1>
-        <div class="balance-pill" id="user-balance">0.00 🪙 Empire Coins</div>
+    <div class="system-watermark">AUTHENTICATED SECURITY NODE // NAWI-EMPIRE</div>
+
+    <header class="border-b border-zinc-900 bg-zinc-950/90 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="h-9 w-9 rounded border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-transparent flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.05)]">
+                <span class="text-amber-500 font-black tracking-wider text-xs">7P</span>
+            </div>
+            <div>
+                <h1 class="text-[10px] font-bold tracking-widest text-zinc-500 uppercase leading-none">System Engine</h1>
+                <p class="text-sm font-black tracking-tight text-white flex items-center gap-1 mt-0.5">
+                    NAWI-EMPIRE<span class="text-amber-500 text-xs font-semibold">001</span>
+                </p>
+            </div>
+        </div>
+
+        <div id="tier-badge-container" class="flex items-center gap-2 px-3 py-1.5 rounded bg-zinc-900/60 border border-zinc-800">
+            <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-[9px] uppercase font-bold tracking-widest text-zinc-500 hidden xs:inline">Access:</span>
+            <span id="active-tier-display" class="text-[10px] font-black text-amber-500 uppercase tracking-wider">Tier 1: Casual Citizen</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button onclick="toggleSystemPanel('cart-panel')" class="relative p-2 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span id="cart-counter" class="absolute top-0 right-0 bg-amber-500 text-black font-black text-[9px] h-4 w-4 rounded-full flex items-center justify-center">0</span>
+            </button>
+            <button onclick="toggleSystemPanel('security-panel')" class="p-2 border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 rounded text-zinc-400 hover:text-white transition-all cursor-pointer">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-500"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="bg-zinc-950 border-b border-zinc-900 p-2 overflow-x-auto custom-scrollbar flex items-center gap-2 whitespace-nowrap lg:px-6">
+        <span class="text-[9px] font-black tracking-widest text-zinc-600 uppercase pr-2 border-r border-zinc-900 hidden md:inline">Ecosystem Pillars:</span>
+        <div id="pillar-navigation-links" class="flex gap-1.5">
+            </div>
     </div>
 
-    <div class="category-scroll">
-        <button class="cat-btn active" onclick="filterShop('All')">All Assets</button>
-        <button class="cat-btn" onclick="filterShop('Raw Food')">Raw Food</button>
-        <button class="cat-btn" onclick="filterShop('Cooked Meal')">Cooked Meals</button>
-        <button class="cat-btn" onclick="filterShop('Spices')">Spices</button>
-        <button class="cat-btn" onclick="filterShop('International')">International</button>
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6">
+        
+        <div class="mb-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-900 pb-4">
+            <div>
+                <h2 id="current-view-title" class="text-lg font-black tracking-tight text-white uppercase">Global Marketplace</h2>
+                <p id="current-view-desc" class="text-xs text-zinc-400 mt-0.5">Secure asset hosting and transactions across the network.</p>
+            </div>
+            
+            <div id="dynamic-filter-housing" class="w-full md:w-auto flex items-center gap-2">
+                </div>
+        </div>
+
+        <div id="marketplace-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <p class="col-span-full text-center text-zinc-600 font-mono text-xs py-20 uppercase tracking-widest">Initialising Vault Handshake...</p>
+        </div>
+
+    </main>
+
+    <div id="cart-panel" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-zinc-950 border-l border-zinc-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 p-6 flex flex-col hidden">
+        <div class="flex items-center justify-between border-b border-zinc-900 pb-4 mb-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="text-amber-500 w-5 h-5"></i>
+                <h3 class="font-black text-xs uppercase tracking-wider text-white">Escrow Pipeline Routing</h3>
+            </div>
+            <button onclick="toggleSystemPanel('cart-panel')" class="text-zinc-500 hover:text-white cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div id="cart-items-container" class="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
+            </div>
+        <div class="border-t border-zinc-900 pt-4 mt-4 space-y-4">
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-zinc-400 font-medium">Total Settlement Estimate</span>
+                <span id="cart-total" class="font-black text-amber-500 text-sm">0.00 🪙</span>
+            </div>
+            <button onclick="executeEscrowTransaction()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-black text-xs uppercase tracking-widest rounded transition-colors shadow-lg shadow-amber-500/10 cursor-pointer">
+                Route Via P2P Gateway
+            </button>
+        </div>
     </div>
 
-    <div class="product-grid" id="market-container">
-        <p style="grid-column: span 2; text-align: center; color: #333; font-size: 10px; padding: 40px;">Synchronizing with the Vault...</p>
+    <div id="security-panel" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-zinc-950 border-l border-zinc-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 p-6 flex flex-col hidden">
+        <div class="flex items-center justify-between border-b border-zinc-900 pb-4 mb-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="sliders" class="text-amber-500 w-4 h-4"></i>
+                <h3 class="font-black text-xs uppercase tracking-wider text-white">Sovereign Control Module</h3>
+            </div>
+            <button onclick="toggleSystemPanel('security-panel')" class="text-zinc-500 hover:text-white cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto space-y-5 custom-scrollbar text-xs">
+            
+            <div class="bg-amber-500/5 border border-amber-500/10 p-3 rounded space-y-1">
+                <span class="text-[9px] font-black uppercase text-amber-500 flex items-center gap-1">
+                    <i data-lucide="cpu" class="w-3 h-3"></i> Controller Manifest Layers
+                </span>
+                <p class="text-[11px] text-zinc-400 leading-normal">
+                    Fallback handlers actively listening for decoupling flags: <code class="text-white bg-zinc-900 px-1 rounded">p2pGateway</code>, <code class="text-white bg-zinc-900 px-1 rounded">authController</code>, <code class="text-white bg-zinc-900 px-1 rounded">battleController</code>.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <label class="font-bold uppercase tracking-wider text-zinc-500 text-[10px] block">Simulate Identity Tier Authorization</label>
+                <div class="space-y-1.5">
+                    <button onclick="setSecurityTier(1)" id="tier-btn-1" class="w-full text-left p-2 rounded border border-amber-500 bg-zinc-900/40 text-white font-bold flex justify-between items-center cursor-pointer">
+                        <span>Tier 1: Casual Citizen</span>
+                        <span class="text-[8px] bg-amber-500 text-black px-1 rounded font-black">ACTIVE</span>
+                    </button>
+                    <button onclick="setSecurityTier(2)" id="tier-btn-2" class="w-full text-left p-2 rounded border border-zinc-800 bg-zinc-900/10 text-zinc-400 hover:border-zinc-700 transition-colors cursor-pointer">
+                        <span>Tier 2: Verified Merchant</span>
+                    </button>
+                    <button onclick="setSecurityTier(3)" id="tier-btn-3" class="w-full text-left p-2 rounded border border-zinc-800 bg-zinc-900/10 text-zinc-400 hover:border-zinc-700 transition-colors cursor-pointer">
+                        <span>Tier 3: Sovereign Challenger</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tier-1-bio-verification" class="p-3 bg-zinc-900/40 border border-zinc-800 rounded">
+                <div class="flex items-center gap-2 mb-1.5 text-white font-bold">
+                    <i data-lucide="video" class="w-4 h-4 text-amber-500"></i>
+                    <span>Day 1 Video Lock Key</span>
+                </div>
+                <p class="text-zinc-400 text-[11px] leading-normal mb-2">10-second front bio-signature verification layer.</p>
+                <button onclick="simulateBioVideoLock()" class="w-full py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-700 rounded text-[11px] uppercase tracking-wide cursor-pointer">
+                    Sync Video Lock
+                </button>
+            </div>
+
+            <div id="tier-3-form-container" class="p-3 bg-gradient-to-br from-amber-500/[0.02] to-transparent border border-amber-500/20 rounded hidden">
+                <div class="flex items-center gap-2 mb-1.5 text-amber-400 font-black">
+                    <i data-lucide="award" class="w-4 h-4"></i>
+                    <span>Workstation Registration</span>
+                </div>
+                <p class="text-zinc-400 text-[11px] leading-normal mb-2">Corporate registration parameters mandatory for entering elite 27-inch ecosystem challenges.</p>
+                <form onsubmit="handleChallengeSubmission(event)" class="space-y-1.5">
+                    <input type="text" required placeholder="Business Registration Name" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <input type="text" required placeholder="CAC Corporate License Num" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <button type="submit" class="w-full py-1.5 bg-amber-500 hover:bg-amber-600 text-black font-black rounded uppercase tracking-wider text-[11px] cursor-pointer">Register Credentials</button>
+                </form>
+            </div>
+
+            <div class="p-3 border border-zinc-900 rounded space-y-1.5">
+                <label class="font-bold text-zinc-400 block uppercase tracking-wider text-[10px]">Dual-Channel Recovery Engine</label>
+                <button onclick="triggerDualOTP()" class="w-full py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded border border-zinc-800 transition-colors cursor-pointer">
+                    Dispatch Synchronized Security OTP
+                </button>
+            </div>
+        </div>
     </div>
 
-    <nav class="nav-bar">
-        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i></a>
-        <a href="shop.html" class="nav-item active"><i class="fa-solid fa-basket-shopping"></i></a>
-        <a href="vendor.html" class="nav-item"><i class="fa-solid fa-plus-circle"></i></a>
-        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user-shield"></i></a>
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/95 backdrop-blur-lg flex justify-around items-center py-3 border-t border-zinc-900 z-40">
+        <a href="dashboard.html" class="flex flex-col items-center gap-1 text-zinc-500 hover:text-white transition-colors">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[9px] uppercase tracking-wider font-bold">Home</span>
+        </a>
+        <a href="shop.html" class="flex flex-col items-center gap-1 text-amber-500 transition-colors">
+            <i class="fa-solid fa-basket-shopping text-lg"></i>
+            <span class="text-[9px] uppercase tracking-wider font-bold">Market</span>
+        </a>
+        <a href="vendor.html" class="flex flex-col items-center gap-1 text-zinc-500 hover:text-white transition-colors">
+            <i class="fa-solid fa-plus-circle text-lg"></i>
+            <span class="text-[9px] uppercase tracking-wider font-bold">Vendor</span>
+        </a>
+        <a href="profile.html" class="flex flex-col items-center gap-1 text-zinc-500 hover:text-white transition-colors">
+            <i class="fa-solid fa-user-shield text-lg"></i>
+            <span class="text-[9px] uppercase tracking-wider font-bold">Secure HQ</span>
+        </a>
     </nav>
 
     <script>
         const API_URL = "https://nawi-empire1.onrender.com";
-        let allProducts = [];
+        let liveKitchenProducts = [];
+        let SystemCart = [];
+        let CurrentActivePillarId = "marketplace";
+        let UserSecurityTier = 1;
 
-        // 1. FETCH APPROVED MEALS FROM VAULT
-        async function fetchShopData() {
+        // Structured Global Multi-Pillar Schema Matrix
+        const corePillarSchema = [
+            {
+                id: "marketplace",
+                name: "Global Marketplace",
+                icon: "shopping-bag",
+                description: "The universal directory for global product architecture, hosting assets and general catalog items securely.",
+                type: "static-market",
+                dataset: [
+                    { id: "m1", name: "Premium Obsidian Design Matrix", price: "250", category: "Framework", origin: "DB-231 HQ" },
+                    { id: "m2", name: "Titanium Chassis Node Map", price: "1200", category: "Hardware", origin: "AURORA CORE" },
+                    { id: "m3", name: "Zero-Trust Encrypted Workspace Engine", price: "85", category: "Security", origin: "7-PILLARS SEC" }
+                ]
+            },
+            {
+                id: "ads",
+                name: "Ads Program Manager",
+                icon: "layers",
+                description: "Global tracking matrix running advertisement allocations across all 7 operational columns.",
+                type: "application",
+                renderLayout: () => renderAdManagerModule()
+            },
+            {
+                id: "gaming",
+                name: "Gaming Studio",
+                icon: "gamepad-2",
+                description: "Global live matching updates and localized performance node allocations for primary titles.",
+                type: "static-market",
+                dataset: [
+                    { id: "g1", name: "Alpha Node Dedicated Match Ticket", price: "15", category: "Server Token", origin: "GAME SERVER" },
+                    { id: "g2", name: "Global Open Arena Access Key", price: "50", category: "Access Token", origin: "EMPIRE ARENA" }
+                ]
+            },
+            {
+                id: "livestream",
+                name: "Live Stream Sync",
+                icon: "video",
+                description: "Real-time verification video feed pipelines confirming secure operator activity logs.",
+                type: "application",
+                renderLayout: () => renderLiveStreamModule()
+            },
+            {
+                id: "kitchen",
+                name: "Kitchen Meal Vault",
+                icon: "utensils",
+                description: "Live connection pipeline handling verified food logs, distribution tracking, and chef stream assets.",
+                type: "dynamic-database"
+            },
+            {
+                id: "music",
+                name: "Music Promotion Hub",
+                icon: "music",
+                description: "Ecosystem distribution soundboard. Index tracks, stream direct packages, or download files directly.",
+                type: "static-market",
+                dataset: [
+                    { id: "mu1", name: "High-Yield Global Release Package", price: "80", category: "Artist Pass", origin: "AUDIO STREAM" },
+                    { id: "mu2", name: "Verified Creator Index Allocation", price: "150", category: "Verification", origin: "MUSIC CORE" }
+                ]
+            },
+            {
+                id: "content",
+                name: "Content Creation Feed",
+                icon: "rss",
+                description: "Structural hub tracking text asset distributions, public system patches, and node verification streams.",
+                type: "application",
+                renderLayout: () => renderContentFeedModule()
+            },
+            {
+                id: "barbershop",
+                name: "Sovereign Stylist Studio",
+                icon: "scissors",
+                description: "High-contrast visual optimization profiles optimized for verified global barbershops, cosmetic boutiques, and salon assets.",
+                type: "static-market",
+                dataset: [
+                    { id: "b1", name: "Obsidian Core Style Matrix", price: "35", category: "Aesthetics", origin: "STYLIST ENGINE" },
+                    { id: "b2", name: "Polished Gold Layout Asset Patch", price: "60", category: "Visual Framework", origin: "STYLIST LUX" }
+                ]
+            },
+            {
+                id: "apparel",
+                name: "Apparel Studio",
+                icon: "shirt",
+                description: "Diamondback 231 creativity framework workspace. Design your digital assets and push them directly to market listings.",
+                type: "application",
+                renderLayout: () => renderApparelStudioModule()
+            }
+        ];
+
+        // Boot Loop Initialization
+        window.addEventListener("DOMContentLoaded", async () => {
+            renderPillarNavigationLinks();
+            await fetchApprovedKitchenData();
+            loadActivePillarView("marketplace");
+            lucide.createIcons();
+        });
+
+        // Pulls dynamic approved assets straight from the Render API link in Code 1
+        async function fetchApprovedKitchenData() {
             try {
                 const res = await fetch(`${API_URL}/api/get-products`);
                 const products = await res.json();
-                
-                // Only show products you have APPROVED in HQ
-                allProducts = products.filter(p => p.status === 'APPROVED');
-                renderProducts(allProducts);
+                liveKitchenProducts = products.filter(p => p.status === 'APPROVED');
             } catch (err) {
-                console.error("Vault Connection Error");
+                console.error("Critical Vault Connection Error - Fallback routines active.");
             }
         }
 
-        // 2. RENDER PRODUCTS TO GRID
-        function renderProducts(list) {
-            const container = document.getElementById('market-container');
-            if(list.length === 0) {
-                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #444; font-size: 10px;">The Kitchen is currently being restocked.</p>';
-                return;
+        // Horizontal Link Generation
+        function renderPillarNavigationLinks() {
+            const container = document.getElementById("pillar-navigation-links");
+            container.innerHTML = corePillarSchema.map(p => `
+                <button onclick="loadActivePillarView('${p.id}')" id="nav-pill-${p.id}" class="px-3 py-1.5 rounded text-xs font-bold uppercase border border-zinc-800 bg-zinc-900/30 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all cursor-pointer">
+                    ${p.name}
+                </button>
+            `).join('');
+        }
+
+        // Main Router View Pipeline
+        function loadActivePillarView(pillarId) {
+            CurrentActivePillarId = pillarId;
+            const targetSchema = corePillarSchema.find(p => p.id === pillarId);
+            if (!targetSchema) return;
+
+            // Manage Visual Dynamic Active Pill State
+            corePillarSchema.forEach(p => {
+                const btn = document.getElementById(`nav-pill-${p.id}`);
+                if (btn) {
+                    btn.classList.remove("border-amber-500", "text-amber-500", "bg-amber-500/5");
+                    btn.classList.add("border-zinc-800", "text-zinc-400", "bg-zinc-900/30");
+                }
+            });
+            const activeBtn = document.getElementById(`nav-pill-${pillarId}`);
+            if (activeBtn) {
+                activeBtn.classList.add("border-amber-500", "text-amber-500", "bg-amber-500/5");
+                activeBtn.classList.remove("border-zinc-800", "text-zinc-400", "bg-zinc-900/30");
             }
 
-            container.innerHTML = list.map(item => `
-                <div class="product-card">
-                    <img src="${item.images[0] || 'https://via.placeholder.com/300x200'}" class="product-img" alt="meal">
-                    <div class="product-info">
-                        <div class="product-origin">${item.origin}</div>
-                        <div class="product-name">${item.mealName}</div>
-                        <div class="product-price">${item.price} 🪙</div>
-                        <button class="btn-buy" onclick="initiatePurchase('${item._id}')">Acquire</button>
+            // Sync Header Content Nodes
+            document.getElementById("current-view-title").innerText = targetSchema.name;
+            document.getElementById("current-view-desc").innerText = targetSchema.description;
+
+            const gridContainer = document.getElementById("marketplace-grid");
+            const filterHousing = document.getElementById("dynamic-filter-housing");
+            
+            // Empty filter space by default
+            filterHousing.innerHTML = "";
+
+            // Routing Node Core Evaluation Logic
+            if (targetSchema.type === "static-market") {
+                gridContainer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+                renderStaticItemsList(targetSchema.dataset);
+            } else if (targetSchema.type === "dynamic-database") {
+                gridContainer.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+                
+                // Inject original filter category controls from Code 1
+                filterHousing.innerHTML = `
+                    <select onchange="filterKitchenCategory(this.value)" class="bg-zinc-900 border border-zinc-800 text-xs text-amber-500 font-bold p-1.5 rounded focus:outline-none focus:border-amber-500">
+                        <option value="All">All Categories</option>
+                        <option value="Raw Food">Raw Food</option>
+                        <option value="Cooked Meal">Cooked Meals</option>
+                        <option value="Spices">Spices</option>
+                        <option value="International">International</option>
+                    </select>
+                `;
+                renderDynamicKitchenList(liveKitchenProducts);
+            } else if (targetSchema.type === "application") {
+                gridContainer.className = "block w-full";
+                gridContainer.innerHTML = targetSchema.renderLayout();
+            }
+
+            lucide.createIcons();
+        }
+
+        // Layout Rendering for static item catalogs
+        function renderStaticItemsList(dataset) {
+            const container = document.getElementById("marketplace-grid");
+            container.innerHTML = dataset.map(item => `
+                <div class="bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-all rounded-xl p-4 flex flex-col justify-between relative group overflow-hidden">
+                    <div>
+                        <div class="flex justify-between items-start text-[9px] font-mono tracking-widest text-zinc-500 uppercase mb-2">
+                            <span>${item.category}</span>
+                            <span class="text-amber-500/60 font-bold">${item.origin}</span>
+                        </div>
+                        <h4 class="text-xs font-black tracking-tight text-white group-hover:text-amber-400 transition-colors uppercase leading-normal">${item.name}</h4>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-zinc-900/60 pt-3 mt-4">
+                        <span class="text-xs font-black text-amber-500">${item.price} 🪙</span>
+                        <button onclick="addItemToEscrowPipeline('${item.id}', '${item.name}', ${item.price})" class="px-2.5 py-1.5 bg-zinc-900 hover:bg-amber-500 hover:text-black border border-zinc-800 text-zinc-300 font-black text-[9px] rounded uppercase tracking-wider transition-all cursor-pointer">
+                            Acquire
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 3. FILTER LOGIC
-        function filterShop(category) {
-            // Update UI buttons
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText === category || (category === 'All' && btn.innerText === 'All Assets')) {
-                    btn.classList.add('active');
-                }
-            });
+        // Layout Rendering for dynamic data assets pulled from Code 1 Live Database
+        function renderDynamicKitchenList(list) {
+            const container = document.getElementById("marketplace-grid");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-zinc-500 font-mono text-xs py-16 uppercase tracking-widest">The Kitchen is currently being restocked.</p>`;
+                return;
+            }
 
-            if(category === 'All') {
-                renderProducts(allProducts);
+            container.innerHTML = list.map(item => `
+                <div class="bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden flex flex-col justify-between group">
+                    <img src="${item.images && item.images[0] ? item.images[0] : 'https://via.placeholder.com/300x200'}" class="w-full h-32 object-cover border-b border-zinc-900 group-hover:scale-102 transition-transform duration-300" alt="vault product">
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <div class="mb-2">
+                            <div class="flex justify-between items-center text-[8px] font-mono tracking-widest text-zinc-500 uppercase mb-1">
+                                <span>${item.category || 'Meal Module'}</span>
+                                <span class="text-zinc-600">${item.origin || 'EMPIRE SYSTEM'}</span>
+                            </div>
+                            <h4 class="text-xs font-black tracking-tight text-zinc-200 uppercase truncate">${item.mealName}</h4>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-zinc-900 pt-2 mt-2">
+                            <span class="text-xs font-black text-amber-500">${item.price} 🪙</span>
+                            <button onclick="addItemToEscrowPipeline('${item._id}', '${item.mealName}', ${item.price})" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-black font-black text-[9px] rounded uppercase tracking-wider transition-colors cursor-pointer">
+                                Acquire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Live Category Filters derived from Code 1
+        function filterKitchenCategory(category) {
+            if (category === "All") {
+                renderDynamicKitchenList(liveKitchenProducts);
             } else {
-                const filtered = allProducts.filter(p => p.category === category);
-                renderProducts(filtered);
+                const filtered = liveKitchenProducts.filter(p => p.category === category);
+                renderDynamicKitchenList(filtered);
             }
         }
 
-        // 4. PURCHASE LOGIC
-        function initiatePurchase(productId) {
-            alert("SECURE HANDSHAKE INITIATED: Contacting Founder for transaction clearance.");
-            // Here you would link to a checkout or a chat with the seller
+        /* HARD-CODED OPERATIONAL INTERFACE APPLICATION LAYOUT GENERATORS */
+
+        function renderAdManagerModule() {
+            return `
+                <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-5 space-y-5 max-w-3xl mx-auto">
+                    <div class="flex justify-between items-start flex-wrap gap-3 border-b border-zinc-900 pb-3">
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-white">Universal Visibility Engine</h3>
+                            <p class="text-[11px] text-zinc-500 mt-0.5">Inject target tracking metrics directly across the 7 interconnected platform modules.</p>
+                        </div>
+                        <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono uppercase font-bold tracking-widest">Global Ad Network Online</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-zinc-900/20 border border-zinc-900 p-3 rounded-lg"><span class="text-zinc-500 text-[9px] uppercase font-bold block">Impressions</span><h4 class="text-base font-black text-white mt-0.5">4.8M</h4></div>
+                        <div class="bg-zinc-900/20 border border-zinc-900 p-3 rounded-lg"><span class="text-zinc-500 text-[9px] uppercase font-bold block">Active Bids</span><h4 class="text-base font-black text-amber-500 mt-0.5">142</h4></div>
+                        <div class="bg-zinc-900/20 border border-zinc-900 p-3 rounded-lg"><span class="text-zinc-500 text-[9px] uppercase font-bold block">Core Yield</span><h4 class="text-base font-black text-emerald-400 mt-0.5">+12.4%</h4></div>
+                    </div>
+                    <div class="space-y-2 pt-1">
+                        <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Inject New Target Frame</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" id="ad-name" placeholder="Campaign Label" class="bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <select id="ad-target" class="bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-400 focus:outline-none focus:border-amber-500">
+                                <option value="Marketplace">Pillar: Marketplace</option>
+                                <option value="Gaming">Pillar: Gaming Studio</option>
+                                <option value="Kitchen">Pillar: Kitchen Meal</option>
+                            </select>
+                            <button onclick="triggerAdCampaignCreation()" class="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs uppercase tracking-widest rounded transition-colors cursor-pointer py-2">Broadcast</button>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        // Initialize Shop
-        window.onload = fetchShopData;
+        function renderLiveStreamModule() {
+            return `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                    <div class="lg:col-span-2 bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden flex flex-col justify-between min-h-[300px] relative">
+                        <div class="p-3 flex justify-between items-center bg-zinc-900/40 border-b border-zinc-900">
+                            <div class="flex items-center space-x-2">
+                                <div class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+                                <span class="text-[11px] font-black uppercase tracking-wider text-white">Live Node Pipeline</span>
+                            </div>
+                            <span class="text-[9px] font-mono bg-zinc-900 px-2 py-0.5 rounded text-zinc-500">SYS_LIVE_001</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-6 text-center space-y-3 my-auto">
+                            <div class="h-10 w-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-600 animate-spin"><i data-lucide="loader" class="w-5 h-5"></i></div>
+                            <div>
+                                <h4 class="text-xs font-black text-white uppercase tracking-wider">Awaiting Stream Initialization Packet</h4>
+                                <p class="text-[11px] text-zinc-500 mt-0.5">Mandatory Video Locks automatically clear interaction credentials.</p>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-zinc-900 bg-zinc-900/10 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-zinc-500">Status: Locked</span>
+                            <button onclick="simulateBioVideoLock()" class="px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px] font-bold rounded uppercase tracking-wider transition-all cursor-pointer">Start Stream Capture</button>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-4 flex flex-col justify-between">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-900 pb-2 mb-2">Node Activity Log</h3>
+                        <div class="flex-1 space-y-2 overflow-y-auto max-h-[200px] text-[10px] font-mono text-zinc-500">
+                            <p>[03:51:29] Node loop online...</p>
+                            <p class="text-amber-500/70">[03:51:32] Mock layer active for missing controllers.</p>
+                            <p class="text-emerald-500/70">[03:51:40] Escrow routing pipeline primed.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderContentFeedModule() {
+            return `
+                <div class="max-w-xl mx-auto bg-zinc-950 border border-zinc-900 rounded-xl p-5 space-y-4">
+                    <div class="border-b border-zinc-900 pb-3">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-white">System Feed Platform</h3>
+                        <p class="text-[11px] text-zinc-500 mt-0.5">Broadcast verified structural status updates down to the public network matrix.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <textarea id="feed-text-input" rows="2" placeholder="Configure global status deployment parameters..." class="w-full bg-zinc-900 border border-zinc-800 rounded p-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] text-zinc-600 font-mono">Channel: System Loop</span>
+                            <button onclick="postToSystemFeed()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-black font-black text-xs uppercase tracking-widest rounded transition-colors cursor-pointer">Dispatch</button>
+                        </div>
+                    </div>
+                    <div id="feed-post-injection-zone" class="space-y-3 pt-1">
+                        <div class="border border-zinc-900 bg-zinc-900/10 p-3 rounded-lg space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px]">
+                                <span class="font-black text-amber-500">7 pillars @ NAWI-EMPIRE</span>
+                                <span class="text-zinc-600">03:00:12</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 leading-relaxed">The entire systemic architecture has been securely bound to 7 distinct structural pillars. Asset protocols running clear.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApparelStudioModule() {
+            return `
+                <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-5 space-y-5 max-w-4xl mx-auto">
+                    <div class="flex justify-between items-start flex-wrap gap-2 border-b border-zinc-900 pb-3">
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-white">Diamondback 231 Digital Framework</h3>
+                            <p class="text-[11px] text-zinc-500 mt-0.5">Design premium layouts and export vector components straight into marketplace listings.</p>
+                        </div>
+                        <span class="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono font-black uppercase tracking-widest">Sovereign Canvas</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="space-y-3 bg-zinc-900/10 p-3 rounded-lg border border-zinc-900 text-xs">
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Engine Controls</h4>
+                            <div class="space-y-1">
+                                <label class="text-zinc-500 text-[11px]">Chassis Aesthetic Theme</label>
+                                <select id="canvas-theme" onchange="updateCanvasSimulation()" class="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-white text-xs focus:outline-none">
+                                    <option value="obsidian">Deep Obsidian Profile</option>
+                                    <option value="titanium">Industrial Titanium Theme</option>
+                                    <option value="gold">Polished Gold Accents</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-zinc-500 text-[11px]">Layout Identification Label</label>
+                                <input type="text" id="canvas-label" value="DB-231 Sovereign Concept" class="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-white text-xs focus:outline-none">
+                            </div>
+                            <button onclick="exportCanvasToMarketplace()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-black font-black uppercase tracking-widest rounded text-[10px] transition-colors cursor-pointer mt-2">Export Asset</button>
+                        </div>
+                        <div class="md:col-span-3 bg-zinc-900/20 border border-zinc-900 rounded-lg p-8 flex flex-col items-center justify-center min-h-[220px]" id="canvas-preview-box" style="background-color: #0a0a0a;">
+                            <div id="canvas-mock-element" class="px-5 py-6 border border-zinc-800 rounded bg-zinc-950 text-center shadow-2xl max-w-xs">
+                                <i data-lucide="sparkles" class="w-6 h-6 mx-auto text-zinc-600 mb-2" id="canvas-preview-icon"></i>
+                                <h4 class="text-xs font-black text-white" id="canvas-preview-text">DB-231 Sovereign Concept</h4>
+                                <p class="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">Sovereign Stylist Spec Engine Matrix Output</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* HARD-CODED INTERACTIVE PIPELINE LOGIC UTILITIES */
+
+        function toggleSystemPanel(panelId) {
+            const el = document.getElementById(panelId);
+            if (!el) return;
+            if (el.classList.contains("hidden")) {
+                el.classList.remove("hidden");
+                setTimeout(() => el.classList.remove("translate-x-full"), 10);
+            } else {
+                el.classList.add("translate-x-full");
+                setTimeout(() => el.classList.add("hidden"), 300);
+            }
+        }
+
+        function addItemToEscrowPipeline(id, name, price) {
+            SystemCart.push({ uniqueIndex: Date.now(), id, name, price: parseFloat(price) });
+            updateCartInterfaceManifest();
+            alert(`SECURE PIPELINE TRIGGERED // Item [${name}] loaded into local Escrow tracking buffers.`);
+        }
+
+        function updateCartInterfaceManifest() {
+            document.getElementById("cart-counter").innerText = SystemCart.length;
+            const container = document.getElementById("cart-items-container");
+            
+            if (SystemCart.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-zinc-600 text-xs uppercase tracking-widest font-mono">Escrow Pipeline Open</div>`;
+                document.getElementById("cart-total").innerText = "0.00 🪙";
+                return;
+            }
+
+            container.innerHTML = SystemCart.map(item => `
+                <div class="bg-zinc-900/60 border border-zinc-800 p-2.5 rounded-lg flex justify-between items-center text-xs">
+                    <div>
+                        <h4 class="font-black text-zinc-200 uppercase text-[11px] truncate max-w-[180px]">${item.name}</h4>
+                        <span class="text-[10px] text-amber-500 font-bold block mt-0.5">${item.price.toFixed(2)} 🪙</span>
+                    </div>
+                    <button onclick="removeItemFromEscrow(${item.uniqueIndex})" class="text-zinc-600 hover:text-red-400 transition-colors p-1 cursor-pointer">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            let combinedSum = SystemCart.reduce((acc, curr) => acc + curr.price, 0);
+            document.getElementById("cart-total").innerText = `${combinedSum.toFixed(2)} 🪙`;
+            lucide.createIcons();
+        }
+
+        function removeItemFromEscrow(uniqueIndex) {
+            SystemCart = SystemCart.filter(item => item.uniqueIndex !== uniqueIndex);
+            updateCartInterfaceManifest();
+        }
+
+        function executeEscrowTransaction() {
+            if (SystemCart.length === 0) {
+                alert("ABORTED // Escrow compiler cannot handle an empty transaction sequence registry.");
+                return;
+            }
+            alert("SECURE HANDSHAKE INITIATED // Routing payload logs directly to Founder and local mock p2pGateway layers for transaction authorization clearance.");
+            SystemCart = [];
+            updateCartInterfaceManifest();
+            toggleSystemPanel('cart-panel');
+        }
+
+        function setSecurityTier(tier) {
+            UserSecurityTier = tier;
+            const display = document.getElementById("active-tier-display");
+            const t1Form = document.getElementById("tier-1-bio-verification");
+            const t3Form = document.getElementById("tier-3-form-container");
+
+            [1, 2, 3].forEach(t => {
+                const btn = document.getElementById(`tier-btn-${t}`);
+                if (btn) {
+                    btn.className = "w-full text-left p-2 rounded border border-zinc-800 bg-zinc-900/10 text-zinc-400 hover:border-zinc-700 transition-colors cursor-pointer";
+                    const activeBadge = btn.querySelector('span');
+                    if (activeBadge && activeBadge.innerText === "ACTIVE") activeBadge.remove();
+                }
+            });
+
+            const targetBtn = document.getElementById(`tier-btn-${tier}`);
+            if (targetBtn) {
+                targetBtn.className = "w-full text-left p-2 rounded border border-amber-500 bg-zinc-900/40 text-white font-bold flex justify-between items-center cursor-pointer";
+                targetBtn.insertAdjacentHTML('beforeend', `<span class="text-[8px] bg-amber-500 text-black px-1 rounded font-black">ACTIVE</span>`);
+            }
+
+            if (tier === 1) {
+                display.innerText = "Tier 1: Casual Citizen";
+                display.className = "text-[10px] font-black text-zinc-400 uppercase tracking-wider";
+                t1Form.classList.remove("hidden");
+                t3Form.classList.add("hidden");
+            } else if (tier === 2) {
+                display.innerText = "Tier 2: Verified Merchant";
+                display.className = "text-[10px] font-black text-amber-500 uppercase tracking-wider";
+                t1Form.classList.add("hidden");
+                t3Form.classList.add("hidden");
+            } else if (tier === 3) {
+                display.innerText = "Tier 3: Sovereign Challenger";
+                display.className = "text-[10px] font-black text-yellow-500 uppercase tracking-wider animate-pulse";
+                t1Form.classList.add("hidden");
+                t3Form.classList.remove("hidden");
+            }
+        }
+
+        function simulateBioVideoLock() {
+            alert("BIOMETRIC TRACE LOCKED // 10-second front bio-signature captured and compiled down as an un-hackable unique signature hash.");
+        }
+
+        function handleChallengeSubmission(e) {
+            e.preventDefault();
+            alert("REGISTRATION TRACE DEPLOYED // Official corporate documentation filed into database storage matrices. Profile verified to compete for the high-end workstation asset.");
+            e.target.reset();
+        }
+
+        function triggerDualOTP() {
+            alert("TRANSMITTING PACKETS // Dual-Channel protocol fired. Synchronized verification tokens deployed simultaneously to original email and registration hardware addresses.");
+        }
+
+        function triggerAdCampaignCreation() {
+            const label = document.getElementById("ad-name").value;
+            const target = document.getElementById("ad-target").value;
+            if (!label) return alert("Abort: Campaign signature tracker required.");
+            alert(`METRICS FIRED // Ad campaign module '${label}' initialized inside the ${target} network parameters.`);
+            document.getElementById("ad-name").value = "";
+        }
+
+        function postToSystemFeed() {
+            const txt = document.getElementById("feed-text-input").value;
+            if (!txt) return;
+            const zone = document.getElementById("feed-post-injection-zone");
+            zone.insertAdjacentHTML('afterbegin', `
+                <div class="border border-amber-500/10 bg-zinc-900/30 p-3 rounded-lg space-y-1 animate-fade-in">
+                    <div class="flex items-center justify-between text-[10px]">
+                        <span class="font-black text-white flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-amber-500"></i> Active Node Operator</span>
+                        <span class="text-zinc-600 font-mono">Just Now</span>
+                    </div>
+                    <p class="text-xs text-zinc-300 leading-relaxed">${txt}</p>
+                </div>
+            `);
+            document.getElementById("feed-text-input").value = "";
+            lucide.createIcons();
+        }
+
+        function updateCanvasSimulation() {
+            const theme = document.getElementById("canvas-theme").value;
+            const label = document.getElementById("canvas-label").value;
+            const previewBox = document.getElementById("canvas-preview-box");
+            const innerCard = document.getElementById("canvas-mock-element");
+            const icon = document.getElementById("canvas-preview-icon");
+            
+            document.getElementById("canvas-preview-text").innerText = label || "Bespoke System Asset";
+
+            if (theme === "obsidian") {
+                previewBox.style.backgroundColor = "#050505";
+                innerCard.style.borderColor = "#1f1f23";
+                icon.style.color = "#52525b";
+            } else if (theme === "titanium") {
+                previewBox.style.backgroundColor = "#1f1f23";
+                innerCard.style.borderColor = "#52525b";
+                icon.style.color = "#e4e4e7";
+            } else if (theme === "gold") {
+                previewBox.style.backgroundColor = "#0a0a0a";
+                innerCard.style.borderColor = "#d4af37";
+                icon.style.color = "#d4af37";
+            }
+        }
+
+        function exportCanvasToMarketplace() {
+            const label = document.getElementById("canvas-label").value || "Bespoke Design Asset";
+            alert(`COMPILATION AGENT LAUNCHED // File vector '${label}' uploaded onto the active marketplace indexing servers safely.`);
+        }
     </script>
 </body>
 </html>
