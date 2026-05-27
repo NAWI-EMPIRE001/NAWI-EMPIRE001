@@ -40,7 +40,7 @@ if (!fs.existsSync('uploads')) {
 // ==========================================
 let authController, battleController, borderControl, masterPayout, p2pGateway;
 
-const safeLoad = (primaryPath, fallbackPath, moduleName) => {
+const safeLoad = (primaryPath, fallbackPath, rootFallbackPath, moduleName) => {
     try {
         return require(primaryPath);
     } catch (e) {
@@ -48,7 +48,14 @@ const safeLoad = (primaryPath, fallbackPath, moduleName) => {
             try {
                 return require(fallbackPath);
             } catch (err) {
-                console.warn(`⚠️ Warning: ${moduleName} missing at standard and fallback paths. Registering mock layer.`);
+                // Proceed to root fallback if both folder paths fail
+            }
+        }
+        if (rootFallbackPath) {
+            try {
+                return require(rootFallbackPath);
+            } catch (rootErr) {
+                console.warn(`⚠️ Warning: ${moduleName} missing at standard, case-fallback, and root paths. Registering mock layer.`);
                 return null;
             }
         }
@@ -57,27 +64,28 @@ const safeLoad = (primaryPath, fallbackPath, moduleName) => {
     }
 };
 
-authController = safeLoad('./controllers/authController', './controllers/authcontroller', 'authController') || {
+// Updated loaders to check './controllers/' first, then standard alternatives, and finally the root directory './'
+authController = safeLoad('./controllers/authController', './controllers/authcontroller', './authController', 'authController') || {
     registerUser: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", message: "Auth microservice simulated." }),
     handleUserSession: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", token: "mock_session_key" })
 };
 
-battleController = safeLoad('./controllers/battle', null, 'battleController') || {
+battleController = safeLoad('./controllers/battle', null, './battle', 'battleController') || {
     initializeBattleSession: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", message: "Gaming studio matchmaking standby.", latency: "12ms" }),
     processStreamVoteGift: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", message: "Gifting transaction ledger posted." })
 };
 
-borderControl = safeLoad('./controllers/border-control', null, 'borderControl') || {
+borderControl = safeLoad('./controllers/border-control', null, './border-control', 'borderControl') || {
     processIdentityUpload: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", message: "Identity file trace securely uploaded." }),
     getVerificationStatus: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", id_verified: true })
 };
 
-masterPayout = safeLoad('./controllers/master-payout', null, 'masterPayout') || {
+masterPayout = safeLoad('./controllers/master-payout', null, './master-payout', 'masterPayout') || {
     getPendingWithdrawals: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", pendingCount: 0 }),
     authorizePayout: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", settlement: "AUTHORIZED" })
 };
 
-p2pGateway = safeLoad('./controllers/p2p-gateway', null, 'p2pGateway') || {
+p2pGateway = safeLoad('./controllers/p2p-gateway', null, './p2p-gateway', 'p2pGateway') || {
     serveGatewayPage: (req, res) => res.status(200).send("P2P core system bridge operational."),
     createP2POrder: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", orderId: "P2P-MOCK-992" }),
     confirmP2PRelease: (req, res) => res.status(200).json({ status: "MOCK_ACTIVE", step: "RELEASE_COMPLETE" }),
@@ -652,7 +660,8 @@ app.post('/api/auth/recover-keys', async (req, res) => {
 // 10. VALUATION HOOKS & LIQUIDITY INDEXERS
 // ==========================================
 app.get('/gateway', p2pGateway.serveGatewayPage);
-app.get('/p2p-bridge', (req, res, next) => p2pGateway.serveGatewayPage(req, res, next));
+app.p2pBridge = (req, res, next) => p2pGateway.serveGatewayPage(req, res, next);
+app.get('/p2p-bridge', app.p2pBridge);
 app.post('/api/p2p/create-order', (req, res, next) => p2pGateway.createP2POrder(req, res, next));
 app.post('/api/p2p/confirm-release', (req, res, next) => p2pGateway.confirmP2PRelease(req, res, next));
 app.post('/api/p2p/transact', enforceEcosystemTierSecurity, p2pGateway.processPillarTransaction);
