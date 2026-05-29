@@ -1,16 +1,18 @@
 {
-  "name": "nawi-empire-sovereign-platform",
-  "version": "7.1.0",
-  "description": "NAWI-EMPIRE Unified Sovereign Production Platform Engine | Aurora-231 Infrastructure Core",
+  "name": "nawi-os-sovereign-platform",
+  "version": "1.0.0",
+  "description": "nawi-OS Unified Sovereign Production Platform Engine | Aurora-231 Infrastructure Core",
   "main": "server.js",
   "private": true,
   "license": "UNLICENSED",
   "type": "commonjs",
-  "author": "NAWI-EMPIRE001 (Nsikak Warri)",
+  "author": "nawi-OS Founder",
+
   "engines": {
     "node": ">=18.18.0",
     "npm": ">=9.0.0"
   },
+
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
@@ -31,8 +33,9 @@
     "pillar:stylist": "node microservices/sovereign-stylist.js",
     "pillar:apparel": "node microservices/apparel-studio-canvas.js"
   },
+
   "keywords": [
-    "nawi-empire",
+    "nawi-os",
     "aurora-231",
     "diamondback-231",
     "mongodb",
@@ -55,6 +58,7 @@
     "ads-engine",
     "apparel-studio"
   ],
+
   "dependencies": {
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
@@ -77,15 +81,19 @@
     "stripe": "^15.12.0",
     "uuid": "^10.0.0"
   },
+
   "devDependencies": {
     "nodemon": "^3.1.4"
   },
+
   "repository": {
     "type": "git",
-    "url": "https://github.com/RobbieCraig/nawi-empire.git"
+    "url": "https://github.com/yourusername/nawi-os.git"
   },
+
   "bugs": {
-    "url": "https://github.com/RobbieCraig/nawi-empire/issues"
+    "url": "https://github.com/yourusername/nawi-os/issues"
   },
-  "homepage": "https://nawi-empire1.onrender.com"
+
+  "homepage": "https://nawi-os.onrender.com"
 }
