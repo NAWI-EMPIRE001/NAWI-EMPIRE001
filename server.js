@@ -1,8 +1,10 @@
 // =========================================================
-// NAWI-EMPIRE MASTER SYSTEM ENGINE v7.0
-// PRODUCTION UNIFIED BUILD
+// NAWI-EMPIRE MASTER SYSTEM ENGINE v7.5 - UNIFIED PRODUCTION BUILD
+// SYSTEMS: 7 Pillars, Aurora-231 Handshake, Sovereign P2P Escrow, WebSocket Stream Core
+// AUTHORITY WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
 // =========================================================
 
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const http = require('http');
@@ -17,36 +19,30 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const axios = require('axios');
 const { Server } = require('socket.io');
 
 // =========================================================
 // EXPRESS SERVER INITIALIZATION
 // =========================================================
-
 const app = express();
 const server = http.createServer(app);
 
 // =========================================================
 // ENVIRONMENT VARIABLES
 // =========================================================
-
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET';
 const NODE_SECRET_KEY = process.env.NODE_SECRET_KEY || 'NAWI_DEFAULT_KEY';
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV || 'production';
 
 const SOVEREIGN_ID = 'NAWI-EMPIRE001';
 const SYSTEM_WATERMARK = 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001';
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/nawi_empire';
+const MONGO_URI = process.env.MONGO_URI;
 
 // =========================================================
 // CREATE REQUIRED DIRECTORIES
 // =========================================================
-
 const uploadsDir = path.join(__dirname, 'uploads');
-
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -54,7 +50,6 @@ if (!fs.existsSync(uploadsDir)) {
 // =========================================================
 // SECURITY MIDDLEWARE
 // =========================================================
-
 app.use(helmet({
     crossOriginResourcePolicy: false,
     contentSecurityPolicy: false
@@ -64,45 +59,27 @@ app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'user-id',
-        'x-node-uuid',
-        'x-node-ram',
-        'x-node-display',
-        'x-node-signature',
-        'x-nawi-identity'
+        'Content-Type', 'Authorization', 'user-id', 'x-node-uuid',
+        'x-node-ram', 'x-node-display', 'x-node-signature', 'x-nawi-identity'
     ]
 }));
 
 app.use(compression());
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
 app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// =========================================================
 // RATE LIMITER
-// =========================================================
-
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 300,
     standardHeaders: true,
     legacyHeaders: false,
-    message: {
-        success: false,
-        message: 'Too many requests detected.'
-    }
+    message: { success: false, message: 'Too many requests detected.' }
 });
-
 app.use(limiter);
 
-// =========================================================
-// RESPONSE HEADERS
-// =========================================================
-
+// PLATFORM HEADERS
 app.use((req, res, next) => {
     res.setHeader('X-Powered-By', 'NAWI-EMPIRE');
     res.setHeader('X-Platform-Authority', SOVEREIGN_ID);
@@ -110,365 +87,109 @@ app.use((req, res, next) => {
     next();
 });
 
-// =========================================================
-// STATIC FILES
-// =========================================================
-
+// STATIC ASSETS
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadsDir));
 
-// =========================================================
 // FILE UPLOAD CONFIGURATION
-// =========================================================
-
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
+    destination: (req, file, cb) => { cb(null, uploadsDir); },
     filename: (req, file, cb) => {
         const uniqueName = `${Date.now()}-${crypto.randomBytes(5).toString('hex')}-${file.originalname}`;
         cb(null, uniqueName);
     }
 });
-
-const upload = multer({
-    storage,
-    limits: {
-        fileSize: 100 * 1024 * 1024
-    }
-});
+const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 
 // =========================================================
-// SAFE CONTROLLER LOADER
+// DATABASE SCHEMAS & UTILITIES
 // =========================================================
-
-const safeLoad = (primaryPath, fallbackPath, rootFallbackPath, moduleName) => {
-    try {
-        return require(primaryPath);
-    } catch (e) {
-        if (fallbackPath) {
-            try {
-                return require(fallbackPath);
-            } catch (err) {}
-        }
-
-        if (rootFallbackPath) {
-            try {
-                return require(rootFallbackPath);
-            } catch (rootErr) {
-                console.warn(`⚠️ ${moduleName} missing.`);
-                return null;
-            }
-        }
-
-        return null;
-    }
-};
-
-// =========================================================
-// OPTIONAL CONTROLLERS
-// =========================================================
-
-let authController = safeLoad(
-    './controllers/authController',
-    './controllers/authcontroller',
-    './authController',
-    'authController'
-) || {
-    registerUser: async (req, res) => {
-        try {
-            const { username, email, password } = req.body;
-
-            const existingUser = await User.findOne({
-                $or: [{ email }, { username }]
-            });
-
-            if (existingUser) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'User already exists.'
-                });
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 12);
-
-            const user = await User.create({
-                username,
-                email,
-                password: hashedPassword
-            });
-
-            const token = jwt.sign(
-                {
-                    userId: user._id,
-                    email: user.email
-                },
-                JWT_SECRET,
-                {
-                    expiresIn: '7d'
-                }
-            );
-
-            return res.status(201).json({
-                success: true,
-                token,
-                user
-            });
-
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
-    },
-
-    handleUserSession: async (req, res) => {
-        try {
-            const { email, password } = req.body;
-
-            const user = await User.findOne({ email });
-
-            if (!user) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Invalid credentials.'
-                });
-            }
-
-            const validPassword = await bcrypt.compare(password, user.password);
-
-            if (!validPassword) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Invalid credentials.'
-                });
-            }
-
-            const token = jwt.sign(
-                {
-                    userId: user._id,
-                    email: user.email
-                },
-                JWT_SECRET,
-                {
-                    expiresIn: '7d'
-                }
-            );
-
-            return res.status(200).json({
-                success: true,
-                token,
-                user
-            });
-
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
-};
-
-// =========================================================
-// DATABASE SCHEMAS
-// =========================================================
-
 const UserSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        default: () => crypto.randomUUID()
-    },
-    username: {
-        type: String,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    phone_number: {
-        type: String,
-        default: ''
-    },
-    profilePhoto: {
-        type: String,
-        default: ''
-    },
-    verified: {
-        type: Boolean,
-        default: false
-    },
-    role: {
-        type: String,
-        enum: ['user', 'creator', 'admin', 'founder'],
-        default: 'user'
-    },
+    userId: { type: String, default: () => crypto.randomUUID(), unique: true },
+    username: { type: String, trim: true, required: true },
+    email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true },
+    phone_number: { type: String, default: '' },
+    profilePhoto: { type: String, default: '' },
+    verified: { type: Boolean, default: false },
+    role: { type: String, enum: ['user', 'creator', 'admin', 'founder'], default: 'user' },
+    current_tier: { type: Number, enum: [1, 2, 3], default: 1 },
     identity: {
-        sovereign_name: {
-            type: String,
-            default: 'Authenticated Citizen'
-        },
-        legacy_rank: {
-            type: String,
-            default: 'Citizen'
-        },
-        id_verified: {
-            type: Boolean,
-            default: false
-        }
+        sovereign_name: { type: String, default: 'Authenticated Citizen' },
+        legacy_rank: { type: String, default: 'Citizen' },
+        id_verified: { type: Boolean, default: false }
     },
     verification_metrics: {
-        day_1_video_url: {
-            type: String,
-            default: ''
-        },
-        corporate_docs_submitted: {
-            type: Boolean,
-            default: false
-        },
-        businessName: {
-            type: String,
-            default: ''
-        },
-        cacNumber: {
-            type: String,
-            default: ''
-        }
+        day_1_video_url: { type: String, default: '' },
+        corporate_docs_submitted: { type: Boolean, default: false },
+        businessName: { type: String, default: '' },
+        cacNumber: { type: String, default: '' }
     },
-    followers: {
-        type: Number,
-        default: 0
-    },
-    following: {
-        type: Number,
-        default: 0
+    metrics: {
+        follower_count: { type: Number, default: 0 },
+        following_count: { type: Number, default: 0 },
+        daily_streak: { type: Number, default: 0 }
     },
     wallet: {
-        empireCoins: {
-            type: Number,
-            default: 0
-        },
-        totalEarned: {
-            type: Number,
-            default: 0
-        },
-        pendingConversion: {
-            type: Number,
-            default: 0
-        }
+        empire_coins: { type: Number, default: 0 },
+        total_earned_to_date: { type: Number, default: 0 },
+        pending_conversion: { type: Number, default: 0 }
     }
-}, {
-    timestamps: true
-});
+}, { timestamps: true });
 
 const ProductSchema = new mongoose.Schema({
-    creator_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    creator_id: { type: String, required: true }, // Unified to String reference
+    pillar_tool: { 
+        type: String, 
+        enum: ['GENERAL', 'THE_SOVEREIGN_EXCHANGE', 'THE_VISIBILITY_ENGINE', 'THE_ARENA_NODE', 'THE_CULINARY_MATRIX', 'THE_AESTHETIC_NEXUS', 'THE_DIAMONDBACK_FORGE', 'THE_SONIC_LEDGER'], 
+        default: 'GENERAL' 
     },
-    pillar_tool: {
-        type: String,
-        default: 'GENERAL'
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        default: ''
-    },
+    title: { type: String, required: true },
+    description: { type: String, default: '' },
     pricing: {
-        base_price: {
-            type: Number,
-            default: 0
-        },
-        transaction_type: {
-            type: String,
-            default: 'P2P_ESCROW'
-        }
+        base_price: { type: Number, default: 0 },
+        transaction_type: { type: String, default: 'P2P_ESCROW' }
     },
-    media_assets: [
-        {
-            asset_id: String,
-            file_url: String,
-            file_type: String
-        }
-    ],
-    status: {
-        type: String,
-        enum: ['active', 'draft', 'sold'],
-        default: 'active'
-    }
-}, {
-    timestamps: true
-});
+    apparel_metadata: {
+        canvas_json_data: { type: String, default: "" },
+        framework_version: { type: String, default: "DIAMONDBACK-231-V1" }
+    },
+    ads_manager_metadata: {
+        boost_enabled: { type: Boolean, default: false },
+        target_impressions: { type: Number, default: 0 }
+    },
+    music_metadata: {
+        total_device_downloads: { type: Number, default: 0 },
+        artist_name: { type: String, default: "NAWI Artist" }
+    },
+    media_assets: [{
+        asset_id: String,
+        file_url: String,
+        file_type: String
+    }],
+    status: { type: String, enum: ['active', 'draft', 'sold'], default: 'active' }
+}, { timestamps: true });
 
 const PostSchema = new mongoose.Schema({
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    authorName: {
-        type: String,
-        default: ''
-    },
+    authorId: { type: String, required: true },
+    authorName: { type: String, default: '' },
     caption: String,
     mediaUrl: String,
-    mediaType: {
-        type: String,
-        enum: ['image', 'video', 'audio', 'live'],
-        default: 'image'
-    },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    comments: {
-        type: Number,
-        default: 0
-    },
-    shares: {
-        type: Number,
-        default: 0
-    },
-    liveData: {
-        roomId: String,
-        isLive: {
-            type: Boolean,
-            default: false
-        },
-        viewers: {
-            type: Number,
-            default: 0
-        }
+    mediaType: { type: String, enum: ['image', 'video', 'audio', 'live_stream'], default: 'image' },
+    pillarType: { type: String, enum: ['Comedy', 'Arena', 'Music', 'Kitchen', 'Apparel', 'Normal'], default: 'Normal' },
+    likes: { type: Number, default: 0 },
+    status: { type: String, default: 'active' },
+    live_stream_metadata: {
+        room_id: String,
+        is_live_now: { type: Boolean, default: false },
+        current_viewers: { type: Number, default: 0 }
     }
-}, {
-    timestamps: true
-});
+}, { timestamps: true });
 
 const DailyLedgerSchema = new mongoose.Schema({
-    date: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    totalVolumeProcessedUsd: {
-        type: Number,
-        default: 0
-    },
-    maxLimitCapUsd: {
-        type: Number,
-        default: 35000000
-    }
+    date: { type: String, required: true, unique: true },
+    totalVolumeProcessedUsd: { type: Number, default: 0 },
+    maxLimitCapUsd: { type: Number, default: 35000000 }
 });
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
@@ -477,59 +198,66 @@ const Post = mongoose.models.Post || mongoose.model('Post', PostSchema);
 const DailyLedger = mongoose.models.DailyLedger || mongoose.model('DailyLedger', DailyLedgerSchema);
 
 // =========================================================
-// AUTH MIDDLEWARE
+// ADAPTIVE CONTROLLER MODULE MATRIX LOADERS
 // =========================================================
+const safeLoad = (primaryPath, fallbackPath, rootFallbackPath, moduleName) => {
+    try { return require(primaryPath); } catch (e) {
+        if (fallbackPath) { try { return require(fallbackPath); } catch (err) {} }
+        if (rootFallbackPath) { try { return require(rootFallbackPath); } catch (rootErr) {} }
+        return null;
+    }
+};
 
-const authenticateToken = async (req, res, next) => {
-    try {
-        const authHeader = req.headers.authorization;
+let authController = safeLoad('./controllers/authController', './controllers/authcontroller', './authController', 'authController') || {
+    registerUser: async (req, res) => {
+        try {
+            const { username, email, password, phone_number } = req.body;
+            const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+            if (existingUser) return res.status(400).json({ success: false, message: 'User already exists.' });
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                success: false,
-                message: 'Authentication token missing.'
-            });
-        }
+            const hashedPassword = await bcrypt.hash(password, 12);
+            const user = await User.create({ username, email, password: hashedPassword, phone_number });
+            const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+            return res.status(201).json({ success: true, token, user });
+        } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
+    },
+    handleUserSession: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
+            if (!user) return res.status(401).json({ success: false, message: 'Invalid credentials.' });
 
-        const token = authHeader.split(' ')[1];
+            const validPassword = await bcrypt.compare(password, user.password);
+            if (!validPassword) return res.status(401).json({ success: false, message: 'Invalid credentials.' });
 
-        const decoded = jwt.verify(token, JWT_SECRET);
-
-        const user = await User.findById(decoded.userId);
-
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid token.'
-            });
-        }
-
-        req.user = user;
-
-        next();
-
-    } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: 'Authentication failed.'
-        });
+            const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+            return res.status(200).json({ success: true, token, user });
+        } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
     }
 };
 
 // =========================================================
-// TIER SECURITY MIDDLEWARE
+// SECURITY ACCESS CONTROL MIDDLEWARES
 // =========================================================
+const authenticateToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Authentication token missing.' });
+        }
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({ userId: decoded.userId });
+        if (!user) return res.status(401).json({ success: false, message: 'Invalid secure token identity.' });
+        req.user = user;
+        next();
+    } catch (error) { return res.status(401).json({ success: false, message: 'Authentication failed.' }); }
+};
 
 const enforceEcosystemTierSecurity = async (req, res, next) => {
     try {
-        const requesterId = req.headers['x-nawi-identity'] || req.body.userId;
-
-        if (!requesterId) {
-            return res.status(401).json({
-                success: false,
-                message: 'Missing user identity.'
-            });
-        }
+        const requesterId = req.headers['x-nawi-identity'] || req.headers['user-id'] || req.body.userId;
+        if (!requesterId) return res.status(401).json({ success: false, message: 'Missing user identity validation context.' });
 
         if (requesterId === SOVEREIGN_ID) {
             req.sovereignOverride = true;
@@ -537,35 +265,21 @@ const enforceEcosystemTierSecurity = async (req, res, next) => {
         }
 
         const user = await User.findOne({ userId: requesterId });
+        if (!user) return res.status(403).json({ success: false, message: 'Access Denied: Signature footprint missing.' });
 
-        if (!user) {
-            return res.status(403).json({
-                success: false,
-                message: 'User not found.'
+        if (!user.verification_metrics?.day_1_video_url) {
+            return res.status(403).json({ 
+                success: false, 
+                required_action: "DAY_1_VIDEO_LOCK_REQUIRED",
+                message: "Frictionless Security Gate: Biological signature video file required." 
             });
         }
-
         req.citizenProfile = user;
-
         next();
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+    } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
 };
 
-// =========================================================
-// HARDWARE SECURITY HANDSHAKE
-// =========================================================
-
-const AURORA_231_HARDWARE_PROFILE = {
-    expectedUuid: 'AURORA-231-MASTER-NODE-99X-7P',
-    expectedRamGb: 192,
-    expectedDisplaySize: 27
-};
+const AURORA_231_HARDWARE_PROFILE = { expectedUuid: 'AURORA-231-MASTER-NODE-99X-7P', expectedRamGb: 192, expectedDisplaySize: 27 };
 
 const verifySovereignNodeHandshake = (req, res, next) => {
     const systemUuid = req.headers['x-node-uuid'];
@@ -574,465 +288,283 @@ const verifySovereignNodeHandshake = (req, res, next) => {
     const secureSignature = req.headers['x-node-signature'];
 
     if (!systemUuid || !systemRam || !systemDisplay || !secureSignature) {
-        return res.status(403).json({
-            status: 'DENIED',
-            message: 'Unauthorized terminal.'
-        });
+        return res.status(403).json({ status: 'DENIED', message: 'Unauthorized execution context.' });
     }
 
     const verificationPayload = `${systemUuid}-${systemRam}-${systemDisplay}`;
+    const expectedSignature = crypto.createHmac('sha256', NODE_SECRET_KEY).update(verificationPayload).digest('hex');
 
-    const expectedSignature = crypto
-        .createHmac('sha256', NODE_SECRET_KEY)
-        .update(verificationPayload)
-        .digest('hex');
-
-    const hardwareMatches =
-        systemUuid === AURORA_231_HARDWARE_PROFILE.expectedUuid &&
-        systemRam === AURORA_231_HARDWARE_PROFILE.expectedRamGb &&
-        systemDisplay === AURORA_231_HARDWARE_PROFILE.expectedDisplaySize;
+    const hardwareMatches = systemUuid === AURORA_231_HARDWARE_PROFILE.expectedUuid &&
+                             systemRam === AURORA_231_HARDWARE_PROFILE.expectedRamGb &&
+                             systemDisplay === AURORA_231_HARDWARE_PROFILE.expectedDisplaySize;
 
     if (hardwareMatches && secureSignature === expectedSignature) {
         req.isMasterAuthority = true;
         return next();
     }
-
-    return res.status(401).json({
-        status: 'DENIED',
-        message: 'Handshake failed.'
-    });
+    return res.status(401).json({ status: 'DENIED', message: 'Hardware handshake verification failed.' });
 };
 
 // =========================================================
-// HEALTH CHECK
+// P2P LIQUIDITY CAP ENGINE
 // =========================================================
+class P2PLiquidityManager {
+    async verifyAndTrackVolume(amountUsd) {
+        const currentDate = new Date().toISOString().split('T')[0];
+        let ledger = await DailyLedger.findOne({ date: currentDate });
+        if (!ledger) ledger = new DailyLedger({ date: currentDate, totalVolumeProcessedUsd: 0 });
 
-app.get('/health', (req, res) => {
-    return res.status(200).json({
-        success: true,
-        platform: 'NAWI-EMPIRE',
-        environment: NODE_ENV,
-        uptime: process.uptime(),
-        timestamp: new Date().toISOString()
-    });
-});
+        if (ledger.totalVolumeProcessedUsd + amountUsd > ledger.maxLimitCapUsd) {
+            return { allowed: false, currentVolume: ledger.totalVolumeProcessedUsd };
+        }
+        ledger.totalVolumeProcessedUsd += amountUsd;
+        await ledger.save();
+        return { allowed: true, currentVolume: ledger.totalVolumeProcessedUsd };
+    }
+
+    async createEscrowTransaction(transactionId, amountUsd, buyerWallet, sellerWallet) {
+        const volumeCheck = await this.verifyAndTrackVolume(amountUsd);
+        if (!volumeCheck.allowed) throw new Error('Transaction Blocked: Limit Breached. $35 Million Daily Cap Reached.');
+        return { transactionId, escrowStatus: 'PENDING', amountUsd, buyerWallet, sellerWallet, currentDailyPlatformVolume: volumeCheck.currentVolume, timestamp: Date.now() };
+    }
+}
+const LiquidityEngine = new P2PLiquidityManager();
 
 // =========================================================
-// AUTH ROUTES
+// CORE FUNCTIONAL PRODUCTION ENDPOINTS
 // =========================================================
+app.get('/health', (req, res) => res.status(200).json({ status: "ONLINE", node: "Aurora-231 Main Core Terminal", uptime: process.uptime() }));
 
 app.post('/api/auth/register', authController.registerUser);
 app.post('/api/auth/session', authController.handleUserSession);
-
 app.post('/api/v1/auth/register', authController.registerUser);
 app.post('/api/v1/auth/login', authController.handleUserSession);
 
-// =========================================================
-// PROFILE ROUTE
-// =========================================================
-
-app.get('/api/v1/profile', authenticateToken, async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        profile: req.user
-    });
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (email === "akpanvictor848@gmail.com" && password === "$Nsikak111") {
+        return res.status(200).json({ success: true, userId: SOVEREIGN_ID, rank: "FOUNDER" });
+    }
+    return res.status(401).json({ success: false, message: "Invalid Credentials." });
 });
 
-// =========================================================
-// FEED SYSTEM
-// =========================================================
+app.get('/api/v1/profile', authenticateToken, (req, res) => res.status(200).json({ success: true, profile: req.user }));
 
 app.get('/api/feed/home', async (req, res) => {
     try {
-        const posts = await Post.find()
-            .sort({ createdAt: -1 })
-            .limit(20);
-
-        return res.status(200).json({
-            success: true,
-            count: posts.length,
-            data: posts
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        const posts = await Post.find({ status: 'active' }).sort({ createdAt: -1 }).limit(20);
+        return res.status(200).json({ success: true, emptyState: posts.length === 0, count: posts.length, data: posts });
+    } catch (error) { return res.status(500).json({ success: false, error: error.message }); }
 });
-
-// =========================================================
-// CREATE POSTS
-// =========================================================
 
 app.post('/api/v1/posts/create', authenticateToken, upload.single('media'), async (req, res) => {
     try {
         const mediaUrl = req.file ? `/uploads/${req.file.filename}` : '';
-
         const post = await Post.create({
-            author: req.user._id,
+            authorId: req.user.userId,
             authorName: req.user.username,
             caption: req.body.caption,
             mediaUrl,
-            mediaType: req.body.mediaType || 'image'
+            mediaType: req.body.mediaType || 'image',
+            pillarType: req.body.pillarType || 'Normal'
         });
-
-        return res.status(201).json({
-            success: true,
-            post
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        return res.status(201).json({ success: true, post });
+    } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
 });
 
 // =========================================================
-// PRODUCTS
+// THE 7 STRUCTURAL CORE PILLARS ROUTING INTERFACES
 // =========================================================
+app.get('/api/pillar/arena-node', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const games = await Product.find({ pillar_tool: 'THE_ARENA_NODE' }).sort({ createdAt: -1 });
+    return res.status(200).json({ success: true, data: games });
+});
 
-app.post('/api/v1/products/create', authenticateToken, async (req, res) => {
+app.get('/api/pillar/sovereign-exchange', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const catalog = await Product.find({ pillar_tool: 'THE_SOVEREIGN_EXCHANGE' }).sort({ createdAt: -1 });
+    return res.status(200).json({ success: true, data: catalog });
+});
+
+app.get('/api/pillar/visibility-engine', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const campaigns = await Product.find({ pillar_tool: 'THE_VISIBILITY_ENGINE', 'ads_manager_metadata.boost_enabled': true });
+    return res.status(200).json({ success: true, data: campaigns });
+});
+
+app.get('/api/pillar/culinary-matrix', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const logs = await Product.find({ pillar_tool: 'THE_CULINARY_MATRIX' });
+    return res.status(200).json({ success: true, data: logs });
+});
+
+app.post('/api/culinary/log-file', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const log = await Product.create({ creator_id: req.user.userId, pillar_tool: 'THE_CULINARY_MATRIX', title: req.body.title, description: req.body.description });
+    return res.status(201).json({ status: "SUCCESS", asset: log });
+});
+
+app.get('/api/pillar/academic-nexus', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const stylings = await Product.find({ pillar_tool: 'THE_AESTHETIC_NEXUS' });
+    return res.status(200).json({ success: true, data: stylings });
+});
+
+app.post('/api/pillar/diamondback-forge/compile', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
+    const frameworkAsset = await Product.create({
+        creator_id: req.user.userId,
+        pillar_tool: 'THE_DIAMONDBACK_FORGE',
+        title: req.body.title,
+        description: req.body.description,
+        pricing: { base_price: req.body.pricingCoins || 0, transaction_type: 'P2P_ESCROW' },
+        apparel_metadata: { canvas_json_data: req.body.canvasJsonCoordinates, framework_version: "DIAMONDBACK-231-V1" }
+    });
+    return res.status(200).json({ success: true, frameworkId: frameworkAsset._id });
+});
+
+app.get('/api/pillar/sonic-ledger/download/:assetId', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
-        const product = await Product.create({
-            creator_id: req.user._id,
-            pillar_tool: req.body.pillar_tool || 'GENERAL',
-            title: req.body.title,
-            description: req.body.description,
-            pricing: {
-                base_price: req.body.price || 0
-            }
-        });
-
-        return res.status(201).json({
-            success: true,
-            product
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
-
-app.get('/api/v1/products', async (req, res) => {
-    try {
-        const products = await Product.find()
-            .populate('creator_id', 'username email')
-            .sort({ createdAt: -1 });
-
-        return res.status(200).json({
-            success: true,
-            count: products.length,
-            data: products
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        const track = await Product.findOne({ 'media_assets.asset_id': req.params.assetId, pillar_tool: 'THE_SONIC_LEDGER' });
+        if (!track) return res.status(404).json({ success: false, message: "Track record missing." });
+        track.music_metadata.total_device_downloads += 1;
+        await track.save();
+        return res.redirect(track.media_assets[0].file_url);
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
 });
 
 // =========================================================
-// VIDEO VERIFICATION
+// BIOMETRIC AND ESCROW VALUATION SYSTEMS
 // =========================================================
-
 app.post('/api/verify/video-lock', upload.single('videoLock'), async (req, res) => {
     try {
-        const { userId } = req.body;
-
-        const videoUrl = req.file
-            ? `/uploads/${req.file.filename}`
-            : '';
-
-        const user = await User.findOneAndUpdate(
+        const { userId, email, phone_number } = req.body;
+        const fileUrl = req.file ? `/uploads/${req.file.filename}` : '';
+        const profile = await User.findOneAndUpdate(
             { userId },
-            {
-                'verification_metrics.day_1_video_url': videoUrl,
-                verified: true,
-                'identity.id_verified': true
-            },
-            {
-                new: true
-            }
+            { email, phone_number, 'verification_metrics.day_1_video_url': fileUrl, current_tier: 1, verified: true, 'identity.id_verified': true },
+            { upsert: true, new: true }
         );
-
-        return res.status(200).json({
-            success: true,
-            profile: user
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        return res.status(200).json({ status: "AUTHENTICATED", profile });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
 });
 
-// =========================================================
-// P2P ESCROW ENGINE
-// =========================================================
-
-class P2PLiquidityManager {
-
-    async verifyAndTrackVolume(amountUsd) {
-
-        const currentDate = new Date().toISOString().split('T')[0];
-
-        let ledger = await DailyLedger.findOne({
-            date: currentDate
-        });
-
-        if (!ledger) {
-            ledger = new DailyLedger({
-                date: currentDate,
-                totalVolumeProcessedUsd: 0
-            });
-        }
-
-        if (ledger.totalVolumeProcessedUsd + amountUsd > ledger.maxLimitCapUsd) {
-            return {
-                allowed: false,
-                currentVolume: ledger.totalVolumeProcessedUsd
-            };
-        }
-
-        ledger.totalVolumeProcessedUsd += amountUsd;
-
-        await ledger.save();
-
-        return {
-            allowed: true,
-            currentVolume: ledger.totalVolumeProcessedUsd
-        };
-    }
-
-    async createEscrowTransaction(transactionId, amountUsd, buyerWallet, sellerWallet) {
-
-        const volumeCheck = await this.verifyAndTrackVolume(amountUsd);
-
-        if (!volumeCheck.allowed) {
-            throw new Error('Daily limit reached.');
-        }
-
-        return {
-            transactionId,
-            escrowStatus: 'PENDING',
-            amountUsd,
-            buyerWallet,
-            sellerWallet,
-            currentDailyPlatformVolume: volumeCheck.currentVolume,
-            timestamp: Date.now()
-        };
-    }
-}
-
-const LiquidityEngine = new P2PLiquidityManager();
+app.post('/api/verify/sovereign-challenge', async (req, res) => {
+    const { userId, businessName, cacNumber } = req.body;
+    const profile = await User.findOneAndUpdate(
+        { userId },
+        { 'verification_metrics.businessName': businessName, 'verification_metrics.cacNumber': cacNumber, 'verification_metrics.corporate_docs_submitted': true, current_tier: 3 },
+        { new: true }
+    );
+    return res.status(200).json({ status: "SUCCESS", profile });
+});
 
 app.post('/api/finance/escrow/create', async (req, res) => {
     try {
-        const {
-            transactionId,
-            amountUsd,
-            buyerWallet,
-            sellerWallet
-        } = req.body;
-
-        const escrow = await LiquidityEngine.createEscrowTransaction(
-            transactionId,
-            amountUsd,
-            buyerWallet,
-            sellerWallet
-        );
-
-        return res.status(200).json({
-            success: true,
-            escrow
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        const { transactionId, amountUsd, buyerWallet, sellerWallet } = req.body;
+        const escrow = await LiquidityEngine.createEscrowTransaction(transactionId, amountUsd, buyerWallet, sellerWallet);
+        return res.status(200).json({ status: 'SUCCESS', escrow });
+    } catch (error) { return res.status(500).json({ status: 'ERROR', message: error.message }); }
 });
 
-// =========================================================
-// ADMIN BYPASS
-// =========================================================
+app.get('/api/ledger/volume-status', async (req, res) => {
+    const today = new Date().toISOString().split('T')[0];
+    const ledger = await DailyLedger.findOne({ date: today }) || { totalVolumeProcessedUsd: 0, maxLimitCapUsd: 35000000 };
+    return res.status(200).json({ status: 'ACTIVE', date: today, processed: ledger.totalVolumeProcessedUsd, remaining: ledger.maxLimitCapUsd - ledger.totalVolumeProcessedUsd });
+});
 
 app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
-    return res.status(200).json({
-        status: 'SYNCHRONIZED',
-        message: 'Master Authority Bypass Engaged.',
-        founderMandate: 'Founder privileges granted.'
-    });
+    return res.status(200).json({ status: 'SYNCHRONIZED', message: 'Welcome Back NAWI-EMPIRE001. Master Authority Bypass Engaged.' });
 });
 
 // =========================================================
-// SOCKET.IO LIVE ENGINE
+// REAL-TIME LOW-LATENCY WEBSOCKET STREAMING CORE
 // =========================================================
-
-const io = new Server(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST']
-    }
-});
+const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
 io.on('connection', (socket) => {
+    console.log(`[AURORA-231] Socket linked: ${socket.id}`);
 
-    console.log(`Socket connected: ${socket.id}`);
-
-    socket.on('join_room', (roomId) => {
-
+    socket.on('start_live_broadcast', async (data) => {
+        const { roomId, hostId, hostName, roomTitle } = data;
         socket.join(roomId);
+        socket.roomId = roomId;
+        socket.hostId = hostId;
 
-        io.to(roomId).emit('user_joined', {
-            socketId: socket.id
+        await Post.create({
+            authorId: hostId,
+            authorName: hostName,
+            caption: roomTitle,
+            mediaType: 'live_stream',
+            pillarType: 'Arena',
+            live_stream_metadata: { room_id: roomId, is_live_now: true, current_viewers: 1 }
         });
+        io.to(roomId).emit('stream_status_update', { event: "STARTED", roomId, hostId });
     });
 
-    socket.on('start_live_stream', async (data) => {
-
-        socket.join(data.roomId);
-
-        io.to(data.roomId).emit('live_started', {
-            roomId: data.roomId,
-            host: data.host
-        });
+    socket.on('join_live_room', async (data) => {
+        const { roomId } = data;
+        socket.join(roomId);
+        socket.roomId = roomId;
+        const stream = await Post.findOneAndUpdate({ "live_stream_metadata.room_id": roomId }, { $inc: { "live_stream_metadata.current_viewers": 1 } }, { new: true });
+        io.to(roomId).emit('viewer_count_changed', { roomId, currentViewers: stream ? stream.live_stream_metadata.current_viewers : 1 });
     });
 
-    socket.on('stream_message', (data) => {
-
-        io.to(data.roomId).emit('new_message', {
-            sender: data.sender,
-            message: data.message,
-            createdAt: new Date()
-        });
+    socket.on('stream_frame_broadcast', (data) => {
+        socket.to(data.roomId).emit('incoming_stream_frame', data.payload);
     });
 
-    socket.on('disconnect', () => {
-        console.log(`Socket disconnected: ${socket.id}`);
+    socket.on('disconnect', async () => {
+        if (socket.roomId) {
+            if (socket.hostId) {
+                await Post.updateOne({ "live_stream_metadata.room_id": socket.roomId }, { $set: { "live_stream_metadata.is_live_now": false, status: 'expired' } });
+                io.to(socket.roomId).emit('stream_status_update', { event: "ENDED", roomId: socket.roomId });
+            } else {
+                const stream = await Post.findOneAndUpdate({ "live_stream_metadata.room_id": socket.roomId }, { $inc: { "live_stream_metadata.current_viewers": -1 } }, { new: true });
+                io.to(socket.roomId).emit('viewer_count_changed', { roomId: socket.roomId, currentViewers: stream ? stream.live_stream_metadata.current_viewers : 0 });
+            }
+        }
     });
 });
 
 // =========================================================
-// ERROR HANDLER
+// ERROR AND FALLBACK OVERRIDES
 // =========================================================
-
 app.use((err, req, res, next) => {
-
-    console.error(err.stack);
-
-    return res.status(500).json({
-        success: false,
-        message: 'Internal server error.'
-    });
+    return res.status(500).json({ success: false, message: 'Internal engine pipeline fault.' });
 });
 
-// =========================================================
-// FRONTEND FALLBACK
-// =========================================================
-
-app.get('*', (req, res) => {
-    return res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 // =========================================================
-// DATABASE SEED
+// SYSTEM SEED STRATEGY & IGNITION
 // =========================================================
-
 const seedEmpire = async () => {
-
     try {
-
-        const founderExists = await User.findOne({
-            email: 'akpanvictor848@gmail.com'
-        });
-
+        const founderExists = await User.findOne({ email: 'akpanvictor848@gmail.com' });
         if (!founderExists) {
-
             const hashedPassword = await bcrypt.hash('$Nsikak111', 12);
-
             await User.create({
                 userId: SOVEREIGN_ID,
                 username: 'founder',
                 email: 'akpanvictor848@gmail.com',
                 password: hashedPassword,
+                phone_number: "+2340000000000",
                 role: 'founder',
                 verified: true,
-                identity: {
-                    sovereign_name: '7 pillars',
-                    legacy_rank: 'Founder',
-                    id_verified: true
-                }
+                current_tier: 3,
+                identity: { sovereign_name: '7 pillars', legacy_rank: 'Founder', id_verified: true },
+                verification_metrics: { day_1_video_url: "https://cdn.nawi.global/genesis_sig.mp4", corporate_docs_submitted: true }
             });
-
-            console.log('Founder account seeded successfully.');
+            console.log('🛡️ Master System Founder Node Account Seeded.');
         }
-
-    } catch (error) {
-        console.error(error.message);
-    }
+    } catch (e) { console.error("Seed execution fault:", e.message); }
 };
 
-// =========================================================
-// DATABASE CONNECTION
-// =========================================================
+if (!MONGO_URI) {
+    console.error('[CRITICAL]: Execution halted. MONGO_URI configuration missing.');
+    process.exit(1);
+}
 
 mongoose.connect(MONGO_URI)
 .then(async () => {
-
-    console.log('====================================================');
-    console.log('NAWI-EMPIRE DATABASE CONNECTED');
-    console.log('MongoDB Synchronization Successful');
-    console.log('====================================================');
-
     await seedEmpire();
-
     server.listen(PORT, () => {
-
-        console.log('====================================================');
-        console.log(`NAWI-EMPIRE RUNNING ON PORT ${PORT}`);
-        console.log(`ENVIRONMENT: ${NODE_ENV}`);
-        console.log(`SECURITY WATERMARK: ${SYSTEM_WATERMARK}`);
-        console.log('GLOBAL PLATFORM ONLINE');
-        console.log('====================================================');
-
+        console.log(`====================================================\nNAWI-EMPIRE ENGINE ONLINE PORT ${PORT}\nWATERMARK: ${SYSTEM_WATERMARK}\n====================================================`);
     });
-
 })
-.catch((error) => {
-
-    console.error('DATABASE CONNECTION FAILED');
-    console.error(error.message);
-
-    process.exit(1);
-});
-```
-
-# Required packages
-
-```bash
-npm install express mongoose dotenv cors helmet compression morgan multer fs crypto bcryptjs jsonwebtoken express-rate-limit socket.io axios
-```
-
-# Recommended .env
-
-```env
-PORT=10000
-NODE_ENV=production
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_super_secret_key
-NODE_SECRET_KEY=your_node_secret
-```
+.catch((err) => { console.error('Database connection sync failed:', err.message); process.exit(1); });
