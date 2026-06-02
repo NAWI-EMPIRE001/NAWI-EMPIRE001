@@ -90,7 +90,7 @@ app.use((req, res, next) => {
 
 // STATIC ASSETS
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', static(uploadsDir));
 
 // FILE UPLOAD CONFIGURATION (with filename sanitization)
 const storage = multer.diskStorage({
@@ -149,7 +149,6 @@ const UserSchema = new mongoose.Schema({
         total_earned_to_date: { type: Number, default: 0 },
         pending_conversion: { type: Number, default: 0 }
     },
-    // Backup codes for account recovery (single-use hashed codes)
     backupCodes: [{
         codeHash: String,
         createdAt: { type: Date, default: Date.now },
@@ -158,11 +157,11 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const ProductSchema = new mongoose.Schema({
-    creator_id: { type: String, required: true }, // Unified to String reference
-    pillar_tool: { 
-        type: String, 
-        enum: ['GENERAL', 'THE_SOVEREIGN_EXCHANGE', 'THE_VISIBILITY_ENGINE', 'THE_ARENA_NODE', 'THE_CULINARY_MATRIX', 'THE_AESTHETIC_NEXUS', 'THE_DIAMONDBACK_FORGE', 'THE_SONIC_LEDGER'], 
-        default: 'GENERAL' 
+    creator_id: { type: String, required: true },
+    pillar_tool: {
+        type: String,
+        enum: ['GENERAL', 'THE_SOVEREIGN_EXCHANGE', 'THE_VISIBILITY_ENGINE', 'THE_ARENA_NODE', 'THE_CULINARY_MATRIX', 'THE_AESTHETIC_NEXUS', 'THE_DIAMONDBACK_FORGE', 'THE_SONIC_LEDGER'],
+        default: 'GENERAL'
     },
     title: { type: String, required: true },
     description: { type: String, default: '' },
@@ -299,14 +298,16 @@ const enforceEcosystemTierSecurity = async (req, res, next) => {
         const user = await User.findOne({ userId: requesterId });
         if (!user) return res.status(403).json({ success: false, message: 'Access Denied: Signature footprint missing.' });
 
-        // NOTE: Removed global day_1_video_url blocking here to allow platform navigation.
-        // Strict KYC checks are enforced where they belong (e.g. escrow/financial endpoints).
         req.citizenProfile = user;
         next();
     } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
 };
 
-const AURORA_231_HARDWARE_PROFILE = { expectedUuid: 'AURORA-231-MASTER-NODE-99X-7P', expectedRamGb: 192, expectedDisplaySize: 27 };
+const AURORA_231_HARDWARE_PROFILE = { 
+    expectedUuid: 'AURORA-231-MASTER-NODE-99X-7P', 
+    expectedRamGb: 192, 
+    expectedDisplaySize: 27 
+};
 
 const verifySovereignNodeHandshake = (req, res, next) => {
     const systemUuid = req.headers['x-node-uuid'];
@@ -390,7 +391,6 @@ app.post('/api/auth/session',
     authController.handleUserSession
 );
 
-// Backwards-compatible login route (no hardcoded credentials)
 app.post('/api/login',
     [
         body('email').isEmail(),
@@ -510,7 +510,6 @@ app.post('/api/verify/video-lock', authenticateToken, upload.single('videoLock')
     try {
         const { userId } = req.body;
         if (!userId) return res.status(400).json({ success: false, message: 'userId required' });
-        // only allow user themselves or admin/founder to set/update the video-lock
         if (req.user.userId !== userId && !['admin','founder'].includes(req.user.role)) {
             return res.status(403).json({ success: false, message: 'Forbidden' });
         }
@@ -539,7 +538,6 @@ app.post('/api/verify/sovereign-challenge', authenticateToken, authorizeRoles('a
     } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
-// Escrow creation: restricted to admin and founder (financial clearing) and requires KYC on participants
 app.post('/api/finance/escrow/create',
     authenticateToken,
     authorizeRoles('admin','founder'),
@@ -556,12 +554,10 @@ app.post('/api/finance/escrow/create',
         try {
             const { transactionId, amountUsd, buyerWallet, sellerWallet, buyerUserId, sellerUserId } = req.body;
 
-            // Check buyer/seller have completed basic video KYC (financial clearing gate)
             const buyer = await User.findOne({ userId: buyerUserId });
             const seller = await User.findOne({ userId: sellerUserId });
             if (!buyer || !seller) return res.status(404).json({ success: false, message: 'Participant user not found' });
 
-            // enforce video KYC for financial clearing action
             if (!buyer.verification_metrics?.day_1_video_url || !seller.verification_metrics?.day_1_video_url) {
                 return res.status(403).json({
                     success: false,
@@ -598,7 +594,6 @@ app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
 // =========================================================
 const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
-// socket auth middleware supporting handshake.auth.token and query.token fallback
 io.use(async (socket, next) => {
     try {
         const token = socket.handshake.auth && socket.handshake.auth.token ? socket.handshake.auth.token : (socket.handshake.query && socket.handshake.query.token ? socket.handshake.query.token : null);
@@ -619,7 +614,6 @@ io.on('connection', (socket) => {
     socket.on('start_live_broadcast', async (data) => {
         try {
             const { roomId, hostId, hostName, roomTitle } = data;
-            // authorization: only host themselves or admin/founder may start broadcast
             if (!socket.user) return socket.emit('error', { message: 'Not authenticated' });
             if (socket.user.userId !== hostId && !['admin','founder'].includes(socket.user.role)) {
                 return socket.emit('error', { message: 'Not authorized to start this broadcast' });
@@ -657,7 +651,6 @@ io.on('connection', (socket) => {
                 { new: true }
             );
 
-            // ensure non-negative viewer count
             if (stream && stream.live_stream_metadata.current_viewers < 0) {
                 stream.live_stream_metadata.current_viewers = 0;
                 await stream.save();
@@ -717,19 +710,16 @@ app.post('/api/account/backup-codes/generate', authenticateToken, async (req, re
     try {
         const { count } = req.body;
         const n = Number.isInteger(count) && count > 0 ? Math.min(20, count) : 8;
-        const codes = generatePlainBackupCodes(n, 12); // 12-char codes
+        const codes = generatePlainBackupCodes(n, 12);
 
         const codeHashes = codes.map(c => ({ codeHash: crypto.createHash('sha256').update(c).digest('hex'), used: false }));
-        // append to user's backupCodes
         await User.updateOne({ userId: req.user.userId }, { $push: { backupCodes: { $each: codeHashes } } });
-        // return plaintext codes ONCE
         return res.status(201).json({ success: true, backupCodes: codes, note: 'Store these codes securely. Each code is shown only once.' });
     } catch (err) {
         return res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// Consume a backup code to get a JWT; requires email + code to prevent blind usage
 app.post('/api/account/backup-codes/consume',
     [
         body('email').isEmail(),
@@ -744,7 +734,6 @@ app.post('/api/account/backup-codes/consume',
 
             const codeHash = crypto.createHash('sha256').update(code).digest('hex');
 
-            // atomically set the first matching unused code to used
             const updated = await User.findOneAndUpdate(
                 { email, "backupCodes.codeHash": codeHash, "backupCodes.used": false },
                 { $set: { "backupCodes.$.used": true } },
@@ -753,7 +742,6 @@ app.post('/api/account/backup-codes/consume',
 
             if (!updated) return res.status(400).json({ success: false, message: 'Invalid or used backup code' });
 
-            // issue JWT
             const token = jwt.sign({ userId: updated.userId, email: updated.email }, JWT_SECRET, { expiresIn: '7d' });
             return res.status(200).json({ success: true, token, user: updated });
         } catch (err) {
@@ -816,7 +804,6 @@ if (!MONGO_URI) {
     process.exit(1);
 }
 
-// Recommended Mongoose options and graceful shutdown handlers
 mongoose.set('strictQuery', false);
 
 mongoose.connect(MONGO_URI)
