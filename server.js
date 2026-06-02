@@ -1,7 +1,7 @@
 // =========================================================
-// NAWI-EMPIRE MASTER SYSTEM ENGINE v7.5 - UNIFIED PRODUCTION BUILD
+// nawi-OS MASTER SYSTEM ENGINE v7.5 - UNIFIED PRODUCTION BUILD
 // SYSTEMS: 7 Pillars, Aurora-231 Handshake, Sovereign P2P Escrow, WebSocket Stream Core
-// AUTHORITY WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+// AUTHORITY WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_nawi-OS001
 // =========================================================
 
 require('dotenv').config();
@@ -20,6 +20,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { Server } = require('socket.io');
+const { body, validationResult } = require('express-validator');
 
 // =========================================================
 // EXPRESS SERVER INITIALIZATION
@@ -28,18 +29,16 @@ const app = express();
 const server = http.createServer(app);
 
 // =========================================================
-// ENVIRONMENT VARIABLES & STRATEGIC FALLBACKS
+// ENVIRONMENT VARIABLES
 // =========================================================
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET';
 const NODE_SECRET_KEY = process.env.NODE_SECRET_KEY || 'NAWI_DEFAULT_KEY';
 const NODE_ENV = process.env.NODE_ENV || 'production';
 
-const SOVEREIGN_ID = 'NAWI-EMPIRE001';
-const SYSTEM_WATERMARK = 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001';
-
-// Unified connection string using cluster path
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://NAWI-EMPIRE001:q6eTDh86ukrWbBrj@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001';
+const SOVEREIGN_ID = 'nawi-OS001';
+const SYSTEM_WATERMARK = 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_nawi-OS001';
+const MONGO_URI = process.env.MONGO_URI;
 
 // =========================================================
 // CREATE REQUIRED DIRECTORIES
@@ -83,7 +82,7 @@ app.use(limiter);
 
 // PLATFORM HEADERS
 app.use((req, res, next) => {
-    res.setHeader('X-Powered-By', 'NAWI-EMPIRE');
+    res.setHeader('X-Powered-By', 'nawi-OS');
     res.setHeader('X-Platform-Authority', SOVEREIGN_ID);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     next();
@@ -93,15 +92,28 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadsDir));
 
-// FILE UPLOAD CONFIGURATION
+// FILE UPLOAD CONFIGURATION (with filename sanitization)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, uploadsDir); },
     filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${crypto.randomBytes(5).toString('hex')}-${file.originalname}`;
+        // sanitize original name
+        const safeOriginal = path.basename(file.originalname).replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const uniqueName = `${Date.now()}-${crypto.randomBytes(5).toString('hex')}-${safeOriginal}`;
         cb(null, uniqueName);
     }
 });
-const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
+const upload = multer({
+    storage,
+    limits: { fileSize: 100 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const allowed = [
+            'image/jpeg','image/png','image/webp','image/gif',
+            'video/mp4','video/quicktime','video/webm','audio/mpeg','audio/mp3'
+        ];
+        if (allowed.includes(file.mimetype)) return cb(null, true);
+        return cb(new Error('Unsupported file type'));
+    }
+});
 
 // =========================================================
 // DATABASE SCHEMAS & UTILITIES
@@ -136,11 +148,17 @@ const UserSchema = new mongoose.Schema({
         empire_coins: { type: Number, default: 0 },
         total_earned_to_date: { type: Number, default: 0 },
         pending_conversion: { type: Number, default: 0 }
-    }
+    },
+    // Backup codes for account recovery (single-use hashed codes)
+    backupCodes: [{
+        codeHash: String,
+        createdAt: { type: Date, default: Date.now },
+        used: { type: Boolean, default: false }
+    }]
 }, { timestamps: true });
 
 const ProductSchema = new mongoose.Schema({
-    creator_id: { type: String, required: true },
+    creator_id: { type: String, required: true }, // Unified to String reference
     pillar_tool: { 
         type: String, 
         enum: ['GENERAL', 'THE_SOVEREIGN_EXCHANGE', 'THE_VISIBILITY_ENGINE', 'THE_ARENA_NODE', 'THE_CULINARY_MATRIX', 'THE_AESTHETIC_NEXUS', 'THE_DIAMONDBACK_FORGE', 'THE_SONIC_LEDGER'], 
@@ -200,22 +218,16 @@ const Post = mongoose.models.Post || mongoose.model('Post', PostSchema);
 const DailyLedger = mongoose.models.DailyLedger || mongoose.model('DailyLedger', DailyLedgerSchema);
 
 // =========================================================
-// ADAPTIVE CONTROLLER MODULE MATRIX LOADERS (WARNINGS RE-ROUTED)
+// ADAPTIVE CONTROLLER MODULE MATRIX LOADERS
 // =========================================================
 const safeLoad = (primaryPath, fallbackPath, rootFallbackPath, moduleName) => {
-    try { 
-        const mod = require(primaryPath); 
-        if(mod) return mod;
-    } catch (e) {
-        if (fallbackPath) { try { const mod = require(fallbackPath); if(mod) return mod; } catch (err) {} }
-        if (rootFallbackPath) { try { const mod = require(rootFallbackPath); if(mod) return mod; } catch (rootErr) {} }
+    try { return require(primaryPath); } catch (e) {
+        if (fallbackPath) { try { return require(fallbackPath); } catch (err) {} }
+        if (rootFallbackPath) { try { return require(rootFallbackPath); } catch (rootErr) {} }
+        return null;
     }
-    // Silent registration notice optimized for production terminal tracking
-    console.log(`[SYSTEM MATRIX] Core Execution Layer Assigned -> ${moduleName}`);
-    return null;
 };
 
-// Unified Production Auth Layer
 let authController = safeLoad('./controllers/authController', './controllers/authcontroller', './authController', 'authController') || {
     registerUser: async (req, res) => {
         try {
@@ -244,32 +256,22 @@ let authController = safeLoad('./controllers/authController', './controllers/aut
     }
 };
 
-let battleController = safeLoad('./controllers/battleController', null, null, 'battleController') || {
-    executeChallenge: async (req, res) => res.status(200).json({ success: true, message: "Standard Node Challenge Activated." })
-};
-
-let borderControl = safeLoad('./controllers/borderControl', null, null, 'borderControl') || {
-    verifyPassport: async (req, res) => res.status(200).json({ success: true, status: "CLEAR_CLEARANCE" })
-};
-
-let masterPayout = safeLoad('./controllers/masterPayout', null, null, 'masterPayout') || {
-    releaseSovereignFunds: async (req, res) => res.status(200).json({ success: true, escrowStatus: "DISBURSED" })
-};
-
-let p2pGateway = safeLoad('./controllers/p2pGateway', null, null, 'p2pGateway') || {
-    processTradeRoute: async (req, res) => res.status(200).json({ success: true, route: "P2P_ISOLATED_STREAM" })
-};
-
 // =========================================================
 // SECURITY ACCESS CONTROL MIDDLEWARES
 // =========================================================
 const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        let token = null;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        } else if (req.headers['x-access-token']) {
+            token = req.headers['x-access-token'];
+        }
+
+        if (!token) {
             return res.status(401).json({ success: false, message: 'Authentication token missing.' });
         }
-        const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, JWT_SECRET);
         const user = await User.findOne({ userId: decoded.userId });
         if (!user) return res.status(401).json({ success: false, message: 'Invalid secure token identity.' });
@@ -278,9 +280,15 @@ const authenticateToken = async (req, res, next) => {
     } catch (error) { return res.status(401).json({ success: false, message: 'Authentication failed.' }); }
 };
 
+const authorizeRoles = (...roles) => (req, res, next) => {
+    if (!req.user) return res.status(401).json({ success: false, message: 'Not authenticated' });
+    if (!roles.includes(req.user.role)) return res.status(403).json({ success: false, message: 'Forbidden' });
+    next();
+};
+
 const enforceEcosystemTierSecurity = async (req, res, next) => {
     try {
-        const requesterId = req.headers['x-nawi-identity'] || req.headers['user-id'] || req.body.userId;
+        const requesterId = req.headers['x-nawi-identity'] || req.headers['user-id'] || req.body.userId || (req.user && req.user.userId);
         if (!requesterId) return res.status(401).json({ success: false, message: 'Missing user identity validation context.' });
 
         if (requesterId === SOVEREIGN_ID) {
@@ -291,13 +299,8 @@ const enforceEcosystemTierSecurity = async (req, res, next) => {
         const user = await User.findOne({ userId: requesterId });
         if (!user) return res.status(403).json({ success: false, message: 'Access Denied: Signature footprint missing.' });
 
-        if (!user.verification_metrics?.day_1_video_url) {
-            return res.status(403).json({ 
-                success: false, 
-                required_action: "DAY_1_VIDEO_LOCK_REQUIRED",
-                message: "Frictionless Security Gate: Biological signature video file required." 
-            });
-        }
+        // NOTE: Removed global day_1_video_url blocking here to allow platform navigation.
+        // Strict KYC checks are enforced where they belong (e.g. escrow/financial endpoints).
         req.citizenProfile = user;
         next();
     } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
@@ -355,22 +358,47 @@ class P2PLiquidityManager {
 const LiquidityEngine = new P2PLiquidityManager();
 
 // =========================================================
+// VALIDATION HELPERS
+// =========================================================
+const validateRequest = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    next();
+};
+
+// =========================================================
 // CORE FUNCTIONAL PRODUCTION ENDPOINTS
 // =========================================================
 app.get('/health', (req, res) => res.status(200).json({ status: "ONLINE", node: "Aurora-231 Main Core Terminal", uptime: process.uptime() }));
 
-app.post('/api/auth/register', authController.registerUser);
-app.post('/api/auth/session', authController.handleUserSession);
-app.post('/api/v1/auth/register', authController.registerUser);
-app.post('/api/v1/auth/login', authController.handleUserSession);
+app.post('/api/auth/register',
+    [
+        body('email').isEmail(),
+        body('password').isLength({ min: 8 }),
+        body('username').notEmpty().trim()
+    ],
+    validateRequest,
+    authController.registerUser
+);
 
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-    if (email === "akpanvictor848@gmail.com" && password === "$Nsikak111") {
-        return res.status(200).json({ success: true, userId: SOVEREIGN_ID, rank: "FOUNDER" });
-    }
-    return res.status(401).json({ success: false, message: "Invalid Credentials." });
-});
+app.post('/api/auth/session',
+    [
+        body('email').isEmail(),
+        body('password').notEmpty()
+    ],
+    validateRequest,
+    authController.handleUserSession
+);
+
+// Backwards-compatible login route (no hardcoded credentials)
+app.post('/api/login',
+    [
+        body('email').isEmail(),
+        body('password').notEmpty()
+    ],
+    validateRequest,
+    authController.handleUserSession
+);
 
 app.get('/api/v1/profile', authenticateToken, (req, res) => res.status(200).json({ success: true, profile: req.user }));
 
@@ -381,20 +409,30 @@ app.get('/api/feed/home', async (req, res) => {
     } catch (error) { return res.status(500).json({ success: false, error: error.message }); }
 });
 
-app.post('/api/v1/posts/create', authenticateToken, upload.single('media'), async (req, res) => {
-    try {
-        const mediaUrl = req.file ? `/uploads/${req.file.filename}` : '';
-        const post = await Post.create({
-            authorId: req.user.userId,
-            authorName: req.user.username,
-            caption: req.body.caption,
-            mediaUrl,
-            mediaType: req.body.mediaType || 'image',
-            pillarType: req.body.pillarType || 'Normal'
-        });
-        return res.status(201).json({ success: true, post });
-    } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
-});
+app.post('/api/v1/posts/create',
+    authenticateToken,
+    upload.single('media'),
+    [
+        body('mediaType').optional().isIn(['image','video','audio','live_stream']),
+        body('caption').optional().isLength({ max: 500 }),
+        body('pillarType').optional().isIn(['Comedy','Arena','Music','Kitchen','Apparel','Normal'])
+    ],
+    validateRequest,
+    async (req, res) => {
+        try {
+            const mediaUrl = req.file ? `/uploads/${req.file.filename}` : '';
+            const post = await Post.create({
+                authorId: req.user.userId,
+                authorName: req.user.username,
+                caption: req.body.caption,
+                mediaUrl,
+                mediaType: req.body.mediaType || 'image',
+                pillarType: req.body.pillarType || 'Normal'
+            });
+            return res.status(201).json({ success: true, post });
+        } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
+    }
+);
 
 // =========================================================
 // THE 7 STRUCTURAL CORE PILLARS ROUTING INTERFACES
@@ -403,49 +441,42 @@ app.get('/api/pillar/arena-node', authenticateToken, enforceEcosystemTierSecurit
     try {
         const games = await Product.find({ pillar_tool: 'THE_ARENA_NODE' }).sort({ createdAt: -1 });
         return res.status(200).json({ success: true, data: games });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pillar/sovereign-exchange', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
         const catalog = await Product.find({ pillar_tool: 'THE_SOVEREIGN_EXCHANGE' }).sort({ createdAt: -1 });
         return res.status(200).json({ success: true, data: catalog });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pillar/visibility-engine', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
         const campaigns = await Product.find({ pillar_tool: 'THE_VISIBILITY_ENGINE', 'ads_manager_metadata.boost_enabled': true });
         return res.status(200).json({ success: true, data: campaigns });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pillar/culinary-matrix', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
         const logs = await Product.find({ pillar_tool: 'THE_CULINARY_MATRIX' });
         return res.status(200).json({ success: true, data: logs });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.post('/api/culinary/log-file', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
         const log = await Product.create({ creator_id: req.user.userId, pillar_tool: 'THE_CULINARY_MATRIX', title: req.body.title, description: req.body.description });
         return res.status(201).json({ status: "SUCCESS", asset: log });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pillar/academic-nexus', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
     try {
         const stylings = await Product.find({ pillar_tool: 'THE_AESTHETIC_NEXUS' });
         return res.status(200).json({ success: true, data: stylings });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
-});
-
-app.get('/api/pillar/aesthetic-nexus', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
-    try {
-        const stylings = await Product.find({ pillar_tool: 'THE_AESTHETIC_NEXUS' });
-        return res.status(200).json({ success: true, data: stylings });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.post('/api/pillar/diamondback-forge/compile', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
@@ -459,7 +490,7 @@ app.post('/api/pillar/diamondback-forge/compile', authenticateToken, enforceEcos
             apparel_metadata: { canvas_json_data: req.body.canvasJsonCoordinates, framework_version: "DIAMONDBACK-231-V1" }
         });
         return res.status(200).json({ success: true, frameworkId: frameworkAsset._id });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pillar/sonic-ledger/download/:assetId', authenticateToken, enforceEcosystemTierSecurity, async (req, res) => {
@@ -472,58 +503,94 @@ app.get('/api/pillar/sonic-ledger/download/:assetId', authenticateToken, enforce
     } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
 });
 
-// Protected Secondary Route System Matrix
-app.post('/api/v1/battle/challenge', battleController.executeChallenge ? battleController.executeChallenge : (req, res) => res.sendStatus(200));
-app.post('/api/v1/border/verify', borderControl.verifyPassport ? borderControl.verifyPassport : (req, res) => res.sendStatus(200));
-app.post('/api/v1/finance/payout', masterPayout.releaseSovereignFunds ? masterPayout.releaseSovereignFunds : (req, res) => res.sendStatus(200));
-app.post('/api/v1/p2p/trade', p2pGateway.processTradeRoute ? p2pGateway.processTradeRoute : (req, res) => res.sendStatus(200));
-
 // =========================================================
 // BIOMETRIC AND ESCROW VALUATION SYSTEMS
 // =========================================================
-app.post('/api/verify/video-lock', upload.single('videoLock'), async (req, res) => {
+app.post('/api/verify/video-lock', authenticateToken, upload.single('videoLock'), async (req, res) => {
     try {
-        const { userId, email, phone_number } = req.body;
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ success: false, message: 'userId required' });
+        // only allow user themselves or admin/founder to set/update the video-lock
+        if (req.user.userId !== userId && !['admin','founder'].includes(req.user.role)) {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
         const fileUrl = req.file ? `/uploads/${req.file.filename}` : '';
         const profile = await User.findOneAndUpdate(
             { userId },
-            { email, phone_number, 'verification_metrics.day_1_video_url': fileUrl, current_tier: 1, verified: true, 'identity.id_verified': true },
-            { upsert: true, new: true }
+            { 'verification_metrics.day_1_video_url': fileUrl, current_tier: 1, verified: true, 'identity.id_verified': true },
+            { upsert: false, new: true }
         );
+        if (!profile) return res.status(404).json({ success: false, message: 'User not found' });
         return res.status(200).json({ status: "AUTHENTICATED", profile });
     } catch (e) { return res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/verify/sovereign-challenge', async (req, res) => {
+app.post('/api/verify/sovereign-challenge', authenticateToken, authorizeRoles('admin','founder'), async (req, res) => {
     try {
         const { userId, businessName, cacNumber } = req.body;
+        if (!userId) return res.status(400).json({ success: false, message: 'userId required' });
         const profile = await User.findOneAndUpdate(
             { userId },
             { 'verification_metrics.businessName': businessName, 'verification_metrics.cacNumber': cacNumber, 'verification_metrics.corporate_docs_submitted': true, current_tier: 3 },
             { new: true }
         );
+        if (!profile) return res.status(404).json({ success: false, message: 'User not found' });
         return res.status(200).json({ status: "SUCCESS", profile });
-    } catch (e) { return res.status(500).json({ error: e.message }); }
+    } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
-app.post('/api/finance/escrow/create', async (req, res) => {
-    try {
-        const { transactionId, amountUsd, buyerWallet, sellerWallet } = req.body;
-        const escrow = await LiquidityEngine.createEscrowTransaction(transactionId, amountUsd, buyerWallet, sellerWallet);
-        return res.status(200).json({ status: 'SUCCESS', escrow });
-    } catch (error) { return res.status(500).json({ status: 'ERROR', message: error.message }); }
-});
+// Escrow creation: restricted to admin and founder (financial clearing) and requires KYC on participants
+app.post('/api/finance/escrow/create',
+    authenticateToken,
+    authorizeRoles('admin','founder'),
+    [
+        body('transactionId').notEmpty(),
+        body('amountUsd').isFloat({ gt: 0 }),
+        body('buyerUserId').notEmpty(),
+        body('sellerUserId').notEmpty(),
+        body('buyerWallet').optional().isString(),
+        body('sellerWallet').optional().isString()
+    ],
+    validateRequest,
+    async (req, res) => {
+        try {
+            const { transactionId, amountUsd, buyerWallet, sellerWallet, buyerUserId, sellerUserId } = req.body;
 
+            // Check buyer/seller have completed basic video KYC (financial clearing gate)
+            const buyer = await User.findOne({ userId: buyerUserId });
+            const seller = await User.findOne({ userId: sellerUserId });
+            if (!buyer || !seller) return res.status(404).json({ success: false, message: 'Participant user not found' });
+
+            // enforce video KYC for financial clearing action
+            if (!buyer.verification_metrics?.day_1_video_url || !seller.verification_metrics?.day_1_video_url) {
+                return res.status(403).json({
+                    success: false,
+                    required_action: "DAY_1_VIDEO_LOCK_REQUIRED",
+                    message: "Both buyer and seller must complete video KYC for escrow transactions."
+                });
+            }
+
+            const escrow = await LiquidityEngine.createEscrowTransaction(transactionId, parseFloat(amountUsd), buyerWallet || null, sellerWallet || null);
+            return res.status(200).json({ status: 'SUCCESS', escrow });
+        } catch (error) { return res.status(500).json({ status: 'ERROR', message: error.message }); }
+    }
+);
+
+// =========================================================
+// LEDGER & ADMIN
+// =========================================================
 app.get('/api/ledger/volume-status', async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
         const ledger = await DailyLedger.findOne({ date: today }) || { totalVolumeProcessedUsd: 0, maxLimitCapUsd: 35000000 };
         return res.status(200).json({ status: 'ACTIVE', date: today, processed: ledger.totalVolumeProcessedUsd, remaining: ledger.maxLimitCapUsd - ledger.totalVolumeProcessedUsd });
-    } catch (e) { return res.status(500).json({ error: e.message }); }
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
-    return res.status(200).json({ status: 'SYNCHRONIZED', message: 'Welcome Back NAWI-EMPIRE001. Master Authority Bypass Engaged.' });
+    return res.status(200).json({ status: 'SYNCHRONIZED', message: 'Welcome Back nawi-OS001. Master Authority Bypass Engaged.' });
 });
 
 // =========================================================
@@ -531,12 +598,33 @@ app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
 // =========================================================
 const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
+// socket auth middleware supporting handshake.auth.token and query.token fallback
+io.use(async (socket, next) => {
+    try {
+        const token = socket.handshake.auth && socket.handshake.auth.token ? socket.handshake.auth.token : (socket.handshake.query && socket.handshake.query.token ? socket.handshake.query.token : null);
+        if (!token) return next(new Error('Authentication error: token missing'));
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({ userId: decoded.userId });
+        if (!user) return next(new Error('Authentication error: invalid token user'));
+        socket.user = user;
+        return next();
+    } catch (err) {
+        return next(new Error(`Authentication error: ${err && err.message ? err.message : 'unknown'}`));
+    }
+});
+
 io.on('connection', (socket) => {
-    console.log(`[AURORA-231] Socket linked: ${socket.id}`);
+    console.log(`[AURORA-231] Socket linked: ${socket.id} user:${socket.user?.userId || 'unknown'}`);
 
     socket.on('start_live_broadcast', async (data) => {
         try {
             const { roomId, hostId, hostName, roomTitle } = data;
+            // authorization: only host themselves or admin/founder may start broadcast
+            if (!socket.user) return socket.emit('error', { message: 'Not authenticated' });
+            if (socket.user.userId !== hostId && !['admin','founder'].includes(socket.user.role)) {
+                return socket.emit('error', { message: 'Not authorized to start this broadcast' });
+            }
+
             socket.join(roomId);
             socket.roomId = roomId;
             socket.hostId = hostId;
@@ -550,21 +638,46 @@ io.on('connection', (socket) => {
                 live_stream_metadata: { room_id: roomId, is_live_now: true, current_viewers: 1 }
             });
             io.to(roomId).emit('stream_status_update', { event: "STARTED", roomId, hostId });
-        } catch (err) { console.error("Broadcast structural fault:", err.message); }
+        } catch (err) {
+            console.error('start_live_broadcast error:', err.message);
+            socket.emit('error', { message: 'Failed to start broadcast' });
+        }
     });
 
     socket.on('join_live_room', async (data) => {
         try {
             const { roomId } = data;
+            if (!socket.user) return socket.emit('error', { message: 'Not authenticated' });
             socket.join(roomId);
             socket.roomId = roomId;
-            const stream = await Post.findOneAndUpdate({ "live_stream_metadata.room_id": roomId }, { $inc: { "live_stream_metadata.current_viewers": 1 } }, { new: true });
+
+            const stream = await Post.findOneAndUpdate(
+                { "live_stream_metadata.room_id": roomId },
+                { $inc: { "live_stream_metadata.current_viewers": 1 } },
+                { new: true }
+            );
+
+            // ensure non-negative viewer count
+            if (stream && stream.live_stream_metadata.current_viewers < 0) {
+                stream.live_stream_metadata.current_viewers = 0;
+                await stream.save();
+            }
+
             io.to(roomId).emit('viewer_count_changed', { roomId, currentViewers: stream ? stream.live_stream_metadata.current_viewers : 1 });
-        } catch (err) { console.error("Room sync join exception:", err.message); }
+        } catch (err) {
+            console.error('join_live_room error:', err.message);
+            socket.emit('error', { message: 'Failed to join room' });
+        }
     });
 
     socket.on('stream_frame_broadcast', (data) => {
-        socket.to(data.roomId).emit('incoming_stream_frame', data.payload);
+        try {
+            if (!socket.user) return socket.emit('error', { message: 'Not authenticated' });
+            socket.to(data.roomId).emit('incoming_stream_frame', data.payload);
+        } catch (err) {
+            console.error('stream_frame_broadcast error:', err.message);
+            socket.emit('error', { message: 'Failed to broadcast frame' });
+        }
     });
 
     socket.on('disconnect', async () => {
@@ -575,17 +688,85 @@ io.on('connection', (socket) => {
                     io.to(socket.roomId).emit('stream_status_update', { event: "ENDED", roomId: socket.roomId });
                 } else {
                     const stream = await Post.findOneAndUpdate({ "live_stream_metadata.room_id": socket.roomId }, { $inc: { "live_stream_metadata.current_viewers": -1 } }, { new: true });
+                    if (stream && stream.live_stream_metadata.current_viewers < 0) {
+                        stream.live_stream_metadata.current_viewers = 0;
+                        await stream.save();
+                    }
                     io.to(socket.roomId).emit('viewer_count_changed', { roomId: socket.roomId, currentViewers: stream ? stream.live_stream_metadata.current_viewers : 0 });
                 }
             }
-        } catch (err) { console.error("Socket terminal cleanup exception:", err.message); }
+        } catch (err) {
+            console.error('disconnect handling error:', err.message);
+        }
     });
 });
+
+// =========================================================
+// ACCOUNT RECOVERY: BACKUP CODES (one-time use)
+// =========================================================
+const generatePlainBackupCodes = (count = 8, len = 10) => {
+    const codes = [];
+    for (let i = 0; i < count; i++) {
+        const code = crypto.randomBytes(Math.ceil(len * 0.6)).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, len);
+        codes.push(code);
+    }
+    return codes;
+};
+
+app.post('/api/account/backup-codes/generate', authenticateToken, async (req, res) => {
+    try {
+        const { count } = req.body;
+        const n = Number.isInteger(count) && count > 0 ? Math.min(20, count) : 8;
+        const codes = generatePlainBackupCodes(n, 12); // 12-char codes
+
+        const codeHashes = codes.map(c => ({ codeHash: crypto.createHash('sha256').update(c).digest('hex'), used: false }));
+        // append to user's backupCodes
+        await User.updateOne({ userId: req.user.userId }, { $push: { backupCodes: { $each: codeHashes } } });
+        // return plaintext codes ONCE
+        return res.status(201).json({ success: true, backupCodes: codes, note: 'Store these codes securely. Each code is shown only once.' });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Consume a backup code to get a JWT; requires email + code to prevent blind usage
+app.post('/api/account/backup-codes/consume',
+    [
+        body('email').isEmail(),
+        body('code').isLength({ min: 6 })
+    ],
+    validateRequest,
+    async (req, res) => {
+        try {
+            const { email, code } = req.body;
+            const user = await User.findOne({ email });
+            if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+            const codeHash = crypto.createHash('sha256').update(code).digest('hex');
+
+            // atomically set the first matching unused code to used
+            const updated = await User.findOneAndUpdate(
+                { email, "backupCodes.codeHash": codeHash, "backupCodes.used": false },
+                { $set: { "backupCodes.$.used": true } },
+                { new: true }
+            );
+
+            if (!updated) return res.status(400).json({ success: false, message: 'Invalid or used backup code' });
+
+            // issue JWT
+            const token = jwt.sign({ userId: updated.userId, email: updated.email }, JWT_SECRET, { expiresIn: '7d' });
+            return res.status(200).json({ success: true, token, user: updated });
+        } catch (err) {
+            return res.status(500).json({ success: false, message: err.message });
+        }
+    }
+);
 
 // =========================================================
 // ERROR AND FALLBACK OVERRIDES
 // =========================================================
 app.use((err, req, res, next) => {
+    console.error('Unhandled error middleware:', err && err.message);
     return res.status(500).json({ success: false, message: 'Internal engine pipeline fault.' });
 });
 
@@ -596,71 +777,84 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 // =========================================================
 const seedEmpire = async () => {
     try {
-        const founderExists = await User.findOne({ email: 'akpanvictor848@gmail.com' });
+        const doSeed = (process.env.SEED_FOUNDER || '').toString().toLowerCase() === 'true';
+        if (!doSeed) {
+            console.log('SEED_FOUNDER not enabled; skipping founder seeding.');
+            return;
+        }
+        const seedEmail = process.env.SEED_FOUNDER_EMAIL;
+        const seedPassword = process.env.SEED_FOUNDER_PASSWORD;
+        if (!seedEmail || !seedPassword) {
+            console.warn('SEED_FOUNDER enabled but SEED_FOUNDER_EMAIL or SEED_FOUNDER_PASSWORD not provided. Skipping seed.');
+            return;
+        }
+
+        const founderExists = await User.findOne({ email: seedEmail });
         if (!founderExists) {
-            const hashedPassword = await bcrypt.hash('$Nsikak111', 12);
+            const hashedPassword = await bcrypt.hash(seedPassword, 12);
             await User.create({
                 userId: SOVEREIGN_ID,
                 username: 'founder',
-                email: 'akpanvictor848@gmail.com',
+                email: seedEmail,
                 password: hashedPassword,
-                phone_number: "+2340000000000",
+                phone_number: "+00000000000",
                 role: 'founder',
                 verified: true,
                 current_tier: 3,
                 identity: { sovereign_name: '7 pillars', legacy_rank: 'Founder', id_verified: true },
-                verification_metrics: { day_1_video_url: "https://cdn.nawi.global/genesis_sig.mp4", corporate_docs_submitted: true }
+                verification_metrics: { day_1_video_url: "", corporate_docs_submitted: true }
             });
-            console.log('🛡️ Master System Founder Node Account Seeded.');
+            console.log('🛡️ Master System Founder Node Seeded via env variables.');
+        } else {
+            console.log('Founder already exists; seed skipped.');
         }
     } catch (e) { console.error("Seed execution fault:", e.message); }
 };
 
-// =========================================================
-// UNIFIED CONNECTION ENGINE AND STARTUP HANDSHAKE
-// =========================================================
-mongoose.connection.on('connected', () => {
-    console.log('MongoDB Synchronized Safely');
-});
+if (!MONGO_URI) {
+    console.error('[CRITICAL]: Execution halted. MONGO_URI configuration missing.');
+    process.exit(1);
+}
 
-mongoose.connection.on('error', (err) => {
-    console.error('MongoDB Transmission Error:', err.message);
-});
+// Recommended Mongoose options and graceful shutdown handlers
+mongoose.set('strictQuery', false);
 
-// Execution Trigger
-mongoose.connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 30000,
-    socketTimeoutMS: 45000
-})
+mongoose.connect(MONGO_URI)
 .then(async () => {
-    console.log('====================================================');
-    console.log('NAWI-EMPIRE DATABASE CONNECTED');
-    console.log('MongoDB Synchronization Successful');
-    console.log('====================================================');
-
     await seedEmpire();
+    server.listen(PORT, () => {
+        console.log('====================================================');
+        console.log(`NAWI-OS ENGINE ONLINE PORT ${PORT}`);
+        console.log(`WATERMARK: ${SYSTEM_WATERMARK}`);
+        console.log(`NODE_ENV: ${NODE_ENV}`);
+        console.log('====================================================');
+    });
+
+    server.on('error', (err) => {
+        console.error('Server encountered an error:', err && err.message);
+        process.exit(1);
+    });
+
+    const shutdown = async (signal) => {
+        console.info(`Received ${signal}. Closing server and MongoDB connection...`);
+        server.close(() => {
+            console.info('HTTP server closed.');
+            mongoose.connection.close(false, () => {
+                console.info('MongoDB connection closed. Exiting process.');
+                process.exit(0);
+            });
+        });
+    };
+
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+    process.on('unhandledRejection', (reason, promise) => {
+        console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+    process.on('uncaughtException', (err) => {
+        console.error('Uncaught Exception thrown:', err);
+        process.exit(1);
+    });
 })
-.catch((error) => {
-    console.error('⚠️ DATABASE CONNECTION ABORTED: Check Cluster Access White-listing / Credentials.');
-    console.error(error.message);
-});
-
-// Fast listener execution context for instant Render platform checkmarks
-server.listen(PORT, () => {
-    console.log('====================================================');
-    console.log(`NAWI-EMPIRE RUNNING ON PORT ${PORT}`);
-    console.log(`ENVIRONMENT: ${NODE_ENV}`);
-    console.log(`SECURITY WATERMARK: ${SYSTEM_WATERMARK}`);
-    console.log('GLOBAL PLATFORM ONLINE');
-    console.log('====================================================');
-});
-
-process.on('SIGINT', async () => {
-    await mongoose.connection.close();
-    process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-    await mongoose.connection.close();
-    process.exit(0);
-});
+.catch((err) => { console.error('Database connection sync failed:', err && err.message); process.exit(1); });
