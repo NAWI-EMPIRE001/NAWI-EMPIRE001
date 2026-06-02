@@ -1,8 +1,3 @@
-# Architecture Overview
-
-This document shows a high-level architecture overview for the Copilot "Plans" feature and surrounding platform components.
-
-```mermaid
 flowchart LR
   %% Clients & Edge
   subgraph CLIENTS["Clients"]
@@ -11,7 +6,7 @@ flowchart LR
   end
 
   subgraph EDGE["Edge / Delivery"]
-    CDN[CDN]
+    CDN[CDN / Edge Network]
     WAF[WAF / DDoS Protection]
   end
 
@@ -21,24 +16,27 @@ flowchart LR
 
   %% API Layer
   subgraph API["API / Ingress"]
-    APIGW[API Gateway / LB]
-    AuthProxy[Auth Proxy (JWT/OAuth)]
+    APIGW[API Gateway / Load Balancer]
+    AuthProxy[Auth Proxy<br/>JWT / OAuth / Node Handshake]
+    WSGateway[WebSocket Gateway<br/>Socket.io Engine]
   end
   WAF --> APIGW
+  WAF --> WSGateway
   APIGW --> AuthProxy
 
   %% Frontend & Gateway
-  subgraph FRONTEND["Frontend"]
+  subgraph FRONTEND["Frontend Core"]
     FrontendSvc[Frontend Service / SPA Backend]
   end
   AuthProxy --> FrontendSvc
 
-  %% Core Services
+  %% Core Application Services
   subgraph SERVICES["Application Services"]
-    PlansSvc[Plans Service\n(feature domain)]
-    CopilotSvc[Copilot AI Service\n(assistant / recommendations)]
-    UsersSvc[User/Profile Service]
-    BillingSvc[Billing Service]
+    PlansSvc[Plans Service<br/>(Feature Domain)]
+    CopilotSvc[Copilot AI Service<br/>(Assistant / ML Insights)]
+    UsersSvc[User / Profile Service]
+    BillingSvc[Billing & Liquidity Engine]
+    MediaSvc[Media Processing Service<br/>Uploads & Transcoding]
     Worker[Background Workers / Jobs]
   end
 
@@ -46,22 +44,25 @@ flowchart LR
   APIGW --> CopilotSvc
   APIGW --> UsersSvc
   APIGW --> BillingSvc
+  APIGW --> MediaSvc
 
+  WSGateway <-->|Real-time Sync| PlansSvc
   FrontendSvc --> PlansSvc
   PlansSvc --> CopilotSvc
   PlansSvc --> BillingSvc
   PlansSvc --> UsersSvc
   CopilotSvc -->|async| Worker
+  MediaSvc -->|async| Worker
 
-  %% Data & Integrations
-  subgraph DATA["Data & Storage"]
-    PlansDB[(Plans DB)\n(Relational)]
-    UsersDB[(Users DB)]
-    BillingDB[(Billing DB)]
+  %% Data & Integrations Layer
+  subgraph DATA["Data & Storage Engine"]
+    PlansDB[(Plans DB<br/>Relational)]
+    UsersDB[(Users DB<br/>NoSQL / Core)]
+    BillingDB[(Billing / Ledger DB)]
     Cache[(Redis Cache)]
-    ObjectStore[(Object Storage)]
+    ObjectStore[(Object Storage<br/>S3 / Cloudinary)]
     EventBus[(Event Bus / Kafka)]
-    MLStore[(ML Feature Store / Vector DB)]
+    MLStore[(Vector DB / Feature Store)]
   end
 
   PlansSvc --> PlansDB
@@ -69,6 +70,7 @@ flowchart LR
   BillingSvc --> BillingDB
   PlansSvc --> Cache
   CopilotSvc --> MLStore
+  MediaSvc --> ObjectStore
   Worker --> EventBus
   EventBus --> PlansSvc
 
@@ -77,29 +79,24 @@ flowchart LR
     Prom[Metrics / Prometheus]
     Tracing[Distributed Tracing]
     Logs[Centralized Logging]
-    CDNConfig[CDN Config / Edge Rules]
-    CICD[CI/CD / GitOps]
+    CICD[CI/CD / GitOps Engine]
   end
 
-  Services --> Prom
-  Services --> Tracing
-  Services --> Logs
+  %% Connected service metrics explicitly to fix rendering error
+  PlansSvc & CopilotSvc & UsersSvc & BillingSvc & MediaSvc --> Prom
+  PlansSvc & CopilotSvc & UsersSvc & BillingSvc & MediaSvc --> Tracing
+  PlansSvc & CopilotSvc & UsersSvc & BillingSvc & MediaSvc --> Logs
   Worker --> Logs
-  CICD --> Services
+  CICD --> FrontendSvc
+  CICD --> SERVICES
 
   %% External integrations
-  subgraph EXTERNAL["External / 3rd-party"]
-    PaymentGateway[Payment Provider]
+  subgraph EXTERNAL["External / 3rd-Party Providers"]
+    PaymentGateway[Payment Gateway / Escrow API]
     AuthProvider[OAuth / Identity Provider]
-    MLProvider[Large Model API / Private Model]
+    MLProvider[Large Model API / LLM Engine]
   end
 
   BillingSvc --> PaymentGateway
   AuthProxy --> AuthProvider
   CopilotSvc --> MLProvider
-```
-
-Notes
-- The diagram highlights synchronous request flows (API Gateway -> Services) and asynchronous flows (Event Bus, Workers).
-- Key concerns: authentication/authorization, data partitioning (separate DBs), caching for read-heavy endpoints, observability for tracing AI requests and billing-sensitive flows.
-- Suggested filename/path: `features/copilot/plans/ARCHITECTURE.md`.
