@@ -1,7 +1,7 @@
 // =========================================================
-// nawi-OS MASTER SYSTEM ENGINE v7.5 - UNIFIED PRODUCTION BUILD
+// NAWI-EMPIRE MASTER SYSTEM ENGINE v7.5 - UNIFIED PRODUCTION BUILD
 // SYSTEMS: 7 Pillars, Aurora-231 Handshake, Sovereign P2P Escrow, WebSocket Stream Core
-// AUTHORITY WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_nawi-OS001
+// AUTHORITY WATERMARK: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
 // Real Platform Framework optimized for verified human interactions.
 // =========================================================
 
@@ -37,8 +37,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET';
 const NODE_SECRET_KEY = process.env.NODE_SECRET_KEY || 'NAWI_DEFAULT_KEY';
 const NODE_ENV = process.env.NODE_ENV || 'production';
 
-const SOVEREIGN_ID = 'nawi-OS001';
-const SYSTEM_WATERMARK = 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_nawi-OS001';
+const SOVEREIGN_ID = 'NAWI-EMPIRE001';
+const SYSTEM_WATERMARK = 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001';
 const MONGO_URI = process.env.MONGO_URI;
 
 // =========================================================
@@ -83,7 +83,7 @@ app.use(limiter);
 
 // PLATFORM HEADERS
 app.use((req, res, next) => {
-    res.setHeader('X-Powered-By', 'nawi-OS');
+    res.setHeader('X-Powered-By', 'NAWI-EMPIRE');
     res.setHeader('X-Platform-Authority', SOVEREIGN_ID);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     next();
@@ -217,43 +217,13 @@ const Post = mongoose.models.Post || mongoose.model('Post', PostSchema);
 const DailyLedger = mongoose.models.DailyLedger || mongoose.model('DailyLedger', DailyLedgerSchema);
 
 // =========================================================
-// ADAPTIVE CONTROLLER MODULE MATRIX LOADERS
+// EXPLICIT MODULE COUPLING LAYER (MATCHING YOUR REPO LAYOUT)
 // =========================================================
-const safeLoad = (primaryPath, fallbackPath, rootFallbackPath, moduleName) => {
-    try { return require(primaryPath); } catch (e) {
-        if (fallbackPath) { try { return require(fallbackPath); } catch (err) {} }
-        if (rootFallbackPath) { try { return require(rootFallbackPath); } catch (rootErr) {} }
-        return null;
-    }
-};
-
-let authController = safeLoad('./controllers/authController', './controllers/authcontroller', './authController', 'authController') || {
-    registerUser: async (req, res) => {
-        try {
-            const { username, email, password, phone_number } = req.body;
-            const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-            if (existingUser) return res.status(400).json({ success: false, message: 'User already exists.' });
-
-            const hashedPassword = await bcrypt.hash(password, 12);
-            const user = await User.create({ username, email, password: hashedPassword, phone_number });
-            const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-            return res.status(201).json({ success: true, token, user });
-        } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
-    },
-    handleUserSession: async (req, res) => {
-        try {
-            const { email, password } = req.body;
-            const user = await User.findOne({ email });
-            if (!user) return res.status(401).json({ success: false, message: 'Invalid credentials.' });
-
-            const validPassword = await bcrypt.compare(password, user.password);
-            if (!validPassword) return res.status(401).json({ success: false, message: 'Invalid credentials.' });
-
-            const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-            return res.status(200).json({ success: true, token, user });
-        } catch (error) { return res.status(500).json({ success: false, message: error.message }); }
-    }
-};
+const authController = require('./controllers/authController.js');
+const battleController = require('./controllers/battleController.js');
+const borderControl = require('./controllers/borderControl.js');
+const masterPayout = require('./controllers/masterPayout.js');
+const p2pGateway = require('./controllers/p2pGateway.js');
 
 // =========================================================
 // SECURITY ACCESS CONTROL MIDDLEWARES
@@ -586,7 +556,7 @@ app.get('/api/ledger/volume-status', async (req, res) => {
 });
 
 app.post('/api/admin/bypass', verifySovereignNodeHandshake, (req, res) => {
-    return res.status(200).json({ status: 'SYNCHRONIZED', message: 'Welcome Back nawi-OS001. Master Authority Bypass Engaged.' });
+    return res.status(200).json({ status: 'SYNCHRONIZED', message: 'Welcome Back NAWI-EMPIRE001. Master Authority Bypass Engaged.' });
 });
 
 // =========================================================
@@ -664,7 +634,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // WebRTC Peer-to-Peer Secure Signaling (Protects system against processing server-side frame data)
+    // WebRTC Peer-to-Peer Secure Signaling
     socket.on('stream_signal_handshake', (data) => {
         try {
             if (!socket.user) return socket.emit('error', { message: 'Not authenticated' });
@@ -814,9 +784,9 @@ mongoose.set('strictQuery', false);
 mongoose.connect(MONGO_URI)
 .then(async () => {
     await seedEmpire();
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
         console.log('====================================================');
-        console.log(`NAWI-OS ENGINE ONLINE PORT ${PORT}`);
+        console.log(`NAWI-EMPIRE ENGINE ONLINE PORT ${PORT}`);
         console.log(`WATERMARK: ${SYSTEM_WATERMARK}`);
         console.log(`NODE_ENV: ${NODE_ENV}`);
         console.log('====================================================');
