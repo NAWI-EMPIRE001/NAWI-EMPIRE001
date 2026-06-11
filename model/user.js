@@ -106,7 +106,7 @@ const UserSchema = new mongoose.Schema(
     identity: {
         sovereign_name: {
             type: String,
-            default: ''
+            default: 'Authenticated Citizen'
         },
 
         legacy_rank: {
@@ -425,20 +425,29 @@ const UserSchema = new mongoose.Schema(
     timestamps: true
 });
 
-// Middleware verification proxy layer
+// Middleware verification proxy layer - Restructured to clear race-conditions
 UserSchema.pre('save', function (next) {
-    // Dynamically synchronizes state names between keys across migrations
-    if (this.isModified('phone_number') && this.phone_number) {
+    // Sync phone number variables safely without logical overwriting conflicts
+    if (this.isModified('phone_number')) {
         this.phone = this.phone_number;
-    } else if (this.isModified('phone') && this.phone) {
+    } else if (this.isModified('phone')) {
         this.phone_number = this.phone;
     }
 
+    // Sync tier authentication fields cleanly
     if (this.isModified('current_tier')) {
         this.verificationTier = this.current_tier;
     } else if (this.isModified('verificationTier')) {
         this.current_tier = this.verificationTier;
     }
+    
+    // Auto sync cross-system biological metadata profiles
+    if (this.isModified('verification_metrics.day_1_video_url')) {
+        this.biometricVerification.day1VideoUrl = this.verification_metrics.day_1_video_url;
+    } else if (this.isModified('biometricVerification.day1VideoUrl')) {
+        this.verification_metrics.day_1_video_url = this.biometricVerification.day1VideoUrl;
+    }
+
     next();
 });
 
