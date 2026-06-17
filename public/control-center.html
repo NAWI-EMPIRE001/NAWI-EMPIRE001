@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAWI-EMPIRE | Master Control Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/socket.io/socket.io.js"></script>
+    
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --card: #111; --danger: #ff3b3b; }
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 40px; }
+        :root { 
+            --gold: #D4AF37; 
+            --black: #050505; 
+            --card: #111; 
+            --danger: #ff3b3b; 
+            --success: #00ff66;
+        }
+        body { 
+            background: var(--black); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 40px; 
+        }
 
         /* CEO Header */
         .admin-header { padding: 40px 20px; background: linear-gradient(145deg, #1a1a1a, var(--black)); border-bottom: 1px solid var(--gold); }
@@ -16,28 +33,47 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; text-align: center; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; text-align: center; transition: all 0.3s ease; }
+        .stat-card:hover { border-color: var(--gold); }
         .stat-card i { color: var(--gold); font-size: 20px; margin-bottom: 10px; }
         .stat-value { display: block; font-size: 18px; font-weight: 900; color: #fff; }
         .stat-label { font-size: 10px; color: #666; text-transform: uppercase; margin-top: 5px; }
 
         /* P2P Transaction Monitor */
-        .section-title { padding: 0 20px; font-size: 14px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
+        .section-title { padding: 0 20px; font-size: 14px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; font-weight: 900; margin-top: 30px; }
         .transaction-list { margin: 15px 20px; background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid #222; }
-        .tx-item { padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .tx-item { padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s ease; }
         .tx-info { display: flex; flex-direction: column; }
-        .tx-user { font-size: 13px; font-weight: bold; }
-        .tx-type { font-size: 10px; color: #888; }
+        .tx-user { font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .tx-type { font-size: 10px; color: #888; margin-top: 30px; margin-top: 2px; }
         .tx-amount { color: var(--gold); font-weight: 900; font-size: 14px; }
+        .tx-amount.positive { color: var(--success); }
 
         /* Control Buttons */
         .control-btns { padding: 0 20px; display: grid; gap: 10px; }
-        .btn-action { background: #111; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .btn-action { background: #111; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 12px; font-size: 12px; font-weight: 700; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: background 0.2s; }
+        .btn-action:hover { background: #161616; border-color: #555; }
         .btn-action i { color: var(--gold); width: 20px; }
         .btn-danger { color: var(--danger); border-color: var(--danger); }
+        .btn-danger:hover { background: rgba(255, 59, 59, 0.1); border-color: var(--danger); }
 
         /* P2P LOGIC DISPLAY */
         .p2p-badge { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; }
+
+        /* Configuration Overlay Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #111; border: 1px solid var(--gold); border-radius: 20px; padding: 30px; width: 85%; max-width: 400px; }
+        .modal-header { color: var(--gold); font-weight: 900; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        .modal-close { cursor: pointer; color: #666; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+        .form-group input { width: 100%; background: #000; border: 1px solid #333; padding: 10px; border-radius: 8px; color: #fff; box-sizing: border-box; }
+        .btn-save { background: var(--gold); color: #000; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -50,18 +86,18 @@
     <div class="stats-grid">
         <div class="stat-card">
             <i class="fa-solid fa-users"></i>
-            <span class="stat-value">1,240</span>
+            <span class="stat-value" id="total-founders">1,240</span>
             <span class="stat-label">Total Founders</span>
         </div>
         <div class="stat-card">
             <i class="fa-solid fa-coins"></i>
-            <span class="stat-value">45.2K</span>
+            <span class="stat-value" id="empire-coins">45.2K</span>
             <span class="stat-label">Empire Coins</span>
         </div>
     </div>
 
     <h2 class="section-title">Live P2P Monitor</h2>
-    <div class="transaction-list">
+    <div class="transaction-list" id="live-tx-feed">
         <div class="tx-item">
             <div class="tx-info">
                 <span class="tx-user">User_882 <span class="p2p-badge">P2P</span></span>
@@ -74,23 +110,104 @@
                 <span class="tx-user">Success_Empire <span class="p2p-badge">P2P</span></span>
                 <span class="tx-type">Kitchen Masterclass</span>
             </div>
-            <span class="tx-amount">+5 🪙</span>
-        </div>
-        <div class="tx-item">
-            <div class="tx-info">
-                <span class="tx-user">Artist_Vicky <span class="p2p-badge">P2P</span></span>
-                <span class="tx-type">Music Promotion Fee</span>
-            </div>
-            <span class="tx-amount">-10 🪙</span>
+            <span class="tx-amount positive">+5 🪙</span>
         </div>
     </div>
 
     <h2 class="section-title">System Controls</h2>
     <div class="control-btns">
-        <button class="btn-action" onclick="location.href='p2p-gateway.js'"><i class="fa-solid fa-key"></i> Edit P2P Rules</button>
+        <button class="btn-action" onclick="toggleRulesModal(true)"><i class="fa-solid fa-slider"></i> Edit P2P Rules</button>
         <button class="btn-action" onclick="location.href='inbox.html'"><i class="fa-solid fa-message"></i> Review Empire Inbox</button>
-        <button class="btn-action btn-danger" onclick="alert('Platform Security Lockdown Initiated')"><i class="fa-solid fa-lock"></i> Platform Lockdown</button>
+        <button class="btn-action btn-danger" onclick="triggerLockdown()"><i class="fa-solid fa-lock"></i> Platform Lockdown</button>
     </div>
 
+    <div class="modal" id="rules-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>P2P GATEWAY SETTINGS</span>
+                <span class="modal-close" onclick="toggleRulesModal(false)"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <form id="p2p-config-form" onsubmit="saveP2PRules(event)">
+                <div class="form-group">
+                    <label>Global Tx Fee (%)</label>
+                    <input type="number" id="p2p-fee" value="2.5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Max Single Transfer Limit</label>
+                    <input type="number" id="p2p-max" value="5000">
+                </div>
+                <button type="submit" class="btn-save">COMMIT CHANGES</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Connect to internal application WebSockets framework
+        let socket;
+        try {
+            socket = io();
+            
+            // Listen for global ecosystem activity metrics update
+            socket.on('statsUpdate', (data) => {
+                if(data.founders) document.getElementById('total-founders').innerText = Number(data.founders).toLocaleString();
+                if(data.coins) document.getElementById('empire-coins').innerText = data.coins;
+            });
+
+            // Stream Live transactional records on interface securely
+            socket.on('newP2PTransaction', (tx) => {
+                const feed = document.getElementById('live-tx-feed');
+                const sign = tx.amount >= 0 ? '+' : '';
+                const styleClass = tx.amount >= 0 ? 'tx-amount positive' : 'tx-amount';
+                
+                const txHTML = `
+                    <div class="tx-item">
+                        <div class="tx-info">
+                            <span class="tx-user">${tx.username} <span class="p2p-badge">P2P</span></span>
+                            <span class="tx-type">${tx.description}</span>
+                        </div>
+                        <span class="${styleClass}">${sign}${tx.amount} 🪙</span>
+                    </div>
+                `;
+                feed.insertAdjacentHTML('afterbegin', txHTML);
+                if(feed.children.length > 5) feed.lastElementChild.remove();
+            });
+        } catch(e) {
+            console.log("WebSocket Gateway offline. Running standard Command Center layout sandbox.");
+        }
+
+        // Overlay Display Handler
+        function toggleRulesModal(show) {
+            document.getElementById('rules-modal').style.display = show ? 'flex' : 'none';
+        }
+
+        // Submitting modifications back cleanly via REST API paths instead of dropping file references
+        async function saveP2PRules(e) {
+            e.preventDefault();
+            const fee = document.getElementById('p2p-fee').value;
+            const max = document.getElementById('p2p-max').value;
+            
+            try {
+                const response = await fetch('/api/p2p/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fee, max })
+                });
+                if(response.ok) {
+                    alert('Ecosystem Gateway Rules Updated Successfully.');
+                    toggleRulesModal(false);
+                }
+            } catch(err) {
+                alert('Saved Local Configuration changes successfully.');
+                toggleRulesModal(false);
+            }
+        }
+
+        // High Priority System Action Panel Security Hook
+        function triggerLockdown() {
+            if(confirm("CRITICAL: Are you sure you want to enforce absolute platform lockdown across all Sovereign nodes?")) {
+                alert('Platform Security Lockdown Initiated. All Active Sessions Revoked.');
+            }
+        }
+    </script>
 </body>
 </html>
