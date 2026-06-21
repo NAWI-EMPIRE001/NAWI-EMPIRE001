@@ -1,46 +1,46 @@
 {
-  "name": "nawi-os-sovereign-platform",
+  "name": "nawi-empire001-sovereign-platform",
   "version": "1.0.0",
-  "description": "nawi-OS Unified Sovereign Production Platform Engine | Aurora-231 Infrastructure Core",
+  "description": "NAWI-EMPIRE001 Unified Sovereign Production Platform Engine | The 7 Core Architectural Pillars",
   "main": "server.js",
   "private": true,
   "license": "UNLICENSED",
   "type": "commonjs",
-  "author": "nawi-OS Founder",
-
+  "author": "Excellency of NAWI-EMPIRE001 ecosystem",
   "engines": {
     "node": ">=18.18.0",
     "npm": ">=9.0.0"
   },
-
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
     "production": "NODE_ENV=production node server.js",
-
+    
     "render-build": "npm ci",
-    "postinstall": "npm ci",
-
     "seed": "node scripts/seed.js",
-
     "restart": "npm run start",
-
+    
     "watermark:apply": "node scripts/apply-platform-seal.js",
     "vault:sync": "node scripts/sync-liquidity.js",
     "secure:gate": "node scripts/p2p-handshake.js",
 
-    "pillar:gaming": "node microservices/gaming-battle-engine.js",
-    "pillar:marketplace": "node microservices/global-marketplace.js",
-    "pillar:ads": "node microservices/ads-program-manager.js",
-    "pillar:streams": "node microservices/user-live-stream.js",
-    "pillar:kitchen": "node microservices/kitchen-meal-stream.js",
-    "pillar:stylist": "node microservices/sovereign-stylist.js",
-    "pillar:apparel": "node microservices/apparel-studio-canvas.js"
+    "pillar:arena-node": "node microservices/arena-node.js",
+    "pillar:sovereign-exchange": "node microservices/sovereign-exchange.js",
+    "pillar:visibility-engine": "node microservices/visibility-engine.js",
+    "pillar:culinary-matrix": "node microservices/culinary-matrix.js",
+    "pillar:aesthetic-nexus": "node microservices/aesthetic-nexus.js",
+    "pillar:diamondback-forge": "node microservices/diamondback-forge.js",
+    "pillar:sonic-ledger": "node microservices/sonic-ledger.js"
   },
-
   "keywords": [
-    "nawi-os",
-    "aurora-231",
+    "nawi-empire001",
+    "arena-node",
+    "sovereign-exchange",
+    "visibility-engine",
+    "culinary-matrix",
+    "aesthetic-nexus",
+    "diamondback-forge",
+    "sonic-ledger",
     "diamondback-231",
     "mongodb",
     "express",
@@ -48,21 +48,11 @@
     "livestream",
     "marketplace",
     "p2p",
-    "social-platform",
-    "realtime",
     "render",
     "nodejs",
     "backend",
-    "api",
-    "sovereign-platform",
-    "fintech",
-    "global-commerce",
-    "media-streaming",
-    "gaming",
-    "ads-engine",
-    "apparel-studio"
+    "fintech"
   ],
-
   "dependencies": {
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
@@ -84,19 +74,15 @@
     "stripe": "^15.12.0",
     "uuid": "^10.0.0"
   },
-
   "devDependencies": {
     "nodemon": "^3.1.4"
   },
-
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/nawi-os.git"
+    "url": "https://github.com/nawi-empire001/sovereign-platform.git"
   },
-
   "bugs": {
-    "url": "https://github.com/yourusername/nawi-os/issues"
+    "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
   },
-
-  "homepage": "https://nawi-os.onrender.com"
+  "homepage": "https://nawi-empire001.onrender.com"
 }
