@@ -16,7 +16,7 @@
     "dev": "nodemon server.js",
     "production": "NODE_ENV=production node server.js",
     
-    "render-build": "npm ci",
+    "render-build": "npm install",
     "seed": "node scripts/seed.js",
     "restart": "npm run start",
     
