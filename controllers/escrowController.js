@@ -1,355 +1,292 @@
+const mongoose = require('mongoose');
 const Escrow = require('../models/Escrow');
 const Wallet = require('../models/Wallet');
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
+const DailyLedger = require('../models/DailyLedger');
 
 /**
- * Create Escrow
- * Diamondback 231 Escrow Shield
+ * =========================================================
+ * NAWI-EMPIRE001 ESCROW ENGINE
+ * FINTECH-GRADE ACID PROTECTED WORKFLOWS
+ * =========================================================
+ */
+
+/**
+ * CREATE ESCROW
  */
 exports.createEscrow = async (req, res) => {
+    const session = await mongoose.startSession();
     try {
+        await session.startTransaction();
 
-        const {
-            sellerId,
-            amount,
-            productId,
-            description,
-            sourcePillar
-        } = req.body;
+        const { sellerId, amount, productId, description, sourcePillar } = req.body;
+        const targetPillar = sourcePillar || 'GENERAL';
 
-        const buyer = await User.findById(req.user.id);
-
-        const seller = await User.findById(sellerId);
+        const buyer = await User.findById(req.user.id).session(session);
+        const seller = await User.findById(sellerId).session(session);
 
         if (!buyer || !seller) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Buyer or Seller user record not found' });
         }
 
-        const buyerWallet = await Wallet.findOne({
-            user: buyer._id
-        });
-
+        const buyerWallet = await Wallet.findOne({ user: buyer._id }).session(session);
         if (!buyerWallet) {
-            return res.status(404).json({
-                success: false,
-                message: 'Buyer wallet not found'
-            });
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Buyer wallet engine instance not found' });
         }
 
-        if (buyerWallet.balance < amount) {
-            return res.status(400).json({
-                success: false,
-                message: 'Insufficient balance'
-            });
-        }
+        // Use core unified Wallet.js hook execution to handle state verification & balance checks safely
+        await buyerWallet.lockEscrow(amount, targetPillar);
 
-        buyerWallet.balance -= amount;
-        buyerWallet.escrowBalance += amount;
+        const escrowIdString = `ESCROW-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        await buyerWallet.save();
-
-        const escrow = await Escrow.create({
-
-            transactionId: `ESCROW-${Date.now()}`,
-
+        const [escrowRecord] = await Escrow.create([{
+            transactionId: escrowIdString,
             buyer: buyer._id,
-
             seller: seller._id,
-
             productId,
-
             amount,
-
             description,
-
             status: 'HELD',
+            escrowMetadata: { sourcePillar: targetPillar },
+            auditTrail: [{
+                action: 'ESCROW_CREATED',
+                actorId: buyer._id.toString(),
+                timestamp: new Date()
+            }]
+        }], { session });
 
-            escrowMetadata: {
-                sourcePillar:
-                    sourcePillar || 'GENERAL'
-            },
-
-            auditTrail: [
-                {
-                    action: 'ESCROW_CREATED',
-                    actorId: buyer._id.toString()
-                }
-            ]
-        });
-
-        const transaction = await Transaction.create({
-
+        const [transactionRecord] = await Transaction.create([{
             transactionId: `TXN-${Date.now()}`,
-
             sender: buyer._id,
-
             receiver: seller._id,
-
-            escrowId: escrow._id,
-
+            escrowId: escrowRecord._id,
             transactionType: 'escrow',
-
             paymentMethod: 'wallet',
-
             amount,
-
             status: 'pending',
+            destinationModule: 'escrow',
+            hub_destination: 'marketplace',
+            gift_type: 'DIRECT_SUPPORT',
+            empire_coins_spent: amount
+        }], { session });
 
-            destinationModule: 'escrow'
+        escrowRecord.relatedTransaction = transactionRecord._id;
+        await escrowRecord.save({ session });
+
+        // Synchronize Global Daily Reconciliation Ledger Ecosystem Status atomically
+        await DailyLedger.logSystemTransaction({
+            type: 'ESCROW_LOCK',
+            amount,
+            currency: 'COIN',
+            status: 'VERIFIED',
+            sourcePillar: targetPillar
         });
 
-        escrow.relatedTransaction = transaction._id;
-
-        await escrow.save();
-
+        await session.commitTransaction();
         return res.status(201).json({
             success: true,
-            message: 'Escrow created successfully',
-            escrow
+            message: 'Escrow channel locked and secured successfully',
+            escrow: escrowRecord
         });
 
     } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        await session.abortTransaction();
+        return res.status(500).json({ success: false, message: error.message });
+    } finally {
+        await session.endSession();
     }
 };
 
 /**
- * Release Escrow
+ * RELEASE ESCROW (SELLER GETS PAID)
  */
 exports.releaseEscrow = async (req, res) => {
-
+    const session = await mongoose.startSession();
     try {
-
+        await session.startTransaction();
         const { escrowId } = req.params;
 
-        const escrow = await Escrow.findById(escrowId);
-
+        const escrow = await Escrow.findById(escrowId).session(session);
         if (!escrow) {
-            return res.status(404).json({
-                success: false,
-                message: 'Escrow not found'
-            });
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Escrow contract not found' });
         }
 
         if (escrow.status !== 'HELD') {
-            return res.status(400).json({
-                success: false,
-                message: 'Escrow already processed'
-            });
+            await session.abortTransaction();
+            return res.status(400).json({ success: false, message: 'Escrow state immutable: Not in HELD status' });
         }
 
-        const sellerWallet = await Wallet.findOne({
-            user: escrow.seller
-        });
+        const buyerWallet = await Wallet.findOne({ user: escrow.buyer }).session(session);
+        const sellerWallet = await Wallet.findOne({ user: escrow.seller }).session(session);
 
-        if (!sellerWallet) {
-            return res.status(404).json({
-                success: false,
-                message: 'Seller wallet not found'
-            });
+        if (!buyerWallet || !sellerWallet) {
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Financial endpoints for balance distribution missing' });
         }
 
-        sellerWallet.balance += escrow.amount;
+        // Deduct from buyer's escrow pool and assign straight to seller's core liquid wallet balance safely
+        if (buyerWallet.escrowBalance < escrow.amount) {
+            await session.abortTransaction();
+            return res.status(400).json({ success: false, message: 'Critical Error: Out of sync account ledger variance' });
+        }
+        buyerWallet.escrowBalance -= escrow.amount;
+        await buyerWallet.save({ session });
 
-        await sellerWallet.save();
+        await sellerWallet.credit(escrow.amount, escrow.escrowMetadata?.sourcePillar || 'GENERAL');
 
         escrow.status = 'RELEASED';
-
         escrow.releasedAt = new Date();
-
         escrow.auditTrail.push({
             action: 'ESCROW_RELEASED',
-            actorId: req.user.id
+            actorId: req.user.id,
+            timestamp: new Date()
         });
-
-        await escrow.save();
+        await escrow.save({ session });
 
         await Transaction.findByIdAndUpdate(
             escrow.relatedTransaction,
-            {
-                status: 'success'
-            }
+            { status: 'success' },
+            { session }
         );
 
-        return res.status(200).json({
-            success: true,
-            message: 'Funds released successfully',
-            escrow
+        await DailyLedger.logSystemTransaction({
+            type: 'ESCROW_RELEASE',
+            amount: escrow.amount,
+            currency: 'COIN',
+            status: 'VERIFIED',
+            sourcePillar: escrow.escrowMetadata?.sourcePillar || 'GENERAL'
         });
+
+        await session.commitTransaction();
+        return res.status(200).json({ success: true, message: 'Escrow settlement released successfully', escrow });
 
     } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        await session.abortTransaction();
+        return res.status(500).json({ success: false, message: error.message });
+    } finally {
+        await session.endSession();
     }
 };
 
 /**
- * Open Dispute
+ * OPEN DISPUTE
  */
 exports.openDispute = async (req, res) => {
-
     try {
-
         const { escrowId } = req.params;
-
         const { reason } = req.body;
 
         const escrow = await Escrow.findById(escrowId);
-
         if (!escrow) {
-            return res.status(404).json({
-                success: false,
-                message: 'Escrow not found'
-            });
+            return res.status(404).json({ success: false, message: 'Escrow instance not found' });
+        }
+
+        if (escrow.status !== 'HELD') {
+            return res.status(400).json({ success: false, message: 'Cannot declare dispute on settled lines' });
         }
 
         escrow.status = 'DISPUTED';
-
-        escrow.disputeReason =
-            reason || 'No reason provided';
-
+        escrow.disputeReason = reason || 'No details specified';
         escrow.disputeOpenedAt = new Date();
-
         escrow.auditTrail.push({
             action: 'DISPUTE_OPENED',
             actorId: req.user.id,
-            notes: reason
+            notes: reason,
+            timestamp: new Date()
         });
-
         await escrow.save();
 
-        return res.status(200).json({
-            success: true,
-            message: 'Dispute opened successfully',
-            escrow
-        });
+        return res.status(200).json({ success: true, message: 'Escrow flagged for manual dispute governance review', escrow });
 
     } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
 /**
- * Refund Escrow
+ * REFUND ESCROW (BUYER GETS MONEY BACK)
  */
 exports.refundEscrow = async (req, res) => {
-
+    const session = await mongoose.startSession();
     try {
-
+        await session.startTransaction();
         const { escrowId } = req.params;
 
-        const escrow = await Escrow.findById(escrowId);
-
+        const escrow = await Escrow.findById(escrowId).session(session);
         if (!escrow) {
-            return res.status(404).json({
-                success: false,
-                message: 'Escrow not found'
-            });
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Escrow record not found' });
         }
 
-        const buyerWallet = await Wallet.findOne({
-            user: escrow.buyer
-        });
+        if (escrow.status !== 'HELD' && escrow.status !== 'DISPUTED') {
+            await session.abortTransaction();
+            return res.status(400).json({ success: false, message: 'Escrow cannot be returned from its current state' });
+        }
 
+        const buyerWallet = await Wallet.findOne({ user: escrow.buyer }).session(session);
         if (!buyerWallet) {
-            return res.status(404).json({
-                success: false,
-                message: 'Buyer wallet not found'
-            });
+            await session.abortTransaction();
+            return res.status(404).json({ success: false, message: 'Buyer target financial interface not found' });
         }
 
-        buyerWallet.balance += escrow.amount;
-
-        if (buyerWallet.escrowBalance >= escrow.amount) {
-            buyerWallet.escrowBalance -= escrow.amount;
-        }
-
-        await buyerWallet.save();
+        // Return the locked funds back up into liquid coinBalance using our model instance wrapper
+        await buyerWallet.refundEscrow(escrow.amount, escrow.escrowMetadata?.sourcePillar || 'GENERAL');
 
         escrow.status = 'REFUNDED';
-
         escrow.refundedAt = new Date();
-
         escrow.auditTrail.push({
             action: 'ESCROW_REFUNDED',
-            actorId: req.user.id
+            actorId: req.user.id,
+            timestamp: new Date()
         });
-
-        await escrow.save();
+        await escrow.save({ session });
 
         await Transaction.findByIdAndUpdate(
             escrow.relatedTransaction,
-            {
-                status: 'cancelled'
-            }
+            { status: 'cancelled' },
+            { session }
         );
 
-        return res.status(200).json({
-            success: true,
-            message: 'Escrow refunded successfully',
-            escrow
+        await DailyLedger.logSystemTransaction({
+            type: 'ESCROW_REFUND',
+            amount: escrow.amount,
+            currency: 'COIN',
+            status: 'VERIFIED',
+            sourcePillar: escrow.escrowMetadata?.sourcePillar || 'GENERAL'
         });
+
+        await session.commitTransaction();
+        return res.status(200).json({ success: true, message: 'Escrow allocation safely rolled back to buyer wallet', escrow });
 
     } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        await session.abortTransaction();
+        return res.status(500).json({ success: false, message: error.message });
+    } finally {
+        await session.endSession();
     }
 };
 
 /**
- * Get Escrow Status
+ * GET ESCROW STATUS
  */
 exports.getEscrowStatus = async (req, res) => {
-
     try {
-
-        const escrow = await Escrow.findById(
-            req.params.escrowId
-        )
-        .populate('buyer', 'userId email')
-        .populate('seller', 'userId email')
-        .populate('relatedTransaction');
+        const escrow = await Escrow.findById(req.params.escrowId)
+            .populate('buyer', 'userId email')
+            .populate('seller', 'userId email')
+            .populate('relatedTransaction');
 
         if (!escrow) {
-            return res.status(404).json({
-                success: false,
-                message: 'Escrow not found'
-            });
+            return res.status(404).json({ success: false, message: 'Escrow allocation reference link missing' });
         }
 
-        return res.status(200).json({
-            success: true,
-            escrow
-        });
+        return res.status(200).json({ success: true, escrow });
 
     } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
