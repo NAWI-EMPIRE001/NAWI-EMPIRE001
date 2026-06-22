@@ -1,38 +1,18 @@
 const mongoose = require('mongoose');
 const Meal = require('./models/Meal'); 
 
-// 🛡️ MASTER CONNECTION CONFIGURATION
-// String matched exactly to your MongoDB Dashboard: nawi-empire001.zwidxex
-const MONGO_URI = "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/NAWI_VAULT?retryWrites=true&w=majority";
-
-const clientOptions = { 
-    serverApi: { version: '1', strict: true, deprecationErrors: true } 
-};
-
-/**
- * Establishes a permanent link to the NAWI-EMPIRE Vault.
- */
-async function connectVault() {
-    try {
-        if (mongoose.connection.readyState === 1) return; 
-        
-        await mongoose.connect(MONGO_URI, clientOptions);
-        console.log("🏰 NAWI EMPIRE: Vault Synchronized & Locked Open!");
-    } catch (error) {
-        // Log failure for Render logs
-        console.error("⚠️ VAULT SYNC FAILURE:", error.message);
-        // Retry every 5 seconds if connection drops
-        setTimeout(connectVault, 5000); 
-    }
-}
-
-// Execute Connection
-connectVault();
+// 🛡️ REUSE SINGLE CONNECTION LOGIC
+// Connection initialization has been completely offloaded to db.js to prevent duplicate string loops.
 
 // --- 🥘 KITCHEN & MARKETPLACE LOGIC ---
 
 async function pushToGlobalMarket(mealData) {
     try {
+        // Ensure the connection is established before saving
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error("Database connection is not open. Operational vault locked.");
+        }
+
         const newMeal = new Meal({
             sellerId: mealData.sellerId,
             mealName: mealData.mealName,
