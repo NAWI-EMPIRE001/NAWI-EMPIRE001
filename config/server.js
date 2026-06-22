@@ -28,29 +28,29 @@ try {
 }
 
 // =========================================================
-// ENVIRONMENT CONFIGURATION
+// ENVIRONMENT CONFIGURATION & PERFECT MONGODB FALLBACK
 // =========================================================
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'production';
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+// Hardcoded with your verified, perfect connection string as the absolute fallback
+const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || PERFECT_MONGO_URI;
 
 // Global instance variable allocation for shutdown access scope
 let serverInstance = null;
 
 // =========================================================
 // GLOBAL SAFETY EXCEPTION TRAPS (Anti-Crash Interceptors)
-// Fixed: Moved to top-level context to guard boot execution failures
 // =========================================================
 process.on('unhandledRejection', (reason, promise) => {
     console.error('⚠️ UNHANDLED REJECTION DETECTED AT:', promise);
     console.error('REASON:', reason);
-    // System stays online; prevents unhandled async rejections from bricking nodes
 });
 
 process.on('uncaughtException', (err) => {
     console.error('❌ CRITICAL UNCAUGHT EXCEPTION OCCURRED:');
     console.error(err);
-    // Graceful panic fallback sequence trigger
     emergencyForceShutdown();
 });
 
@@ -67,17 +67,14 @@ const executeDatabaseConnection = async () => {
         }
     }
 
-    if (!MONGO_URI) {
-        throw new Error('CRITICAL: Neither MONGO_URI nor MONGODB_URI environmental variables are set.');
-    }
-
     const options = {
-        autoIndex: NODE_ENV !== 'production', // Performance optimization for production nodes
-        maxPoolSize: 10,                      // Concurrent database socket limitations
-        serverSelectionTimeoutMS: 5000,       // Fast-fail handling to prevent hanging instances
-        socketTimeoutMS: 45000,               // Close inactive sockets to prevent resource leaks
+        autoIndex: NODE_ENV !== 'production', 
+        maxPoolSize: 10,                      
+        serverSelectionTimeoutMS: 5000,       
+        socketTimeoutMS: 45000,               
     };
 
+    // Mongoose connects directly using the verified connection string format
     await mongoose.connect(MONGO_URI, options);
 };
 
@@ -117,7 +114,7 @@ const startServer = async () => {
         // =================================================
         // START NETWORK ENGINE LISTENING
         // =================================================
-        serverInstance.listen(PORT, () => {
+        serverInstance.listen(PORT, '0.0.0.0', () => {
             console.log(`
 ====================================================
  🚀 NAWI-EMPIRE001 ONLINE
@@ -155,17 +152,14 @@ const startServer = async () => {
 const shutdown = async (signal) => {
     console.log(`\n====================================================\n ${signal} RECEIVED - TEARING DOWN ECOSYSTEM SAFELY\n====================================================`);
 
-    // Safety Timeout Execution Policy Guardrail
     const forceExitTimeout = setTimeout(() => {
         console.error('⚠️ Graceful shutdown timed out. Forcing transaction node termination.');
         process.exit(1);
     }, 10000);
 
     if (serverInstance) {
-        // Step 1: Immediately deny any incoming network requests
         serverInstance.close(async () => {
             try {
-                // Step 2: Unmount and spin down active MongoDB drivers safely
                 await mongoose.connection.close();
                 console.log('🟢 MongoDB Connection Closed Safely.');
                 console.log('🛑 Server Shutdown Complete. Node Released.');
