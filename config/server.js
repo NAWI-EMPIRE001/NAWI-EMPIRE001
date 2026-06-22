@@ -33,12 +33,26 @@ try {
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'production';
 
-// Hardcoded with your verified, perfect connection string as the absolute fallback
-const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
+// Target database name explicit placement (nawi_db) inside the secure fallback cluster string
+const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/nawi_db?appName=NAWI-EMPIRE001";
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || PERFECT_MONGO_URI;
 
 // Global instance variable allocation for shutdown access scope
 let serverInstance = null;
+
+// =========================================================
+// EMERGENCY SHUTDOWN DEFENSE (Moved Up for Proper Execution Scope)
+// =========================================================
+const emergencyForceShutdown = () => {
+    try {
+        if (serverInstance) serverInstance.close();
+        mongoose.connection.close(false, () => {
+            process.exit(1);
+        });
+    } catch (e) {
+        process.exit(1);
+    }
+};
 
 // =========================================================
 // GLOBAL SAFETY EXCEPTION TRAPS (Anti-Crash Interceptors)
@@ -173,17 +187,6 @@ const shutdown = async (signal) => {
     } else {
         clearTimeout(forceExitTimeout);
         process.exit(0);
-    }
-};
-
-const emergencyForceShutdown = () => {
-    try {
-        if (serverInstance) serverInstance.close();
-        mongoose.connection.close(false, () => {
-            process.exit(1);
-        });
-    } catch (e) {
-        process.exit(1);
     }
 };
 
