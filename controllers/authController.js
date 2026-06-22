@@ -5,7 +5,7 @@
  * Description: Fully integrated, validated 7 Pillars routing, Tiered Verification, and Sovereign Stylist Engines.
  */
 
-const User = require('../module/user'); // Fixed path to point directly to your real lowercase folder structure
+const User = require('../module/user'); // Verified lowercase directory path match
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -63,12 +63,14 @@ const authController = {
                 phone: phone_number,
                 verified: true,
                 role: 'user',
+                accountStatus: 'active',
                 current_tier: 1,
                 verificationTier: 1,
                 identity: {
                     sovereign_name: username,
                     legacy_rank: 'Citizen',
-                    id_verified: true
+                    id_verified: true,
+                    joined_date: new Date().toISOString().split('T')[0]
                 },
                 verification_metrics: {
                     day_1_video_url: videoUrl,
@@ -77,7 +79,16 @@ const authController = {
                     cacNumber: '',
                     secure_docs_url: ''
                 },
-                sovereignStylistTheme: { // Fixed object casing parameter to match schema
+                pillarAccess: {
+                    marketplace: true,
+                    ads_program: true,
+                    gaming_studio: true,
+                    live_stream: true,
+                    kitchen_meal: true,
+                    music_promotion: true,
+                    content_creation: true
+                },
+                sovereignStylistTheme: { 
                     activeTheme: "deep_obsidian", 
                     titaniumAccents: true,
                     polishedGoldBorders: true
@@ -184,6 +195,7 @@ const authController = {
                 "culinary-matrix": { name: "Kitchen Meal Hub Engine", key: "culinary-matrix", minTierRequired: 1 },
                 "aesthetic-nexus": { name: "Content Creation Layouts", key: "aesthetic-nexus", minTierRequired: 1 },
                 "diamondback-forge": { name: "Diamondback Apparel Forge", key: "diamondback-forge", minTierRequired: 2 }, 
+                "forge": { name: "Diamondback Apparel Forge", key: "diamondback-forge", minTierRequired: 2 }, 
                 "sonic-ledger": { name: "Global Music Audio Ledger", key: "sonic-ledger", minTierRequired: 1 }
             };
 
@@ -236,7 +248,6 @@ const authController = {
                 return res.status(404).json({ success: false, message: "User not found." });
             }
 
-            // Fixed property synchronization to match Schema definition camelCase naming convention
             user.sovereignStylistTheme = {
                 activeTheme: selectedStyle,
                 titaniumAccents: selectedStyle === "industrial_titanium",
