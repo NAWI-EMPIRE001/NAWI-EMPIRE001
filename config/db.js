@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 // ==============================
-// ENV VALIDATION
+// ENV VALIDATION & PERFECT FALLBACK
 // ==============================
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || PERFECT_MONGO_URI;
 
 if (!MONGO_URI) {
     throw new Error('❌ MONGO_URI / MONGODB_URI environment variable is missing');
@@ -25,11 +26,15 @@ const mongooseOptions = {
 // ==============================
 let retryCount = 0;
 const MAX_RETRIES = 10;
+let isConnecting = false; // Guard flag to prevent duplicate connection executions
 
 // ==============================
 // CONNECT FUNCTION
 // ==============================
 const connectDB = async () => {
+    if (isConnecting) return; // Block entry if a connection attempt is already alive
+    isConnecting = true;
+
     try {
         await mongoose.connect(MONGO_URI, mongooseOptions);
 
@@ -44,10 +49,11 @@ const connectDB = async () => {
         `);
 
         retryCount = 0; // reset on success
+        isConnecting = false;
 
     } catch (error) {
-
         retryCount++;
+        isConnecting = false;
 
         console.error(`
 =========================================
@@ -60,9 +66,7 @@ const connectDB = async () => {
 
         if (retryCount < MAX_RETRIES) {
             const delay = Math.min(1000 * retryCount * 2, 30000);
-
             console.log(`⏳ Retrying MongoDB in ${delay / 1000}s...`);
-
             setTimeout(connectDB, delay);
         } else {
             console.error('❌ Max retry limit reached. Shutting down system.');
@@ -72,7 +76,7 @@ const connectDB = async () => {
 };
 
 // ==============================
-// CONNECTION EVENTS (IMPORTANT)
+// CONNECTION EVENTS (CLEANED)
 // ==============================
 mongoose.connection.on('connected', () => {
     console.log('🟢 Mongoose event: connected');
@@ -82,9 +86,9 @@ mongoose.connection.on('error', (err) => {
     console.error('🔴 Mongoose event error:', err.message);
 });
 
+// Fixed: Removed the clashing standalone connectDB() invoke loop to stop duplicate threads.
 mongoose.connection.on('disconnected', () => {
-    console.warn('🟡 Mongoose disconnected — attempting reconnection...');
-    connectDB();
+    console.warn('🟡 Mongoose disconnected.');
 });
 
 // ==============================
