@@ -1,25 +1,45 @@
+// ======================================================
+// 👑 NAWI-EMPIRE001 APPLICATION CORE
+// FILE: app.js
+// ======================================================
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
+const path = require('path');
 
-// ==============================
-// ROUTES IMPORTS
-// ==============================
-const authRoutes = require('./routes/auth.routes');
-const postRoutes = require('./routes/post.routes');
-const pillarRoutes = require('./routes/pillar.routes');
-const financeRoutes = require('./routes/finance.routes');
+// ======================================================
+// EXPRESS APP INITIALIZATION
+// ======================================================
 
-// ==============================
-// EXPRESS APP INIT
-// ==============================
 const app = express();
 
-// ==============================
-// SECURITY + PERFORMANCE LAYER
-// ==============================
+// ======================================================
+// MIDDLEWARE IMPORTS
+// ======================================================
+
+const rateLimiter = require('./middlewares/rateLimiter');
+const { notFound, errorHandler } = require('./middlewares/errorMiddleware');
+
+// ======================================================
+// ROUTES IMPORTS
+// ======================================================
+
+const authRoutes = require('./routes/authRoutes');
+const walletRoutes = require('./routes/walletRoutes');
+const escrowRoutes = require('./routes/escrowRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const marketplaceRoutes = require('./routes/marketplaceRoutes');
+const streamRoutes = require('./routes/streamRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const verificationRoutes = require('./routes/verificationRoutes');
+
+// ======================================================
+// SECURITY MIDDLEWARE
+// ======================================================
+
 app.use(
     helmet({
         crossOriginResourcePolicy: false,
@@ -30,7 +50,8 @@ app.use(
 app.use(
     cors({
         origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowedHeaders: [
             'Content-Type',
             'Authorization',
@@ -44,116 +65,125 @@ app.use(
     })
 );
 
+// ======================================================
+// PERFORMANCE MIDDLEWARE
+// ======================================================
+
 app.use(compression());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// ==============================
-// STATIC FILES (MEDIA + UI)
-// ==============================
-app.use('/uploads', express.static('uploads'));
-app.use(express.static('public'));
+app.use(
+    express.json({
+        limit: '50mb'
+    })
+);
 
-// ==============================
-// CORE HEALTH CHECK
-// ==============================
-app.get('/health', (req, res) => {
+app.use(
+    express.urlencoded({
+        extended: true,
+        limit: '50mb'
+    })
+);
+
+app.use(
+    morgan(
+        process.env.NODE_ENV === 'production'
+            ? 'combined'
+            : 'dev'
+    )
+);
+
+// ======================================================
+// GLOBAL RATE LIMITER
+// ======================================================
+
+app.use(rateLimiter);
+
+// ======================================================
+// STATIC FILES
+// ======================================================
+
+app.use(
+    '/uploads',
+    express.static(path.join(__dirname, 'uploads'))
+);
+
+app.use(
+    express.static(path.join(__dirname, 'public'))
+);
+
+// ======================================================
+// ROOT HEALTH CHECK
+// ======================================================
+
+app.get('/', (req, res) => {
     res.status(200).json({
+        success: true,
         status: 'ONLINE',
-        system: 'NAWI-EMPIRE001 CORE ENGINE',
-        architecture: '7-PILLAR UNIFIED FRAMEWORK',
+        ecosystem: 'NAWI-EMPIRE001',
+        architecture: '7-PILLAR ECOSYSTEM',
+        environment: process.env.NODE_ENV || 'development',
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
     });
 });
 
-// ==============================
-// 7 PILLAR ROUTE MAPPING
-// ==============================
+// ======================================================
+// DETAILED HEALTH CHECK
+// ======================================================
 
-/**
- * PILLAR 1: THE SOVEREIGN EXCHANGE
- * Financial + escrow + wallet systems
- */
-app.use('/api/pillar/exchange', financeRoutes);
-
-/**
- * PILLAR 2: THE VISIBILITY ENGINE
- * Ads + promotion + reach systems
- */
-app.use('/api/pillar/visibility', pillarRoutes);
-
-/**
- * PILLAR 3: THE ARENA NODE
- * Gaming + battle + interactive systems
- */
-app.use('/api/pillar/arena', pillarRoutes);
-
-/**
- * PILLAR 4: THE CULINARY MATRIX
- * Food + content logging system
- */
-app.use('/api/pillar/culinary', pillarRoutes);
-
-/**
- * PILLAR 5: THE AESTHETIC NEXUS
- * Styling + apparel + creative design tools
- */
-app.use('/api/pillar/aesthetic', pillarRoutes);
-
-/**
- * PILLAR 6: THE DIAMONDBACK FORGE
- * Creation engine (products, frameworks, assets)
- */
-app.use('/api/pillar/forge', pillarRoutes);
-
-/**
- * PILLAR 7: THE SONIC LEDGER
- * Media + streaming + audio/video tracking
- */
-app.use('/api/pillar/ledger', pillarRoutes);
-
-// ==============================
-// CORE SYSTEM ROUTES
-// ==============================
-app.use('/api/auth', authRoutes);
-app.use('/api/posts', postRoutes);
-
-// ==============================
-// DEFAULT ROOT RESPONSE
-// ==============================
-app.get('/', (req, res) => {
+app.get('/health', (req, res) => {
     res.status(200).json({
-        message: 'NAWI-EMPIRE001 ACTIVE',
-        system: '7-PILLAR SOVEREIGN ENGINE',
-        status: 'OPERATIONAL'
+        success: true,
+        database: 'CONNECTED',
+        status: 'HEALTHY',
+        uptime: process.uptime(),
+        memoryUsage: process.memoryUsage(),
+        timestamp: new Date().toISOString()
     });
 });
 
-// ==============================
-// ERROR HANDLING (GLOBAL)
-// ==============================
-app.use((err, req, res, next) => {
-    console.error('APP ERROR INTERCEPTED:', err.message || err);
-    res.status(500).json({
-        success: false,
-        message: 'Internal Platform Engine Error',
-        error: process.env.NODE_ENV === 'production' ? 'Core Secure State' : err.message
-    });
-});
+// ======================================================
+// API VERSION 1 ROUTES
+// ======================================================
 
-// ==============================
+// AUTHENTICATION
+app.use('/api/v1/auth', authRoutes);
+
+// USER PROFILE
+app.use('/api/v1/profile', profileRoutes);
+
+// WALLET ENGINE
+app.use('/api/v1/wallet', walletRoutes);
+
+// ESCROW ENGINE
+app.use('/api/v1/escrow', escrowRoutes);
+
+// MARKETPLACE ENGINE
+app.use('/api/v1/marketplace', marketplaceRoutes);
+
+// STREAMING ENGINE
+app.use('/api/v1/streams', streamRoutes);
+
+// MESSAGING ENGINE
+app.use('/api/v1/messages', messageRoutes);
+
+// VERIFICATION ENGINE
+app.use('/api/v1/verification', verificationRoutes);
+
+// ======================================================
 // 404 HANDLER
-// ==============================
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found in NAWI-EMPIRE001 system'
-    });
-});
+// ======================================================
 
-// ==============================
-// EXPORT APP
-// ==============================
+app.use(notFound);
+
+// ======================================================
+// GLOBAL ERROR HANDLER
+// ======================================================
+
+app.use(errorHandler);
+
+// ======================================================
+// EXPORT APPLICATION
+// ======================================================
+
 module.exports = app;
