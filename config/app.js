@@ -135,10 +135,11 @@ app.get('/', (req, res) => {
 // ERROR HANDLING (GLOBAL)
 // ==============================
 app.use((err, req, res, next) => {
-    console.error('APP ERROR:', err.message || err);
+    console.error('APP ERROR INTERCEPTED:', err.message || err);
     res.status(500).json({
         success: false,
-        message: 'Internal Platform Engine Error'
+        message: 'Internal Platform Engine Error',
+        error: process.env.NODE_ENV === 'production' ? 'Core Secure State' : err.message
     });
 });
 
