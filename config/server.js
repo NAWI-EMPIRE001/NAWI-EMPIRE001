@@ -1,6 +1,5 @@
 // =========================================================
 // 👑 NAWI-EMPIRE001 - MASTER SERVER ENTRY POINT
-// PRODUCTION CORE ARCHITECTURE & FAULT-TOLERANT BOT SEQUENCE
 // =========================================================
 
 require('dotenv').config();
@@ -8,193 +7,274 @@ require('dotenv').config();
 const http = require('http');
 const mongoose = require('mongoose');
 
-// Core Framework Dependencies
 const app = require('./app');
+const connectDB = require('./config/db');
 
-// Dynamic Database Fallback Loader
-let connectDB = null;
-try {
-    connectDB = require('./config/db');
-} catch (err) {
-    console.warn('⚠️ ./config/db.js module not detected. Using internal fallback connector.');
-}
-
-// WebSocket Module Loader
+// =========================================================
+// OPTIONAL WEBSOCKET LAYER
+// =========================================================
 let initSockets = null;
+
 try {
     initSockets = require('./sockets');
 } catch (err) {
-    console.warn('⚠️ Socket module not detected. Continuing without WebSockets.');
+    console.warn(
+        '⚠️ Socket module not detected. Running without WebSockets.'
+    );
 }
 
 // =========================================================
-// ENVIRONMENT CONFIGURATION & PERFECT MONGODB FALLBACK
+// ENVIRONMENT CONFIGURATION
 // =========================================================
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'production';
 
-// Target database name explicit placement (nawi_db) inside the secure fallback cluster string
-const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/nawi_db?appName=NAWI-EMPIRE001";
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || PERFECT_MONGO_URI;
-
-// Global instance variable allocation for shutdown access scope
 let serverInstance = null;
 
 // =========================================================
-// EMERGENCY SHUTDOWN DEFENSE (Moved Up for Proper Execution Scope)
+// ENVIRONMENT VALIDATION
 // =========================================================
-const emergencyForceShutdown = () => {
-    try {
-        if (serverInstance) serverInstance.close();
-        mongoose.connection.close(false, () => {
-            process.exit(1);
-        });
-    } catch (e) {
+const validateEnvironment = () => {
+
+    const requiredVariables = [
+        'MONGO_URI',
+        'JWT_SECRET'
+    ];
+
+    const missing = requiredVariables.filter(
+        variable => !process.env[variable]
+    );
+
+    if (missing.length > 0) {
+
+        console.error(`
+====================================================
+❌ MISSING ENVIRONMENT VARIABLES
+====================================================
+${missing.join('\n')}
+====================================================
+        `);
+
         process.exit(1);
     }
 };
 
 // =========================================================
-// GLOBAL SAFETY EXCEPTION TRAPS (Anti-Crash Interceptors)
+// EMERGENCY SHUTDOWN
+// =========================================================
+const emergencyForceShutdown = async () => {
+
+    try {
+
+        if (serverInstance) {
+            serverInstance.close();
+        }
+
+        await mongoose.connection.close();
+
+    } catch (error) {
+        console.error(
+            'Emergency shutdown error:',
+            error.message
+        );
+    }
+
+    process.exit(1);
+};
+
+// =========================================================
+// GLOBAL PROCESS SAFETY
 // =========================================================
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('⚠️ UNHANDLED REJECTION DETECTED AT:', promise);
-    console.error('REASON:', reason);
+
+    console.error('⚠️ UNHANDLED REJECTION');
+    console.error('Promise:', promise);
+    console.error('Reason:', reason);
 });
 
 process.on('uncaughtException', (err) => {
-    console.error('❌ CRITICAL UNCAUGHT EXCEPTION OCCURRED:');
+
+    console.error('❌ UNCAUGHT EXCEPTION');
     console.error(err);
+
     emergencyForceShutdown();
 });
 
 // =========================================================
-// FAULT-TOLERANT DATABASE ENGINE CONNECTOR
+// MONGODB EVENT WATCHERS
 // =========================================================
-const executeDatabaseConnection = async () => {
-    if (typeof connectDB === 'function') {
-        try {
-            await connectDB();
-            return true;
-        } catch (err) {
-            console.error('❌ External connectDB failed. Forcing internal fallback engine...', err.message);
-        }
-    }
+mongoose.connection.on('disconnected', () => {
 
-    const options = {
-        autoIndex: NODE_ENV !== 'production', 
-        maxPoolSize: 10,                      
-        serverSelectionTimeoutMS: 5000,       
-        socketTimeoutMS: 45000,               
-    };
+    console.warn(
+        '🟠 MongoDB connection lost.'
+    );
+});
 
-    // Mongoose connects directly using the verified connection string format
-    await mongoose.connect(MONGO_URI, options);
-};
+mongoose.connection.on('reconnected', () => {
+
+    console.log(
+        '🟢 MongoDB reconnected.'
+    );
+});
 
 // =========================================================
-// SYSTEM BOOT SEQUENCE
+// SERVER BOOT ENGINE
 // =========================================================
 const startServer = async () => {
+
     try {
+
+        validateEnvironment();
+
         console.log(`
 ====================================================
- NAWI-EMPIRE001 BOOT SEQUENCE STARTING
+🚀 NAWI-EMPIRE001 BOOT SEQUENCE
 ====================================================
- ENVIRONMENT : ${NODE_ENV.toUpperCase()}
- PORT        : ${PORT}
+ENVIRONMENT : ${NODE_ENV.toUpperCase()}
+PORT        : ${PORT}
 ====================================================
         `);
 
-        // Execute Database Connection with strict fallback safety
-        await executeDatabaseConnection();
-        console.log('🟢 MongoDB Connected and Synchronized Safely');
+        // Database
+        await connectDB();
 
-        // =================================================
-        // HTTP SERVER CORE CREATION
-        // =================================================
+        console.log(
+            '🟢 MongoDB Connected Successfully'
+        );
+
+        // HTTP Server
         serverInstance = http.createServer(app);
 
-        // =================================================
-        // SOCKET.IO INITIALIZATION LAYER
-        // =================================================
+        // Server Timeouts
+        serverInstance.timeout = 120000;
+        serverInstance.keepAliveTimeout = 65000;
+        serverInstance.headersTimeout = 66000;
+
+        // WebSocket Layer
         if (typeof initSockets === 'function') {
+
             initSockets(serverInstance);
-            console.log('🟣 WebSocket Layer Initialized');
+
+            console.log(
+                '🟣 WebSocket Layer Initialized'
+            );
+
         } else {
-            console.log('⚪ WebSocket Layer: Bypass Mode Enabled.');
+
+            console.log(
+                '⚪ WebSocket Layer Disabled'
+            );
         }
 
-        // =================================================
-        // START NETWORK ENGINE LISTENING
-        // =================================================
+        // Start Listening
         serverInstance.listen(PORT, '0.0.0.0', () => {
+
             console.log(`
 ====================================================
- 🚀 NAWI-EMPIRE001 ONLINE
+🚀 NAWI-EMPIRE001 ONLINE
 ====================================================
- STATUS      : OPERATIONAL
- PORT        : ${PORT}
- ENVIRONMENT : ${NODE_ENV.toUpperCase()}
+STATUS      : OPERATIONAL
+PORT        : ${PORT}
+ENVIRONMENT : ${NODE_ENV.toUpperCase()}
 ====================================================
             `);
         });
 
-        // =================================================
-        // SERVER NETWORK ERROR HANDLER
-        // =================================================
         serverInstance.on('error', (err) => {
-            console.error('❌ RUNTIME NETWORK SERVER ERROR:', err.message);
+
+            console.error(
+                '❌ NETWORK SERVER ERROR:',
+                err.message
+            );
+
             process.exit(1);
         });
 
     } catch (err) {
+
         console.error(`
 ====================================================
- CRITICAL SERVER START FAILURE
+❌ SERVER START FAILURE
 ====================================================
- ERROR REASON: ${err.message}
+${err.message}
 ====================================================
         `);
+
         process.exit(1);
     }
 };
 
 // =========================================================
-// GRACEFUL ENGINE SHUTDOWN COOLDOWN LAYER
+// GRACEFUL SHUTDOWN
 // =========================================================
 const shutdown = async (signal) => {
-    console.log(`\n====================================================\n ${signal} RECEIVED - TEARING DOWN ECOSYSTEM SAFELY\n====================================================`);
 
-    const forceExitTimeout = setTimeout(() => {
-        console.error('⚠️ Graceful shutdown timed out. Forcing transaction node termination.');
+    console.log(`
+====================================================
+${signal} RECEIVED
+SAFE SHUTDOWN INITIATED
+====================================================
+    `);
+
+    const timeout = setTimeout(() => {
+
+        console.error(
+            '⚠️ Shutdown timeout exceeded.'
+        );
+
         process.exit(1);
+
     }, 10000);
 
-    if (serverInstance) {
-        serverInstance.close(async () => {
-            try {
+    try {
+
+        if (serverInstance) {
+
+            serverInstance.close(async () => {
+
                 await mongoose.connection.close();
-                console.log('🟢 MongoDB Connection Closed Safely.');
-                console.log('🛑 Server Shutdown Complete. Node Released.');
-                clearTimeout(forceExitTimeout);
+
+                console.log(
+                    '🟢 MongoDB Connection Closed'
+                );
+
+                clearTimeout(timeout);
+
                 process.exit(0);
-            } catch (dbErr) {
-                console.error('Mongo Shutdown Error:', dbErr.message);
-                process.exit(1);
-            }
-        });
-    } else {
-        clearTimeout(forceExitTimeout);
-        process.exit(0);
+            });
+
+        } else {
+
+            await mongoose.connection.close();
+
+            clearTimeout(timeout);
+
+            process.exit(0);
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Shutdown Error:',
+            error.message
+        );
+
+        process.exit(1);
     }
 };
 
-// Register Signal Observers globally
+// =========================================================
+// SIGNAL HANDLERS
+// =========================================================
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 // =========================================================
-// RUN EMPIRE NODE ENGINE
+// START ECOSYSTEM
 // =========================================================
 startServer();
+
+// =========================================================
+// EXPORTS
+// =========================================================
+module.exports = serverInstance;
