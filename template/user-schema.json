@@ -1,13 +1,46 @@
 {
   "platform_watermark": "PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001",
-  "_id": "Unique_Citizen_ID",
-  "userId": "Unique_Citizen_ID_String",
+  "userId": "crypto-random-uuid-string",
+  "username": "citizen_username",
   "email": "citizen_email@example.com",
+  "password": "hashed_secure_password_string",
+  "phone": "",
+  "phone_number": "",
+  "profilePhoto": "",
+  "verified": false,
+  "role": "user",
+  "accountStatus": "active",
+  "verificationTier": 1,
+  "current_tier": 1,
   "identity": {
-    "sovereign_name": "Username",
+    "sovereign_name": "Authenticated Citizen",
     "legacy_rank": "Citizen",
     "id_verified": false,
-    "joined_date": "2026-05-20"
+    "joined_date": "2026-06-22T00:00:00.000Z"
+  },
+  "biometricVerification": {
+    "day1VideoUrl": "",
+    "verifiedAt": null,
+    "biometricStatus": "pending"
+  },
+  "verification_metrics": {
+    "day_1_video_url": "",
+    "corporate_docs_submitted": false,
+    "businessName": "",
+    "cacNumber": "",
+    "secure_docs_url": ""
+  },
+  "businessVerification": {
+    "businessName": "",
+    "registrationNumber": "",
+    "registrationDocument": "",
+    "approved": false
+  },
+  "complianceMetrics": {
+    "cleanEscrowTransactions": 0,
+    "rulesViolated": 0,
+    "successfulDeliveries": 0,
+    "disputesOpened": 0
   },
   "metrics": {
     "follower_count": 0,
@@ -21,13 +54,35 @@
     "gate_1k_reached": false,
     "gate_20k_reached": false
   },
-  "wallet": {
-    "empire_coins": 0,
-    "total_earned_to_date": 0,
-    "pending_conversion": 0.00,
-    "welcome_bonus_used": false,
-    "last_mint_date": "2026-05-20"
+  "pillarAccess": {
+    "marketplace": true,
+    "ads_program": true,
+    "gaming_studio": true,
+    "live_stream": true,
+    "kitchen_meal": true,
+    "music_promotion": true,
+    "content_creation": true
   },
+  "wallet": {
+    "empire_coins": 5,
+    "total_earned_to_date": 0,
+    "pending_conversion": 0,
+    "usdBalance": 0,
+    "ngnBalance": 0
+  },
+  "sovereignStylistTheme": {
+    "activeTheme": "deep_obsidian",
+    "titaniumAccents": true,
+    "polishedGoldBorders": true
+  },
+  "challengesEntered": [],
+  "backupCodes": [
+    {
+      "codeHash": "hashed_backup_code_string",
+      "createdAt": "2026-06-22T00:00:00.000Z",
+      "used": false
+    }
+  ],
   "watermarked_assets": {
     "video_streams": [
       {
@@ -45,9 +100,15 @@
       }
     ]
   },
+  "walletId": "60c72b2f9b1d8b2bad000001",
+  "verificationId": "60c72b2f9b1d8b2bad000002",
+  "advertisements": [],
+  "escrows": [],
+  "messages": [],
   "security": {
     "is_banned": false,
     "scam_alert_flag": 0,
-    "multi_factor_auth": "ENABLED"
+    "multi_factor_auth": "ENABLED",
+    "lastLogin": null
   }
 }
