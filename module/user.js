@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: models/User.js
+ * Module: module/user.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  * Description: Unified, high-performance database schema tracking compliance, themes, and pillar authorizations.
  */
@@ -108,17 +108,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             default: 'Authenticated Citizen'
         },
-
         legacy_rank: {
             type: String,
             default: 'Citizen'
         },
-
         id_verified: {
             type: Boolean,
             default: false
         },
-
         joined_date: {
             type: Date,
             default: Date.now
@@ -193,17 +190,14 @@ const UserSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
-
         rulesViolated: {
             type: Number,
             default: 0
         },
-
         successfulDeliveries: {
             type: Number,
             default: 0
         },
-
         disputesOpened: {
             type: Number,
             default: 0
@@ -215,17 +209,14 @@ const UserSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
-
         following_count: {
             type: Number,
             default: 0
         },
-
         daily_streak: {
             type: Number,
             default: 0
         },
-
         activity_score: {
             type: Number,
             default: 0
@@ -237,17 +228,14 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
-
         is_monetized: {
             type: Boolean,
             default: false
         },
-
         gate_1k_reached: {
             type: Boolean,
             default: false
         },
-
         gate_20k_reached: {
             type: Boolean,
             default: false
@@ -262,32 +250,26 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: true
         },
-
         ads_program: {
             type: Boolean,
             default: true
         },
-
         gaming_studio: {
             type: Boolean,
             default: true
         },
-
         live_stream: {
             type: Boolean,
             default: true
         },
-
         kitchen_meal: {
             type: Boolean,
             default: true
         },
-
         music_promotion: {
             type: Boolean,
             default: true
         },
-
         content_creation: {
             type: Boolean,
             default: true
@@ -302,22 +284,18 @@ const UserSchema = new mongoose.Schema(
             type: Number,
             default: 5
         },
-
         total_earned_to_date: {
             type: Number,
             default: 0
         },
-
         pending_conversion: {
             type: Number,
             default: 0
         },
-        
         usdBalance: {
             type: Number,
             default: 0
         },
-
         ngnBalance: {
             type: Number,
             default: 0
@@ -330,94 +308,43 @@ const UserSchema = new mongoose.Schema(
     sovereignStylistTheme: {
         activeTheme: {
             type: String,
-            enum: [
-                'deep_obsidian',
-                'industrial_titanium',
-                'polished_gold'
-            ],
+            enum: ['deep_obsidian', 'industrial_titanium', 'polished_gold'],
             default: 'deep_obsidian'
         },
-
         titaniumAccents: {
             type: Boolean,
             default: true
         },
-
         polishedGoldBorders: {
             type: Boolean,
             default: true
         }
     },
 
-    challengesEntered: [{
-        type: String
-    }],
+    challengesEntered: [{ type: String }],
 
     backupCodes: [
         {
-            codeHash: {
-                type: String
-            },
-
-            createdAt: {
-                type: Date,
-                default: Date.now
-            },
-
-            used: {
-                type: Boolean,
-                default: false
-            }
+            codeHash: { type: String },
+            createdAt: { type: Date, default: Date.now },
+            used: { type: Boolean, default: false }
         }
     ],
 
     // ==========================================
     // SYSTEM REF ACCESS POINTERS
     // ==========================================
-    walletId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Wallet'
-    },
-
-    verificationId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Verification'
-    },
-
-    advertisements: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Advertisement'
-    }],
-
-    escrows: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Escrow'
-    }],
-
-    messages: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Message'
-    }],
+    walletId: { type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' },
+    verificationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Verification' },
+    advertisements: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Advertisement' }],
+    escrows: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Escrow' }],
+    messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
 
     security: {
-        is_banned: {
-            type: Boolean,
-            default: false
-        },
-
-        scam_alert_flag: {
-            type: Number,
-            default: 0
-        },
-
-        multi_factor_auth: {
-            type: String,
-            default: 'ENABLED'
-        },
-
-        lastLogin: {
-            type: Date
-        }
+        is_banned: { type: Boolean, default: false },
+        scam_alert_flag: { type: Number, default: 0 },
+        multi_factor_auth: { type: String, default: 'ENABLED' },
+        lastLogin: { type: Date }
     }
 },
 {
@@ -425,23 +352,20 @@ const UserSchema = new mongoose.Schema(
     timestamps: true
 });
 
-// Middleware verification proxy layer - Restructured to clear race-conditions
+// Middleware verification proxy layer - Clear race-conditions safely
 UserSchema.pre('save', function (next) {
-    // Sync phone number variables safely without logical overwriting conflicts
     if (this.isModified('phone_number')) {
         this.phone = this.phone_number;
     } else if (this.isModified('phone')) {
         this.phone_number = this.phone;
     }
 
-    // Sync tier authentication fields cleanly
     if (this.isModified('current_tier')) {
         this.verificationTier = this.current_tier;
     } else if (this.isModified('verificationTier')) {
         this.current_tier = this.verificationTier;
     }
     
-    // Auto sync cross-system biological metadata profiles
     if (this.isModified('verification_metrics.day_1_video_url')) {
         this.biometricVerification.day1VideoUrl = this.verification_metrics.day_1_video_url;
     } else if (this.isModified('biometricVerification.day1VideoUrl')) {
