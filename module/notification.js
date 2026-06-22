@@ -1,31 +1,44 @@
-// models/Notification.js
+ // ======================================================
+// NAWI-EMPIRE001 NOTIFICATION MODEL
+// FILE: models/Notification.js
+// ======================================================
 
 const mongoose = require('mongoose');
 
-const NotificationSchema = new mongoose.Schema({
-
-    // Platform Watermark
-    platform_watermark: {
+const NotificationSchema = new mongoose.Schema(
+{
+    // ==================================================
+    // PLATFORM WATERMARK
+    // ==================================================
+    platformWatermark: {
         type: String,
-        default: "PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001",
+        default:
+            'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001',
         immutable: true
     },
 
-    // Recipient
+    // ==================================================
+    // RECIPIENT
+    // ==================================================
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        index: true
     },
 
-    // Sender
+    // ==================================================
+    // OPTIONAL SENDER
+    // ==================================================
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: null
     },
 
-    // Notification Type
+    // ==================================================
+    // TYPE
+    // ==================================================
     type: {
         type: String,
         enum: [
@@ -36,53 +49,96 @@ const NotificationSchema = new mongoose.Schema({
             'LIVE_STREAM',
             'MARKETPLACE',
             'PURCHASE',
+            'ESCROW',
             'WALLET_DEPOSIT',
             'WALLET_WITHDRAWAL',
+            'VERIFICATION',
             'SONIC_LEDGER',
             'SYSTEM'
         ],
         default: 'SYSTEM'
     },
 
-    // Title
+    // ==================================================
+    // ORIGINATING PILLAR
+    // ==================================================
+    pillar: {
+        type: String,
+        enum: [
+            'CORE',
+            'ARENA_NODE',
+            'SOVEREIGN_EXCHANGE',
+            'VISIBILITY_ENGINE',
+            'CULINARY_MATRIX',
+            'AESTHETIC_NEXUS',
+            'DIAMONDBACK_FORGE',
+            'SONIC_LEDGER'
+        ],
+        default: 'CORE'
+    },
+
+    // ==================================================
+    // CONTENT
+    // ==================================================
     title: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
 
-    // Message
     message: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
 
-    // Optional URL
+    // ==================================================
+    // OPTIONAL ACTION LINK
+    // ==================================================
     actionUrl: {
         type: String,
         default: ''
     },
 
-    // Optional Post
+    // ==================================================
+    // RELATED REFERENCES
+    // ==================================================
     postId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         default: null
     },
 
-    // Optional Product
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         default: null
     },
 
-    // Read Status
+    // ==================================================
+    // FLEXIBLE PAYLOAD
+    // ==================================================
+    metadata: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
+
+    // ==================================================
+    // READ STATUS
+    // ==================================================
     read: {
         type: Boolean,
         default: false
     },
 
-    // Priority
+    readAt: {
+        type: Date,
+        default: null
+    },
+
+    // ==================================================
+    // PRIORITY
+    // ==================================================
     priority: {
         type: String,
         enum: [
@@ -92,24 +148,41 @@ const NotificationSchema = new mongoose.Schema({
             'CRITICAL'
         ],
         default: 'NORMAL'
-    },
-
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 
 },
 {
+    timestamps: true,
     collection: 'notifications'
-});
+}
+);
+
+// ======================================================
+// INDEXES
+// ======================================================
 
 NotificationSchema.index({
     userId: 1,
     createdAt: -1
 });
 
+NotificationSchema.index({
+    read: 1
+});
+
+NotificationSchema.index({
+    pillar: 1
+});
+
+NotificationSchema.index({
+    type: 1
+});
+
+// ======================================================
+// EXPORT MODEL
+// ======================================================
+
 module.exports = mongoose.model(
     'Notification',
     NotificationSchema
-); 
+);
