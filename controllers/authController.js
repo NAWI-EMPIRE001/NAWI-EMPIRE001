@@ -1,11 +1,11 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: authController.js
+ * Module: controllers/authController.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231
  * Description: Fully integrated, validated 7 Pillars routing, Tiered Verification, and Sovereign Stylist Engines.
  */
 
-const User = require('../models/User');
+const User = require('../module/user'); // Fixed path to point directly to your real lowercase folder structure
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -53,16 +53,18 @@ const authController = {
             // Production file path assignment
             const videoUrl = `/storage/biometrics/${Date.now()}_${username}.mp4`;
 
-            // Build structural Mongoose model mapping
+            // Build structural Mongoose model mapping aligned with module/user.js schema definitions
             const user = await User.create({
                 userId: crypto.randomUUID(),
                 username,
                 email: email.toLowerCase(),
                 password: hashedPassword,
                 phone_number: phone_number,
+                phone: phone_number,
                 verified: true,
                 role: 'user',
                 current_tier: 1,
+                verificationTier: 1,
                 identity: {
                     sovereign_name: username,
                     legacy_rank: 'Citizen',
@@ -72,17 +74,20 @@ const authController = {
                     day_1_video_url: videoUrl,
                     corporate_docs_submitted: false,
                     businessName: '',
-                    cacNumber: ''
+                    cacNumber: '',
+                    secure_docs_url: ''
                 },
-                sovereign_stylist_theme: {
-                    activeTheme: "deep_obsidian", // Default high-contrast premium theme
+                sovereignStylistTheme: { // Fixed object casing parameter to match schema
+                    activeTheme: "deep_obsidian", 
                     titaniumAccents: true,
                     polishedGoldBorders: true
                 },
                 wallet: {
                     empire_coins: 5,
                     total_earned_to_date: 0,
-                    pending_conversion: 0
+                    pending_conversion: 0,
+                    usdBalance: 0,
+                    ngnBalance: 0
                 }
             });
 
@@ -101,7 +106,7 @@ const authController = {
                     username: user.username,
                     email: user.email,
                     current_tier: user.current_tier,
-                    theme: user.sovereign_stylist_theme.activeTheme
+                    theme: user.sovereignStylistTheme.activeTheme
                 }
             });
 
@@ -164,9 +169,7 @@ const authController = {
                 return res.status(404).json({ success: false, message: 'User not found.' });
             }
 
-            // Normalizes matching format definitions across both sets of maps
             const structuralPillarMap = {
-                // Code 1 Framework Keys
                 "marketplace": { name: "Global Marketplace", key: "sovereign-exchange", minTierRequired: 1 },
                 "ads_program": { name: "Ads Program Manager", key: "visibility-engine", minTierRequired: 1 },
                 "gaming_studio": { name: "Global Gaming Studio & Battles", key: "arena-node", minTierRequired: 1 },
@@ -175,13 +178,12 @@ const authController = {
                 "music_promotion": { name: "Global Music Hub", key: "sonic-ledger", minTierRequired: 1 },
                 "content_creation": { name: "Content Creation Feed", key: "aesthetic-nexus", minTierRequired: 1 },
                 
-                // Code 2 Technical Kebab-case Keys
                 "arena-node": { name: "Global Gaming Studio & Battles", key: "arena-node", minTierRequired: 1 },
                 "sovereign-exchange": { name: "Global Marketplace / Exchange", key: "sovereign-exchange", minTierRequired: 1 },
                 "visibility-engine": { name: "Ads & Media Streaming System", key: "visibility-engine", minTierRequired: 1 },
                 "culinary-matrix": { name: "Kitchen Meal Hub Engine", key: "culinary-matrix", minTierRequired: 1 },
                 "aesthetic-nexus": { name: "Content Creation Layouts", key: "aesthetic-nexus", minTierRequired: 1 },
-                "diamondback-forge": { name: "Diamondback Apparel Forge", key: "diamondback-forge", minTierRequired: 2 }, // Merchant lock
+                "diamondback-forge": { name: "Diamondback Apparel Forge", key: "diamondback-forge", minTierRequired: 2 }, 
                 "sonic-ledger": { name: "Global Music Audio Ledger", key: "sonic-ledger", minTierRequired: 1 }
             };
 
@@ -192,7 +194,6 @@ const authController = {
                 return res.status(404).json({ success: false, message: `Component '${targetPillar}' does not exist in architecture.` });
             }
 
-            // Enforce Strict Verification Tier Restrictions
             if (user.current_tier < selectedPillar.minTierRequired) {
                 return res.status(403).json({ 
                     success: false, 
@@ -235,8 +236,8 @@ const authController = {
                 return res.status(404).json({ success: false, message: "User not found." });
             }
 
-            // Persistence update to DB
-            user.sovereign_stylist_theme = {
+            // Fixed property synchronization to match Schema definition camelCase naming convention
+            user.sovereignStylistTheme = {
                 activeTheme: selectedStyle,
                 titaniumAccents: selectedStyle === "industrial_titanium",
                 polishedGoldBorders: selectedStyle === "polished_gold"
@@ -274,11 +275,11 @@ const authController = {
                 return res.status(404).json({ success: false, message: 'User not found.' });
             }
 
-            // Unified logical evaluation checklist (Supports both structural escrow or internal ledger values)
             const meetsCoinRequirement = user.wallet && user.wallet.empire_coins >= 1000;
             
             if (meetsCoinRequirement && user.current_tier < 2) {
                 user.current_tier = 2;
+                user.verificationTier = 2;
                 if (user.identity) user.identity.legacy_rank = 'Verified Merchant';
                 
                 await user.save();
@@ -315,7 +316,6 @@ const authController = {
                 return res.status(404).json({ success: false, message: 'User not found.' });
             }
 
-            // Hard-bound check for physical corporate validation uploads to guard high ecosystem layers
             if (!corporateDocs || !businessName || !cacNumber) {
                 return res.status(403).json({
                     success: false,
@@ -325,8 +325,8 @@ const authController = {
 
             const documentUrl = `/storage/secure_docs/${Date.now()}_corporate_verification.pdf`;
 
-            // State changes committed safely to MongoDB instance
             user.current_tier = 3;
+            user.verificationTier = 3;
             if (user.identity) user.identity.legacy_rank = 'Sovereign Challenger';
             
             user.verification_metrics.businessName = businessName;
@@ -365,21 +365,19 @@ const authController = {
                 return res.status(404).json({ success: false, message: 'User not found.' });
             }
 
-            // Cross check secondary phone security anchor if passed down through context
             if (phone_number && user.phone_number && user.phone_number !== phone_number) {
                 return res.status(400).json({ success: false, message: "Security parameters do not match structural profile anchor points." });
             }
 
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            // Broadcast log emulation matching the core protocol requirements
             console.log(`[DUAL-CHANNEL SECURITY ENFORCEMENT] Sending OTP ${otp} to Email: ${user.email}`);
             console.log(`[DUAL-CHANNEL SECURITY ENFORCEMENT] Sending OTP ${otp} to Phone: ${user.phone_number || 'Not Linked'}`);
 
             return res.status(200).json({
                 success: true,
                 message: 'Security key synchronization active. Dual-channel verification code dispatched to anchor targets.',
-                otp // Returned for testing hooks; drop or clear variable out of JSON payload in cold production environment
+                otp 
             });
 
         } catch (error) {
