@@ -1,109 +1,172 @@
+// ======================================================
+// NAWI-EMPIRE001 - UNIFIED DATABASE ENGINE
+// FILE: config/db.js
+// PURPOSE: Single MongoDB Connection Layer
+// ======================================================
+
 const mongoose = require('mongoose');
 
-// ==============================
-// ENV VALIDATION & PERFECT FALLBACK
-// ==============================
-const PERFECT_MONGO_URI = "mongodb+srv://nawi-empire001:dK05dKxX5WaY9oud@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || PERFECT_MONGO_URI;
+// ======================================================
+// CONFIGURATION
+// ======================================================
+
+const MONGO_URI =
+    process.env.MONGO_URI || process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
-    throw new Error('❌ MONGO_URI / MONGODB_URI environment variable is missing');
+    throw new Error(
+        '❌ MONGO_URI environment variable is missing.'
+    );
 }
 
-// ==============================
-// CONNECTION OPTIONS (STABILITY TUNED)
-// ==============================
 const mongooseOptions = {
-    maxPoolSize: 20,              // handles concurrent escrow + streams
-    serverSelectionTimeoutMS: 5000, // fail fast on bad connection
+    maxPoolSize: 20,
+    minPoolSize: 5,
+    serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
-    family: 4,                    // force IPv4 (Render stability)
-    autoIndex: true
+    family: 4,
+    autoIndex: process.env.NODE_ENV !== 'production',
+    retryWrites: true,
+    w: 'majority'
 };
 
-// ==============================
-// RETRY SYSTEM
-// ==============================
-let retryCount = 0;
-const MAX_RETRIES = 10;
-let isConnecting = false; // Guard flag to prevent duplicate connection executions
+// ======================================================
+// INTERNAL STATE
+// ======================================================
 
-// ==============================
-// CONNECT FUNCTION
-// ==============================
+let isConnecting = false;
+let retryCount = 0;
+
+const MAX_RETRIES = 5;
+
+// ======================================================
+// DATABASE CONNECTOR
+// ======================================================
+
 const connectDB = async () => {
-    if (isConnecting) return; // Block entry if a connection attempt is already alive
+
+    // Already connected
+    if (mongoose.connection.readyState === 1) {
+
+        console.log(
+            '🟢 MongoDB already connected.'
+        );
+
+        return mongoose.connection;
+    }
+
+    // Connection currently in progress
+    if (isConnecting) {
+
+        console.log(
+            '🟡 MongoDB connection already in progress.'
+        );
+
+        return;
+    }
+
     isConnecting = true;
 
     try {
-        await mongoose.connect(MONGO_URI, mongooseOptions);
+
+        console.log('🔄 Connecting to MongoDB Atlas...');
+
+        const conn = await mongoose.connect(
+            MONGO_URI,
+            mongooseOptions
+        );
+
+        retryCount = 0;
+        isConnecting = false;
 
         console.log(`
-=========================================
- 🟢 NAWI-EMPIRE001 DATABASE CONNECTED
-=========================================
- HOST: ${mongoose.connection.host}
- DATABASE: ${mongoose.connection.name}
- STATUS: ONLINE
-=========================================
+=====================================================
+🟢 NAWI-EMPIRE001 DATABASE CONNECTED
+=====================================================
+HOST      : ${conn.connection.host}
+DATABASE  : ${conn.connection.name}
+STATUS    : ONLINE
+=====================================================
         `);
 
-        retryCount = 0; // reset on success
-        isConnecting = false;
+        return conn;
 
     } catch (error) {
-        retryCount++;
+
         isConnecting = false;
+        retryCount++;
 
         console.error(`
-=========================================
- 🔴 DATABASE CONNECTION FAILED
- Attempt: ${retryCount}/${MAX_RETRIES}
-=========================================
- ${error.message}
-=========================================
+=====================================================
+🔴 DATABASE CONNECTION FAILED
+ATTEMPT : ${retryCount}/${MAX_RETRIES}
+=====================================================
+${error.message}
+=====================================================
         `);
 
         if (retryCount < MAX_RETRIES) {
-            const delay = Math.min(1000 * retryCount * 2, 30000);
-            console.log(`⏳ Retrying MongoDB in ${delay / 1000}s...`);
-            setTimeout(connectDB, delay);
-        } else {
-            console.error('❌ Max retry limit reached. Shutting down system.');
-            process.exit(1);
+
+            const delay =
+                Math.min(retryCount * 5000, 30000);
+
+            console.log(
+                `⏳ Retrying in ${delay / 1000} seconds...`
+            );
+
+            await new Promise(resolve =>
+                setTimeout(resolve, delay)
+            );
+
+            return connectDB();
         }
+
+        console.error(`
+=====================================================
+❌ MAXIMUM DATABASE RETRIES EXCEEDED
+APPLICATION SHUTDOWN INITIATED
+=====================================================
+        `);
+
+        process.exit(1);
     }
 };
 
-// ==============================
-// CONNECTION EVENTS (CLEANED)
-// ==============================
+// ======================================================
+// CONNECTION EVENTS
+// ======================================================
+
 mongoose.connection.on('connected', () => {
-    console.log('🟢 Mongoose event: connected');
+
+    console.log(
+        '🟢 MongoDB Event: Connected'
+    );
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error('🔴 Mongoose event error:', err.message);
+
+    console.error(
+        '🔴 MongoDB Event Error:',
+        err.message
+    );
 });
 
-// Fixed: Removed the clashing standalone connectDB() invoke loop to stop duplicate threads.
 mongoose.connection.on('disconnected', () => {
-    console.warn('🟡 Mongoose disconnected.');
+
+    console.warn(
+        '🟠 MongoDB Event: Disconnected'
+    );
 });
 
-// ==============================
-// GRACEFUL SHUTDOWN SUPPORT
-// ==============================
-process.on('SIGINT', async () => {
-    console.log('⚠️ SIGINT received — closing MongoDB connection...');
-    await mongoose.connection.close();
-    process.exit(0);
+mongoose.connection.on('reconnected', () => {
+
+    console.log(
+        '🟢 MongoDB Event: Reconnected'
+    );
 });
 
-process.on('SIGTERM', async () => {
-    console.log('⚠️ SIGTERM received — closing MongoDB connection...');
-    await mongoose.connection.close();
-    process.exit(0);
-});
+// ======================================================
+// EXPORT
+// ======================================================
 
 module.exports = connectDB;
