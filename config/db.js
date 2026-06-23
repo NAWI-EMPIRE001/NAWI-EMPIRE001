@@ -1,172 +1,72 @@
 // ======================================================
-// NAWI-EMPIRE001 - UNIFIED DATABASE ENGINE
-// FILE: config/db.js
-// PURPOSE: Single MongoDB Connection Layer
+// NAWI-EMPIRE001
+// FILE: services/kitchenService.js
+// PURPOSE: Kitchen Marketplace Operations
 // ======================================================
 
 const mongoose = require('mongoose');
+let Meal;
 
-// ======================================================
-// CONFIGURATION
-// ======================================================
-
-const MONGO_URI =
-    process.env.MONGO_URI || process.env.MONGODB_URI;
-
-if (!MONGO_URI) {
-    throw new Error(
-        '❌ MONGO_URI environment variable is missing.'
-    );
+try {
+    // Fixed path to point directly to your real lowercase layout folder structure
+    Meal = require('../module/meal');
+} catch (error) {
+    console.error('❌ Meal model could not be loaded:', error.message);
+    throw error;
 }
 
-const mongooseOptions = {
-    maxPoolSize: 20,
-    minPoolSize: 5,
-    serverSelectionTimeoutMS: 10000,
-    socketTimeoutMS: 45000,
-    family: 4,
-    autoIndex: process.env.NODE_ENV !== 'production',
-    retryWrites: true,
-    w: 'majority'
-};
-
 // ======================================================
-// INTERNAL STATE
+// PUSH MEAL TO GLOBAL MARKET
 // ======================================================
-
-let isConnecting = false;
-let retryCount = 0;
-
-const MAX_RETRIES = 5;
-
-// ======================================================
-// DATABASE CONNECTOR
-// ======================================================
-
-const connectDB = async () => {
-
-    // Already connected
-    if (mongoose.connection.readyState === 1) {
-
-        console.log(
-            '🟢 MongoDB already connected.'
-        );
-
-        return mongoose.connection;
-    }
-
-    // Connection currently in progress
-    if (isConnecting) {
-
-        console.log(
-            '🟡 MongoDB connection already in progress.'
-        );
-
-        return;
-    }
-
-    isConnecting = true;
-
+const pushToGlobalMarket = async (mealData = {}) => {
     try {
-
-        console.log('🔄 Connecting to MongoDB Atlas...');
-
-        const conn = await mongoose.connect(
-            MONGO_URI,
-            mongooseOptions
-        );
-
-        retryCount = 0;
-        isConnecting = false;
-
-        console.log(`
-=====================================================
-🟢 NAWI-EMPIRE001 DATABASE CONNECTED
-=====================================================
-HOST      : ${conn.connection.host}
-DATABASE  : ${conn.connection.name}
-STATUS    : ONLINE
-=====================================================
-        `);
-
-        return conn;
-
-    } catch (error) {
-
-        isConnecting = false;
-        retryCount++;
-
-        console.error(`
-=====================================================
-🔴 DATABASE CONNECTION FAILED
-ATTEMPT : ${retryCount}/${MAX_RETRIES}
-=====================================================
-${error.message}
-=====================================================
-        `);
-
-        if (retryCount < MAX_RETRIES) {
-
-            const delay =
-                Math.min(retryCount * 5000, 30000);
-
-            console.log(
-                `⏳ Retrying in ${delay / 1000} seconds...`
-            );
-
-            await new Promise(resolve =>
-                setTimeout(resolve, delay)
-            );
-
-            return connectDB();
+        // Verify active MongoDB connection
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error('Database connection unavailable.');
         }
 
-        console.error(`
-=====================================================
-❌ MAXIMUM DATABASE RETRIES EXCEEDED
-APPLICATION SHUTDOWN INITIATED
-=====================================================
-        `);
+        // Required field validation
+        const requiredFields = ['sellerId', 'mealName', 'description', 'price', 'category'];
+        const missingFields = requiredFields.filter(field => !mealData[field]);
 
-        process.exit(1);
+        if (missingFields.length > 0) {
+            throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        }
+
+        // Create marketplace record
+        const newMeal = new Meal({
+            sellerId: mealData.sellerId,
+            mealName: mealData.mealName,
+            origin: mealData.origin || 'Global',
+            description: mealData.description,
+            price: mealData.price,
+            currency: mealData.currency || 'Empire Coins',
+            category: mealData.category,
+            images: Array.isArray(mealData.images) ? mealData.images : [],
+            status: 'PENDING_AUDIT'
+        });
+
+        const savedMeal = await newMeal.save();
+        console.log(`✨ MARKET ENTRY CREATED: ${savedMeal.mealName}`);
+
+        return {
+            success: true,
+            message: 'Asset submitted for audit.',
+            mealId: savedMeal._id,
+            asset: savedMeal
+        };
+
+    } catch (error) {
+        console.error('❌ MARKET ENTRY ERROR:', error.message);
+        return {
+            success: false,
+            message: 'Marketplace submission failed.',
+            error: error.message
+        };
     }
 };
 
-// ======================================================
-// CONNECTION EVENTS
-// ======================================================
-
-mongoose.connection.on('connected', () => {
-
-    console.log(
-        '🟢 MongoDB Event: Connected'
-    );
-});
-
-mongoose.connection.on('error', (err) => {
-
-    console.error(
-        '🔴 MongoDB Event Error:',
-        err.message
-    );
-});
-
-mongoose.connection.on('disconnected', () => {
-
-    console.warn(
-        '🟠 MongoDB Event: Disconnected'
-    );
-});
-
-mongoose.connection.on('reconnected', () => {
-
-    console.log(
-        '🟢 MongoDB Event: Reconnected'
-    );
-});
-
-// ======================================================
-// EXPORT
-// ======================================================
-
-module.exports = connectDB;
+module.exports = {
+    KitchenMeal: Meal,
+    pushToGlobalMarket
+};
