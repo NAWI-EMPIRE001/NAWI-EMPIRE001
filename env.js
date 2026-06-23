@@ -19,7 +19,6 @@ function showEmpireAlert(message, type = "success") {
     const alertBox = document.createElement('div');
     alertBox.id = "empire-toast";
     
-    // Premium Typography and Display Specs
     alertBox.style.cssText = `
         position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
         width: 90%; max-width: 400px; background: rgba(5, 5, 5, 0.98);
@@ -40,10 +39,8 @@ function showEmpireAlert(message, type = "success") {
     alertBox.innerHTML = `<span>${icon} ${message}</span>`;
     document.body.appendChild(alertBox);
 
-    // Smooth drop-down transition
     setTimeout(() => { alertBox.style.top = "25px"; }, 100);
 
-    // Graceful exit tracking
     setTimeout(() => {
         alertBox.style.top = "-120px";
         setTimeout(() => { alertBox.remove(); }, 600);
@@ -52,12 +49,11 @@ function showEmpireAlert(message, type = "success") {
 
 /**
  * 🛡️ SOVEREIGN STATUS & BALANCE SYNC
- * Coordinates with the 7-Pillar backend framework under proper authorization guidelines.
  */
 async function syncEmpireData() {
     const userId = localStorage.getItem('user_id');
-    const authToken = localStorage.getItem('auth_token'); // Required JWT verification handle
-    const identitySignature = localStorage.getItem('nawi_identity'); // Maps to x-nawi-identity header
+    const authToken = localStorage.getItem('auth_token'); 
+    const identitySignature = localStorage.getItem('nawi_identity'); 
 
     if (!userId) {
         console.warn("Guest Node Session: Authority Limited.");
@@ -65,7 +61,7 @@ async function syncEmpireData() {
     }
 
     try {
-        // Enforce secure communication via custom system-wide headers
+        // Synchronized cleanly with your exact authRoutes.js endpoints
         const response = await fetch(`${API_URL}/api/auth/profile/${userId}`, {
             method: 'GET',
             headers: {
@@ -79,8 +75,7 @@ async function syncEmpireData() {
 
         if (!response.ok) {
             if (response.status === 401 || response.status === 403) {
-                console.error("Session Authenticity Compromised. Re-routing...");
-                // Handle token expiration or unauthorized exceptions safely
+                console.error("Session Authenticity Compromised.");
                 return;
             }
             throw new Error(`Vault returned server status flag: ${response.status}`);
@@ -88,7 +83,6 @@ async function syncEmpireData() {
 
         const data = await response.json();
 
-        // Enforce compliance and restriction controls immediately on the client interface
         if (data.status === "TERMINATED" || data.complianceStatus === "SUSPENDED") {
             window.location.href = "banished.html";
             return;
@@ -98,10 +92,8 @@ async function syncEmpireData() {
             showEmpireAlert(data.pendingWarning, "warning");
         }
 
-        // Financial Data Transformation Layer (Translates integer coins back to fractional currency)
         const coinDisplay = document.getElementById('empire-balance-top');
         if (coinDisplay) {
-            // Converts internal integer balances (e.g. 1000 units) to user-friendly decimals (10.00)
             const trueCoinBalance = data.balance ? (Number(data.balance) / 100).toFixed(2) : '0.00';
             coinDisplay.innerHTML = `<i class="fa-solid fa-coins"></i> ${trueCoinBalance}`;
         }
@@ -114,19 +106,14 @@ async function syncEmpireData() {
         console.log("Empire Sync Architecture: Operational.");
 
     } catch (err) {
-        console.error("Connection to Vault Lost. Attempting background recovery loop...", err.message);
+        console.error("Connection to Vault Lost.", err.message);
     }
 }
 
-/**
- * 🛠️ NAVIGATION & TOOL REDIRECTION
- * Ensures navigation blocks transfer parameters smoothly to matching pillar configurations.
- */
 function initializeNavigation() {
     const toolCards = document.querySelectorAll('.tool-card, [data-tool]');
-
     toolCards.forEach(card => {
-        card.style.cursor = 'pointer'; // Ensure actionable mouse cursor behavior
+        card.style.cursor = 'pointer';
         card.addEventListener('click', (e) => {
             const target = card.getAttribute('data-tool');
             if (target) {
@@ -136,14 +123,8 @@ function initializeNavigation() {
     });
 }
 
-// =========================================================
-// INITIALIZATION LIFE CYCLE HOOKS
-// =========================================================
 window.addEventListener('DOMContentLoaded', () => {
-    // Immediate initial state execution
     syncEmpireData();
     initializeNavigation();
-    
-    // Automated cyclic polling execution matrix configured for every 60 seconds
     setInterval(syncEmpireData, 60000);
 });
