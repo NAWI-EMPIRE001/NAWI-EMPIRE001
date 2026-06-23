@@ -20,8 +20,8 @@ const app = express();
 // MIDDLEWARE IMPORTS
 // ======================================================
 
-const rateLimiter = require('./middlewares/rateLimiter');
-const { notFound, errorHandler } = require('./middlewares/errorMiddleware');
+const rateLimiter = require('./middleware/rateLimiter');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // ======================================================
 // ROUTES IMPORTS
