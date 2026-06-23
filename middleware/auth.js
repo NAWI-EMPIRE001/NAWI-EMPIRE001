@@ -1,348 +1,238 @@
+/**
+ * NAWI-EMPIRE001 Core Infrastructure
+ * Module: middleware/authMiddleware.js
+ * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
+ * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
+ */
+
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../module/user'); // Synchronized with your real lowercase folder path
+const mongoose = require('mongoose');
 
 /**
  * ==========================================================
- * NAWI-EMPIRE001 AUTHORIZATION GATEWAY
- * Protected By Diamondback 231 Authority
+ * 1. CORE AUTHENTICATION GATEWAY (Protects Private Routes)
  * ==========================================================
  */
-
-/**
- * Verify JWT Token
- */
-exports.protect = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
     try {
-
         let token;
 
-        if (
-            req.headers.authorization &&
-            req.headers.authorization.startsWith('Bearer')
-        ) {
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
 
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Authentication token missing'
+                message: 'Access denied. Authentication token missing.'
             });
         }
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET');
 
-        const user = await User.findById(decoded.id);
+        // Build safe dynamic query conditions to prevent CastErrors on invalid ObjectIds
+        const queryConditions = [];
+        if (decoded.userId) {
+            queryConditions.push({ userId: decoded.userId });
+        }
+        
+        const potentialId = decoded.id || decoded.userId;
+        if (potentialId && mongoose.Types.ObjectId.isValid(potentialId)) {
+            queryConditions.push({ _id: potentialId });
+        }
+
+        if (queryConditions.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token structure.'
+            });
+        }
+
+        const user = await User.findOne({ $or: queryConditions }).select('-password');
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'User not found'
+                message: 'User account not found within system registry.'
             });
         }
 
-        if (user.security?.is_banned === true) {
+        // Integrity security check interceptor
+        if (user.accountStatus === 'banned' || user.security?.is_banned === true) {
             return res.status(403).json({
                 success: false,
-                message: 'Account suspended'
+                message: 'Account suspended from ecosystem due to security parameters.'
             });
         }
 
+        // Attach verified user profile context directly onto request stream
         req.user = user;
-
         next();
 
     } catch (error) {
-
         return res.status(401).json({
             success: false,
-            message: 'Invalid authentication token'
+            message: 'Invalid or expired authentication token.'
         });
-
     }
 };
 
 /**
  * ==========================================================
- * Verification Levels
+ * 2. SEVEN PILLARS INTERACTIVE LAYOUT CONTROL
  * ==========================================================
  */
-
-exports.requireVerification = (
-    minimumLevel = 1
-) => {
-
+authMiddleware.authorizePillar = (pillarName) => {
     return async (req, res, next) => {
-
         try {
-
-            const level =
-                req.user?.verification?.verificationLevel || 0;
-
-            if (level < minimumLevel) {
-                return res.status(403).json({
-                    success: false,
-                    message:
-                        `Verification level ${minimumLevel} required`
-                });
-            }
-
-            next();
-
-        } catch (error) {
-
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-
-        }
-    };
-};
-
-/**
- * ==========================================================
- * Seven Pillars Access Control
- * ==========================================================
- */
-
-exports.authorizePillar = (
-    pillarName
-) => {
-
-    return async (req, res, next) => {
-
-        try {
-
             const allowedPillars = [
-
                 'ARENA_NODE',
-
                 'SOVEREIGN_EXCHANGE',
-
                 'VISIBILITY_ENGINE',
-
                 'CULINARY_MATRIX',
-
                 'AESTHETIC_NEXUS',
-
                 'DIAMONDBACK_FORGE',
-
                 'SONIC_LEDGER'
             ];
 
-            if (
-                !allowedPillars.includes(
-                    pillarName
-                )
-            ) {
+            const normalizedInput = pillarName.toUpperCase().trim();
+
+            if (!allowedPillars.includes(normalizedInput)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Invalid pillar'
+                    message: `Component '${pillarName}' does not map to architectural configuration pillars.`
                 });
             }
 
-            req.pillar = pillarName;
-
+            req.pillar = normalizedInput;
             next();
-
         } catch (error) {
-
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-
+            return res.status(500).json({ success: false, message: error.message });
         }
     };
 };
 
 /**
  * ==========================================================
- * Merchant Access
+ * 3. TIER VERIFICATION LEVEL ENFORCER
  * ==========================================================
  */
-
-exports.requireMerchant = async (
-    req,
-    res,
-    next
-) => {
-
-    try {
-
-        const merchantVerified =
-            req.user?.verification?.merchantVerified;
-
-        if (!merchantVerified) {
-            return res.status(403).json({
-                success: false,
-                message:
-                    'Merchant verification required'
-            });
-        }
-
-        next();
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-};
-
-/**
- * ==========================================================
- * Admin Access
- * ==========================================================
- */
-
-exports.requireAdmin = async (
-    req,
-    res,
-    next
-) => {
-
-    try {
-
-        const role =
-            req.user?.identity?.legacy_rank;
-
-        if (
-            role !== 'Founder' &&
-            role !== 'Administrator'
-        ) {
-            return res.status(403).json({
-                success: false,
-                message:
-                    'Administrative authorization required'
-            });
-        }
-
-        next();
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-};
-
-/**
- * ==========================================================
- * Escrow Shield Protection
- * ==========================================================
- */
-
-exports.requireEscrowAccess = async (
-    req,
-    res,
-    next
-) => {
-
-    try {
-
-        if (
-            req.user.security?.is_banned
-        ) {
-            return res.status(403).json({
-                success: false,
-                message:
-                    'Escrow access restricted'
-            });
-        }
-
-        next();
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-};
-
-/**
- * ==========================================================
- * Visibility Engine Access
- * ==========================================================
- */
-
-exports.requireAdvertisingAccess =
-    async (
-        req,
-        res,
-        next
-    ) => {
-
+authMiddleware.requireVerification = (minimumLevel = 1) => {
+    return async (req, res, next) => {
         try {
+            const userTier = req.user?.current_tier || req.user?.verificationTier || 1;
 
-            if (
-                req.user.security?.scam_alert_flag > 5
-            ) {
+            if (userTier < minimumLevel) {
                 return res.status(403).json({
                     success: false,
-                    message:
-                        'Advertising privileges restricted'
+                    message: `Elevated Access Denied. Verification level ${minimumLevel} required. Current level: ${userTier}`
                 });
             }
-
             next();
-
         } catch (error) {
-
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-
+            return res.status(500).json({ success: false, message: error.message });
         }
     };
+};
 
 /**
  * ==========================================================
- * Diamondback Forge Creator Access
+ * 4. TIER 2 VERIFIED MERCHANT GUARD
  * ==========================================================
  */
+authMiddleware.requireMerchant = async (req, res, next) => {
+    try {
+        const isMerchant = req.user?.current_tier >= 2 || req.user?.identity?.legacy_rank === 'Verified Merchant';
 
-exports.requireCreatorAccess =
-    async (
-        req,
-        res,
-        next
-    ) => {
-
-        try {
-
-            if (
-                req.user.security?.is_banned
-            ) {
-                return res.status(403).json({
-                    success: false,
-                    message:
-                        'Creator privileges restricted'
-                });
-            }
-
-            next();
-
-        } catch (error) {
-
-            return res.status(500).json({
+        if (!isMerchant) {
+            return res.status(403).json({
                 success: false,
-                message: error.message
+                message: 'Merchant verification level required to access trade nodes.'
             });
-
         }
-    };
+        next();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * ==========================================================
+ * 5. FOUNDER & ADMINISTRATOR COMMAND AUTHORITY
+ * ==========================================================
+ */
+authMiddleware.requireAdmin = async (req, res, next) => {
+    try {
+        const rank = req.user?.identity?.legacy_rank;
+
+        if (rank !== 'Founder' && rank !== 'Administrator') {
+            return res.status(403).json({
+                success: false,
+                message: 'Administrative authorization required. Action logged.'
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * ==========================================================
+ * 6. ESCROW SHIELD VALUE PROTECTION
+ * ==========================================================
+ */
+authMiddleware.requireEscrowAccess = async (req, res, next) => {
+    try {
+        if (req.user?.security?.is_banned) {
+            return res.status(403).json({
+                success: false,
+                message: 'Escrow access restricted for this account node.'
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * ==========================================================
+ * 7. VISIBILITY ENGINE PRIVILEGES SHIELD
+ * ==========================================================
+ */
+authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
+    try {
+        if (req.user?.security?.scam_alert_flag > 5) {
+            return res.status(403).json({
+                success: false,
+                message: 'Advertising privileges restricted due to compliance indicators.'
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * ==========================================================
+ * 8. DIAMONDBACK FORGE CREATOR ACCESS
+ * ==========================================================
+ */
+authMiddleware.requireCreatorAccess = async (req, res, next) => {
+    try {
+        if (req.user?.security?.is_banned) {
+            return res.status(403).json({
+                success: false,
+                message: 'Creator privileges restricted for this account node.'
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = authMiddleware;
