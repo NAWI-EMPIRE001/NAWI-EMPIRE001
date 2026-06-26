@@ -20,8 +20,14 @@ const app = express();
 // MIDDLEWARE IMPORTS
 // ======================================================
 
-const rateLimiter = require('./middleware/rateLimiter');
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const {
+    globalLimiter
+} = require('./middlewares/rateLimiter');
+
+const {
+    notFound,
+    errorHandler
+} = require('./middlewares/errorMiddleware');
 
 // ======================================================
 // ROUTES IMPORTS
@@ -51,7 +57,13 @@ app.use(
     cors({
         origin: '*',
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        methods: [
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE'
+        ],
         allowedHeaders: [
             'Content-Type',
             'Authorization',
@@ -96,7 +108,7 @@ app.use(
 // GLOBAL RATE LIMITER
 // ======================================================
 
-app.use(rateLimiter);
+app.use(globalLimiter);
 
 // ======================================================
 // STATIC FILES
@@ -104,15 +116,19 @@ app.use(rateLimiter);
 
 app.use(
     '/uploads',
-    express.static(path.join(__dirname, 'uploads'))
+    express.static(
+        path.join(__dirname, 'uploads')
+    )
 );
 
 app.use(
-    express.static(path.join(__dirname, 'public'))
+    express.static(
+        path.join(__dirname, 'public')
+    )
 );
 
 // ======================================================
-// ROOT HEALTH CHECK
+// ROOT ROUTE
 // ======================================================
 
 app.get('/', (req, res) => {
@@ -121,21 +137,22 @@ app.get('/', (req, res) => {
         status: 'ONLINE',
         ecosystem: 'NAWI-EMPIRE001',
         architecture: '7-PILLAR ECOSYSTEM',
-        environment: process.env.NODE_ENV || 'development',
+        environment:
+            process.env.NODE_ENV || 'development',
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
     });
 });
 
 // ======================================================
-// DETAILED HEALTH CHECK
+// HEALTH CHECK ROUTE
 // ======================================================
 
 app.get('/health', (req, res) => {
     res.status(200).json({
         success: true,
-        database: 'CONNECTED',
         status: 'HEALTHY',
+        database: 'CONNECTED',
         uptime: process.uptime(),
         memoryUsage: process.memoryUsage(),
         timestamp: new Date().toISOString()
@@ -143,31 +160,23 @@ app.get('/health', (req, res) => {
 });
 
 // ======================================================
-// API VERSION 1 ROUTES
+// API ROUTES
 // ======================================================
 
-// AUTHENTICATION
 app.use('/api/v1/auth', authRoutes);
 
-// USER PROFILE
 app.use('/api/v1/profile', profileRoutes);
 
-// WALLET ENGINE
 app.use('/api/v1/wallet', walletRoutes);
 
-// ESCROW ENGINE
 app.use('/api/v1/escrow', escrowRoutes);
 
-// MARKETPLACE ENGINE
 app.use('/api/v1/marketplace', marketplaceRoutes);
 
-// STREAMING ENGINE
 app.use('/api/v1/streams', streamRoutes);
 
-// MESSAGING ENGINE
 app.use('/api/v1/messages', messageRoutes);
 
-// VERIFICATION ENGINE
 app.use('/api/v1/verification', verificationRoutes);
 
 // ======================================================
