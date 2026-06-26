@@ -1,26 +1,14 @@
 const mongoose = require('mongoose');
 
-/**
- * =========================================================
- * NAWI-EMPIRE001 - UNIFIED WALLET CORE SYSTEM
- * FINTECH-GRADE BALANCE + ESCROW ENGINE
- * =========================================================
- */
-
 const WalletSchema = new mongoose.Schema({
 
-    // =========================
-    // PLATFORM LOCK
-    // =========================
     platform_watermark: {
         type: String,
-        default: 'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001',
+        default:
+            'PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001',
         immutable: true
     },
 
-    // =========================
-    // OWNER LINK
-    // =========================
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -29,38 +17,24 @@ const WalletSchema = new mongoose.Schema({
         index: true
     },
 
-    // =========================
-    // CORE LIQUID BALANCE
-    // =========================
     coinBalance: {
         type: Number,
         default: 5,
-        min: 0,
-        set: v => Math.max(0, v) // Prevents negative injection attacks
+        min: 0
     },
 
-    // =========================
-    // ESCROW LOCKED FUNDS
-    // =========================
     escrowBalance: {
         type: Number,
         default: 0,
-        min: 0,
-        set: v => Math.max(0, v)
+        min: 0
     },
 
-    // =========================
-    // RISK CONTROL BALANCE
-    // =========================
     frozenBalance: {
         type: Number,
         default: 0,
         min: 0
     },
 
-    // =========================
-    // MULTI-CURRENCY EXTENSION LAYER
-    // =========================
     usdBalance: {
         type: Number,
         default: 0,
@@ -73,9 +47,6 @@ const WalletSchema = new mongoose.Schema({
         min: 0
     },
 
-    // =========================
-    // FINANCIAL TRACKING
-    // =========================
     totalEarned: {
         type: Number,
         default: 0,
@@ -88,19 +59,17 @@ const WalletSchema = new mongoose.Schema({
         min: 0
     },
 
-    // =========================
-    // SYSTEM STATUS CONTROL
-    // =========================
     walletStatus: {
         type: String,
-        enum: ['ACTIVE', 'FROZEN', 'RESTRICTED'],
+        enum: [
+            'ACTIVE',
+            'FROZEN',
+            'RESTRICTED'
+        ],
         default: 'ACTIVE',
         index: true
     },
 
-    // =========================
-    // PILLAR REVENUE TRACKING
-    // =========================
     pillarRevenue: {
         ARENA_NODE: { type: Number, default: 0 },
         SOVEREIGN_EXCHANGE: { type: Number, default: 0 },
@@ -111,14 +80,14 @@ const WalletSchema = new mongoose.Schema({
         SONIC_LEDGER: { type: Number, default: 0 }
     },
 
-    // =========================
-    // TRANSACTION HISTORY
-    // =========================
     transactionHistory: [
         {
             transactionId: {
                 type: String,
-                default: () => `TXN-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+                default: () =>
+                    `TXN-${Date.now()}-${Math.floor(
+                        1000 + Math.random() * 9000
+                    )}`,
                 index: true
             },
 
@@ -146,15 +115,29 @@ const WalletSchema = new mongoose.Schema({
                 default: 'COIN'
             },
 
-            status: {
-                type: String,
-                enum: ['PENDING', 'VERIFIED', 'FAILED'],
-                default: 'VERIFIED'
-            },
-
             sourcePillar: {
                 type: String,
                 default: 'GENERAL'
+            },
+
+            description: {
+                type: String,
+                default: ''
+            },
+
+            reference: {
+                type: String,
+                default: ''
+            },
+
+            status: {
+                type: String,
+                enum: [
+                    'PENDING',
+                    'VERIFIED',
+                    'FAILED'
+                ],
+                default: 'VERIFIED'
             },
 
             timestamp: {
@@ -170,134 +153,247 @@ const WalletSchema = new mongoose.Schema({
 });
 
 
-// =========================================================
-// 🧠 WALLET CORE ACTION HOOKS (AUTOMATED HISTORY ENGINE)
-// =========================================================
+// =====================================================
+// VIRTUALS
+// =====================================================
 
-/**
- * Guard check helper to ensure operational integrity
- */
-WalletSchema.methods.assertActive = function () {
-    if (this.walletStatus !== 'ACTIVE') {
-        throw new Error(`Transaction blocked: Wallet is current ${this.walletStatus}`);
+WalletSchema.virtual('availableBalance').get(function () {
+    return Math.max(
+        0,
+        this.coinBalance - this.frozenBalance
+    );
+});
+
+
+// =====================================================
+// INTERNAL VALIDATOR
+// =====================================================
+
+WalletSchema.methods.validateAmount = function (amount) {
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+        throw new Error('Invalid transaction amount');
     }
 };
 
-/**
- * SAFE DEBIT (coinBalance)
- */
-WalletSchema.methods.debit = async function (amount, sourcePillar = 'GENERAL') {
-    this.assertActive();
-    if (this.coinBalance < amount) throw new Error('Insufficient coin balance');
+WalletSchema.methods.assertActive = function () {
 
-    this.coinBalance -= amount;
-
-    // Fixed: Now automatically appends history directly on action Execution
-    this.transactionHistory.push({
-        type: 'PURCHASE',
-        amount: amount,
-        sourcePillar: sourcePillar
-    });
-
-    return await this.save();
+    if (this.walletStatus !== 'ACTIVE') {
+        throw new Error(
+            `Wallet is ${this.walletStatus}`
+        );
+    }
 };
 
-/**
- * SAFE CREDIT (coinBalance)
- */
-WalletSchema.methods.credit = async function (amount, sourcePillar = 'GENERAL') {
+
+// =====================================================
+// CREDIT
+// =====================================================
+
+WalletSchema.methods.credit = async function (
+    amount,
+    sourcePillar = 'GENERAL',
+    description = ''
+) {
+
+    this.validateAmount(amount);
     this.assertActive();
-    
+
     this.coinBalance += amount;
     this.totalEarned += amount;
 
-    // Accumulate metrics if sourced from a designated Architectural Pillar
     if (this.pillarRevenue[sourcePillar] !== undefined) {
         this.pillarRevenue[sourcePillar] += amount;
     }
 
     this.transactionHistory.push({
         type: 'DEPOSIT',
-        amount: amount,
-        sourcePillar: sourcePillar
+        amount,
+        sourcePillar,
+        description
     });
 
     return await this.save();
 };
 
-/**
- * LOCK INTO ESCROW
- */
-WalletSchema.methods.lockEscrow = async function (amount, sourcePillar = 'GENERAL') {
+
+// =====================================================
+// DEBIT
+// =====================================================
+
+WalletSchema.methods.debit = async function (
+    amount,
+    sourcePillar = 'GENERAL',
+    description = ''
+) {
+
+    this.validateAmount(amount);
     this.assertActive();
-    if (this.coinBalance < amount) throw new Error('Insufficient balance for escrow');
+
+    if (this.coinBalance < amount) {
+        throw new Error('Insufficient balance');
+    }
+
+    this.coinBalance -= amount;
+
+    this.transactionHistory.push({
+        type: 'PURCHASE',
+        amount,
+        sourcePillar,
+        description
+    });
+
+    return await this.save();
+};
+
+
+// =====================================================
+// WITHDRAW
+// =====================================================
+
+WalletSchema.methods.withdraw = async function (
+    amount,
+    description = ''
+) {
+
+    this.validateAmount(amount);
+    this.assertActive();
+
+    if (this.coinBalance < amount) {
+        throw new Error('Insufficient balance');
+    }
+
+    this.coinBalance -= amount;
+    this.totalWithdrawn += amount;
+
+    this.transactionHistory.push({
+        type: 'WITHDRAWAL',
+        amount,
+        description
+    });
+
+    return await this.save();
+};
+
+
+// =====================================================
+// ESCROW METHODS
+// =====================================================
+
+WalletSchema.methods.lockEscrow = async function (
+    amount,
+    sourcePillar = 'GENERAL'
+) {
+
+    this.validateAmount(amount);
+    this.assertActive();
+
+    if (this.coinBalance < amount) {
+        throw new Error('Insufficient balance');
+    }
 
     this.coinBalance -= amount;
     this.escrowBalance += amount;
 
     this.transactionHistory.push({
         type: 'ESCROW_LOCK',
-        amount: amount,
-        sourcePillar: sourcePillar
+        amount,
+        sourcePillar
     });
 
     return await this.save();
 };
 
-/**
- * RELEASE FROM ESCROW TO WALLET
- */
-WalletSchema.methods.releaseEscrow = async function (amount, sourcePillar = 'GENERAL') {
-    // Escrow releases are allowed even during restriction to clear pending allocations safely
-    if (this.escrowBalance < amount) throw new Error('Insufficient escrow balance');
+WalletSchema.methods.releaseEscrow = async function (
+    amount,
+    sourcePillar = 'GENERAL'
+) {
+
+    this.validateAmount(amount);
+
+    if (this.escrowBalance < amount) {
+        throw new Error(
+            'Insufficient escrow balance'
+        );
+    }
 
     this.escrowBalance -= amount;
     this.coinBalance += amount;
 
     this.transactionHistory.push({
         type: 'ESCROW_RELEASE',
-        amount: amount,
-        sourcePillar: sourcePillar
+        amount,
+        sourcePillar
     });
 
     return await this.save();
 };
 
-/**
- * REFUND FROM ESCROW
- */
-WalletSchema.methods.refundEscrow = async function (amount, sourcePillar = 'GENERAL') {
+WalletSchema.methods.refundEscrow = async function (
+    amount,
+    sourcePillar = 'GENERAL'
+) {
+
+    this.validateAmount(amount);
+
     if (this.escrowBalance < amount) {
-        this.escrowBalance = 0; // Guard clause fallback
-    } else {
-        this.escrowBalance -= amount;
+        throw new Error(
+            'Insufficient escrow balance'
+        );
     }
 
+    this.escrowBalance -= amount;
     this.coinBalance += amount;
 
     this.transactionHistory.push({
         type: 'ESCROW_REFUND',
-        amount: amount,
-        sourcePillar: sourcePillar
+        amount,
+        sourcePillar
     });
 
     return await this.save();
 };
 
 
-// =========================================================
-// 🚀 BACKWARD COMPATIBILITY & DUAL-EXPORT LAYER
-// =========================================================
-const Wallet = mongoose.model('Wallet', WalletSchema);
+// =====================================================
+// ADMIN METHODS
+// =====================================================
 
-// This bridges legacy style calls: creditWallet(wallet, amount) -> wallet.credit(amount)
-const legacyControllerBridge = {
-    Wallet,
-    debitWallet: async (walletInstance, amount) => await walletInstance.debit(amount),
-    creditWallet: async (walletInstance, amount) => await walletInstance.credit(amount),
-    lockEscrow: async (walletInstance, amount) => await walletInstance.lockEscrow(amount),
-    releaseEscrow: async (walletInstance, amount) => await walletInstance.releaseEscrow(amount),
-    refundEscrow: async (walletInstance, amount) => await walletInstance.refundEscrow(amount)
+WalletSchema.methods.freezeWallet = async function () {
+
+    this.walletStatus = 'FROZEN';
+
+    return await this.save();
 };
 
-module.exports = legacyControllerBridge;
+WalletSchema.methods.activateWallet = async function () {
+
+    this.walletStatus = 'ACTIVE';
+
+    return await this.save();
+};
+
+
+// =====================================================
+// INDEXES
+// =====================================================
+
+WalletSchema.index({
+    walletStatus: 1
+});
+
+WalletSchema.index({
+    updatedAt: -1
+});
+
+
+// =====================================================
+// EXPORTS
+// =====================================================
+
+const Wallet = mongoose.model(
+    'Wallet',
+    WalletSchema
+);
+
+module.exports = Wallet;
