@@ -179,7 +179,7 @@ const validationErrorResponse = (
 // ======================================================
 // EXPORTS
 // ======================================================
-module.exports = {
+models.exports = {
     successResponse,
     errorResponse,
     paginatedResponse,
