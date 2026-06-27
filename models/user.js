@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: module/user.js
+ * Models: models/user.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  * Description: Unified, high-performance database schema tracking compliance, themes, and pillar authorizations.
  */
@@ -375,4 +375,4 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
+models.exports = mongoose.models.User || mongoose.model('User', UserSchema);
