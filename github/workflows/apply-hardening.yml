@@ -3,7 +3,7 @@ name: Apply Hardening (create branch + PR)
 on:
   workflow_dispatch:
     inputs:
-      skip-npm-install:
+      npm-install:
         description: 'Set to "true" to skip npm install in CI (default: false)'
         required: false
         default: 'false'
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BRANCH: security/hardening-core
-      SKIP_NPM_INSTALL: ${{ github.event.inputs.skip-npm-install }}
+      NPM_INSTALL: ${{ github.event.inputs.skip-npm-install }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
