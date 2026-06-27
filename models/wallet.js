@@ -391,9 +391,9 @@ WalletSchema.index({
 // EXPORTS
 // =====================================================
 
-const Wallet = mongoose.model(
+const Wallet = mongoose.models(
     'Wallet',
     WalletSchema
 );
 
-module.exports = Wallet;
+models.exports = Wallet;
