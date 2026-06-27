@@ -108,4 +108,4 @@ const logger = {
     }
 };
 
-module.exports = logger;
+models.exports = logger;
