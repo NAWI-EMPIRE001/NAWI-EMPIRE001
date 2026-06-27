@@ -375,4 +375,4 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-models.exports = mongoose.models.User || mongoose.model('User', UserSchema);
+models.exports = mongoose.models.User || mongoose.models('User', UserSchema);
