@@ -206,10 +206,10 @@ const broadcast = (event, payload) => {
 // ==========================================================
 // EXPORTS
 // ==========================================================
-module.exports = initSockets;
+models.exports = initSockets;
 
-module.exports.getIO = getIO;
-module.exports.emitToUser = emitToUser;
-module.exports.emitToStream = emitToStream;
-module.exports.emitToBattle = emitToBattle;
-module.exports.broadcast = broadcast;
+models.exports.getIO = getIO;
+models.exports.emitToUser = emitToUser;
+models.exports.emitToStream = emitToStream;
+models.exports.emitToBattle = emitToBattle;
+models.exports.broadcast = broadcast;
