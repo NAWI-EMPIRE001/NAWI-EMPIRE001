@@ -222,4 +222,4 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 // Initialize Infrastructure
 startServer();
 
-models.exports = serverInstance;
+module.exports = serverInstance;
