@@ -1,4 +1,4 @@
-//**
+/**
  * NAWI-EMPIRE001 Core Infrastructure
  * Module: controllers/authController.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231
