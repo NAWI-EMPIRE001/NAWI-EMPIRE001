@@ -6,7 +6,7 @@
 const mongoose = require('mongoose');
 
 // The exact production URI string provided by your MongoDB Atlas cluster
-const ATLAS_PRODUCTION_URI = "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@nawi-empire001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
+const ATLAS_PRODUCTION_URI = "mongodb+srv://NAWI-EMPIRE001:NAWI-EMPIRE001@NAWI-EMPIRE001.zwidxex.mongodb.net/?appName=NAWI-EMPIRE001";
 
 const connectDB = async () => {
   // Uses Render Environment Variables first; falls back safely to your verified production string
@@ -27,4 +27,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+models.exports = connectDB;
