@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Models: controllers/authController.js
+ * Module: controllers/authController.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231
  * Description: Fully integrated, validated 7 Pillars routing, Tiered Verification, and Sovereign Stylist Engines.
  */
@@ -397,4 +397,4 @@ const authController = {
     }
 };
 
-models.exports = authController;
+module.exports = authController;
