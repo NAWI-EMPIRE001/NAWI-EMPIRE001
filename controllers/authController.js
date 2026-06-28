@@ -5,7 +5,7 @@
  * Description: Fully integrated, validated 7 Pillars routing, Tiered Verification, and Sovereign Stylist Engines.
  */
 
-const User = require('../module/user'); // Verified lowercase directory path match
+const User = require('../models/user'); // Verified lowercase directory path match
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
