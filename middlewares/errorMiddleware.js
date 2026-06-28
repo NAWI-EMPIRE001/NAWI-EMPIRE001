@@ -53,7 +53,7 @@ const asyncHandler = (fn) => {
     };
 };
 
-models.exports = {
+module.exports = {
     notFound,
     errorHandler,
     asyncHandler
