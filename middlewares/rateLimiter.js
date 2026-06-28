@@ -153,7 +153,7 @@ const messageLimiter = rateLimit({
 // EXPORTS
 // =====================================================
 
-models.exports = {
+model.exports = {
     globalLimiter,
     authLimiter,
     financialLimiter,
