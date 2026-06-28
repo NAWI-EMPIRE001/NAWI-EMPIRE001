@@ -32,4 +32,4 @@ router.put(
     escrowController.releaseEscrow
 );
 
-module.exports = router;
+models.exports = router;
