@@ -38,7 +38,7 @@ try {
         initSockets = socketModule.initSockets;
     }
 } catch (err) {
-    console.warn('⚠️ Socket module not detected or incomplete. Running without WebSockets.');
+    console.warn('⚠️ Socket models not detected or incomplete. Running without WebSockets.');
 }
 
 // =========================================================
@@ -222,4 +222,4 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 // Initialize Infrastructure
 startServer();
 
-module.exports = serverInstance;
+models.exports = serverInstance;
