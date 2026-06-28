@@ -1,4 +1,9 @@
-# Exported from Render on 2026-06-04T23:34:06Z
+# ======================================================
+# 👑 NAWI-EMPIRE001 BLUEPRINT ARCHITECTURE
+# FILE: render.yaml
+# PURPOSE: Automated Cluster Deployment Definition
+# ======================================================
+
 version: "1"
 projects:
 - name: NAWI-EMPIRE001
@@ -8,10 +13,13 @@ projects:
     - type: web
       name: NAWI-EMPIRE001
       runtime: node
-      repo: https://github.com/NAWI-EMPIRE001/NAWI-EMPIRE001
       plan: free
+      region: oregon
+      buildCommand: npm install
+      startCommand: node server.js
+      autoDeployTrigger: commit
       envVars:
-      - key: client.key
+      - key: CLIENT_KEY
         sync: false
       - key: SEED_FOUNDER_PASSWORD
         sync: false
@@ -27,9 +35,5 @@ projects:
         sync: false
       - key: MONGO_URI
         sync: false
-      region: oregon
-      buildCommand: npm install
-      startCommand: node server.js
-      autoDeployTrigger: commit
       previews:
         generation: automatic
