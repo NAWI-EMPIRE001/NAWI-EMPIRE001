@@ -6,7 +6,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../module/user'); // Synchronized with your real lowercase folder path
+const User = require('../models/user'); // Synchronized with your real lowercase folder path
 const mongoose = require('mongoose');
 
 /**
