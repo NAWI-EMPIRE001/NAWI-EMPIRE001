@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: middlewares/authMiddleware.js
+ * Models: middlewares/authMiddleware.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
  * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
  */
@@ -235,4 +235,4 @@ authMiddleware.requireCreatorAccess = async (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+models.exports = authMiddleware;
