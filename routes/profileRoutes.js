@@ -65,4 +65,4 @@ router.post(
     authController.resetPassword
 );
 
-module.exports = router;
+models.exports = router;
