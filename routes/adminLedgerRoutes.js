@@ -44,5 +44,5 @@ router.put(
     adminLedgerController.updateLedgerMetrics
 );
 
-module.exports =
+models.exports =
     router;
