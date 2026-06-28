@@ -95,4 +95,4 @@ class WalletService {
     }
 }
 
-module.exports = WalletService;
+models.exports = WalletService;
