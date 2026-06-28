@@ -1,4 +1,4 @@
-module.exports = (pillarKey) => {
+models.exports = (pillarKey) => {
 
     return async (
         req,
