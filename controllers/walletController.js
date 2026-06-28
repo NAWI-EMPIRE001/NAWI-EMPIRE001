@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Transaction = require('../models/Transaction');
+const User = require('../modele/User');
+const Transaction = require('../module/Transaction');
 
 /**
  * WALLET BALANCE
