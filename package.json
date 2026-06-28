@@ -14,16 +14,13 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "production": "NODE_ENV=production node server.js",
-    
+    "production": "node server.js",
     "render-build": "npm install",
     "seed": "node scripts/seed.js",
     "restart": "npm run start",
-    
     "watermark:apply": "node scripts/apply-platform-seal.js",
     "vault:sync": "node scripts/sync-liquidity.js",
     "secure:gate": "node scripts/p2p-handshake.js",
-
     "pillar:arena-node": "node microservices/arena-node.js",
     "pillar:sovereign-exchange": "node microservices/sovereign-exchange.js",
     "pillar:visibility-engine": "node microservices/visibility-engine.js",
@@ -86,4 +83,3 @@
   },
   "homepage": "https://nawi-empire001.onrender.com"
 }
-
