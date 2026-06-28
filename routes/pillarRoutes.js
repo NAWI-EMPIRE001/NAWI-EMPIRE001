@@ -137,4 +137,4 @@ router.post(
     authController.routeToPillar
 );
 
-module.exports = router;
+models.exports = router;
