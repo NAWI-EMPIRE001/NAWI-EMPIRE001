@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: routes/authRoutes.js
+ * Models: routes/authRoutes.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  * Description: Fully optimized mapping for Authentication, Profiles, 7-Pillar Routing, and Security Engines.
  */
@@ -60,4 +60,4 @@ router.post('/stylist/apply', authMiddleware, authController.applySovereignStyli
 router.post('/merchant/evaluate', authMiddleware, authController.evaluateMerchantStatus);
 router.post('/challenge/trigger', authMiddleware, authController.triggerSovereignChallenge);
 
-module.exports = router;
+models.exports = router;
