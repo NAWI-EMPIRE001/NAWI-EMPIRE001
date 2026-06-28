@@ -2,17 +2,17 @@
 const mongoose = require('mongoose');
 let MealImport;
 try {
-  MealImport = require('../module/meal');
+  MealImport = require('../models/meal');
 } catch (error) {
-  console.error('❌ Meal model could not be loaded:', error.message);
+  console.error('❌ Meal models could not be loaded:', error.message);
   throw error;
 }
 
-// Safely extract the model constructor whether it is exported directly or as an object property
+// Safely extract the models constructor whether it is exported directly or as an object property
 const Meal = (MealImport && (MealImport.model || MealImport.Meal)) || (typeof MealImport === 'function' ? MealImport : null);
 
 if (!Meal) {
-  throw new Error('❌ Failed to resolve Meal model constructor from module/meal.js');
+  throw new Error('❌ Failed to resolve Meal model constructor from models/meal.js');
 }
 
 /**
@@ -82,7 +82,7 @@ const pushToGlobalMarket = async (mealData = {}) => {
   }
 };
 
-module.exports = {
+models.exports = {
   KitchenMeal: Meal,
   pushToGlobalMarket
 };
