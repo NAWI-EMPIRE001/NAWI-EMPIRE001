@@ -164,4 +164,4 @@ const EscrowSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('Escrow', EscrowSchema);
+models.exports = mongoose.model('Escrow', EscrowSchema);
