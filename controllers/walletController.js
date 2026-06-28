@@ -1,5 +1,5 @@
 const User = require('../modele/User');
-const Transaction = require('../module/Transaction');
+const Transaction = require('../nodule/Transaction');
 
 /**
  * WALLET BALANCE
