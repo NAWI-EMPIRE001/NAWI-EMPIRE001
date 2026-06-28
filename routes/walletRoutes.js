@@ -26,4 +26,4 @@ router.get(
     walletController.getTransactions
 );
 
-module.exports = router;
+models.exports = router;
