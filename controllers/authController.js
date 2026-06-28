@@ -1,11 +1,14 @@
-/**
+//**
  * NAWI-EMPIRE001 Core Infrastructure
  * Module: controllers/authController.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231
  * Description: Fully integrated, validated 7 Pillars routing, Tiered Verification, and Sovereign Stylist Engines.
  */
 
-const User = require('../models/user'); // Verified lowercase directory path match
+// =========================================================
+// 🏛️ CORE SECURITY DEPENDENCIES & ALIGNED IMPORT ENGINE
+// =========================================================
+const User = require('../models/User'); // 🟢 FIXED: Upper-case strict matching for absolute Linux compilation safety
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -53,7 +56,7 @@ const authController = {
             // Production file path assignment
             const videoUrl = `/storage/biometrics/${Date.now()}_${username}.mp4`;
 
-            // Build structural Mongoose model mapping aligned with module/user.js schema definitions
+            // Build structural Mongoose model mapping aligned with models/User.js schema definitions
             const user = await User.create({
                 userId: crypto.randomUUID(),
                 username,
