@@ -195,4 +195,4 @@ app.use(errorHandler);
 // EXPORT APPLICATION
 // ======================================================
 
-module.exports = app;
+models.exports = app;
