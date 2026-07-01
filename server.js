@@ -1,225 +1,129 @@
-// =========================================================
-// 👑 NAWI-EMPIRE001 - MASTER SERVER ENGINE ENTRY POINT
-// System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
-// Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
-// =========================================================
-
-require('dotenv').config();
+/**
+ * NAWI-EMPIRE001 Core Infrastructure
+ * Module: server.js
+ * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
+ * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
+ * Description: Fully decoupled, pure network infrastructure bootstrap layer.
+ * Isolated against side-effect process actions to guarantee integration-testing safety.
+ */
 
 const http = require('http');
 const mongoose = require('mongoose');
-
 const app = require('./app');
 const connectDB = require('./config/db');
 
-// =========================================================
-// 🏛️ THE 7 CORE ARCHITECTURAL PILLARS MATRIX
-// =========================================================
-const SEVEN_PILLARS_MANIFEST = {
-    1: "ARENA_NODE (Gaming & Interactive Layer)",
-    2: "SOVEREIGN_EXCHANGE (Trade & Financial Core)",
-    3: "VISIBILITY_ENGINE (Ecosystem Advertising & Compliance)",
-    4: "CULINARY_MATRIX (Kitchen & Marketplace Engine)",
-    5: "AESTHETIC_NEXUS (Design, Apparel & 3D Plaque Renders)",
-    6: "DIAMONDBACK_FORGE (Creative Tools & Project Development)",
-    7: "SONIC_LEDGER (Ecosystem Decentralized Audio Log Engine)"
-};
-
-// =========================================================
-// OPTIONAL WEBSOCKET LAYER AUTOMATION
-// =========================================================
-let initSockets = null;
-
-try {
-    const socketModule = require('./sockets');
-    if (typeof socketModule === 'function') {
-        initSockets = socketModule;
-    } else if (socketModule && typeof socketModule.initSockets === 'function') {
-        initSockets = socketModule.initSockets;
-    }
-} catch (err) {
-    console.warn('⚠️ Socket models not detected or incomplete. Running without WebSockets.');
-}
-
-// =========================================================
-// ENVIRONMENT CONFIGURATION
-// =========================================================
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'production';
-
 let serverInstance = null;
 
 // =========================================================
-// ENVIRONMENT VALIDATION
-// =========================================================
-const validateEnvironment = () => {
-    const requiredVariables = [
-        'MONGO_URI',
-        'JWT_SECRET'
-    ];
-
-    const missing = requiredVariables.filter(
-        variable => !process.env[variable]
-    );
-
-    if (missing.length > 0) {
-        console.error(`
-====================================================
-❌ MISSING ENVIRONMENT VARIABLES DETECTED
-====================================================
-${missing.join('\n')}
-====================================================
-        `);
-        process.exit(1);
-    }
-};
-
-// =========================================================
-// EMERGENCY SHUTDOWN MATRIX
-// =========================================================
-const emergencyForceShutdown = async () => {
-    try {
-        if (serverInstance) {
-            serverInstance.close();
-        }
-        await mongoose.connection.close();
-    } catch (error) {
-        console.error('Emergency shutdown database error:', error.message);
-    }
-    process.exit(1);
-};
-
-// =========================================================
-// GLOBAL PROCESS INFRASTRUCTURE SAFETY
+// GLOBAL EXCEPTION SECURITY INTERCEPT ARRAYS
 // =========================================================
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('⚠️ UNHANDLED REJECTION IN RUNTIME:');
-    console.error('Promise Context:', promise);
-    console.error('Reason / Trace:', reason);
+    console.error('⚠️ UNHANDLED REJECTION IN RUNTIME ENGINE:', reason);
+    // Let global launcher boundary logic capture the structural fault trace
 });
 
 process.on('uncaughtException', (err) => {
-    console.error('❌ CRITICAL UNCAUGHT EXCEPTION THROWN:');
-    console.error(err);
-    emergencyForceShutdown();
+    console.error('❌ CRITICAL UNCAUGHT EXCEPTION IN METRIC RUNTIME:', err);
+    throw err;
 });
 
 // =========================================================
-// SERVER BOOT ENGINE
+// ASYNCHRONOUS EXPLICIT SERVER LAUNCH ENGINE
 // =========================================================
 const startServer = async () => {
-    try {
-        validateEnvironment();
-
-        console.log(`
-====================================================
-🚀 NAWI-EMPIRE001 SYSTEM BOOT SEQUENCE INITIATED
-====================================================
-ENVIRONMENT : ${NODE_ENV.toUpperCase()}
-PORT        : ${PORT}
-AUTHORITY   : DIAMONDBACK 231 SECURE GATEWAY
-====================================================
-        `);
-
-        // Display the 7 Core Pillars Layout in Render logs at bootup
-        console.log("🏛️ INITIALIZING FRAMEWORK PILLARS:");
-        Object.entries(SEVEN_PILLARS_MANIFEST).forEach(([num, pillar]) => {
-            console.log(`   [Pillar ${num}] ➔ ${pillar}`);
-        });
-        console.log("====================================================\n");
-
-        // Initialize Central Database Pool (Config/db.js manages its own logs cleanly)
-        await connectDB();
-
-        // HTTP Server Instantiation
-        serverInstance = http.createServer(app);
-
-        // Heavy-Duty Server Optimization Timeouts
-        serverInstance.timeout = 120000;
-        serverInstance.keepAliveTimeout = 65000;
-        serverInstance.headersTimeout = 66000;
-
-        // WebSocket Dynamic Mount Engine Check
-        if (typeof initSockets === 'function') {
-            initSockets(serverInstance);
-            console.log('Orchestration Hub: 🟣 WebSocket Layer Layer Active.');
-        } else {
-            console.log('Orchestration Hub: ⚪ WebSocket Layer Standby.');
-        }
-
-        // Start Network Port Binding
-        serverInstance.listen(PORT, '0.0.0.0', () => {
-            console.log(`
-====================================================
-👑 NAWI-EMPIRE001 IS ONLINE & OPERATIONAL
-====================================================
-THE CITY OF MULTIPILLARS PRODUCES ALL WHAT I NEED
-STATUS      : ONLINE
-PORT        : ${PORT}
-ENVIRONMENT : ${NODE_ENV.toUpperCase()}
-====================================================
-            `);
-        });
-
-        serverInstance.on('error', (err) => {
-            console.error('❌ SYSTEM NETWORK SERVER ERROR:', err.message);
-            process.exit(1);
-        });
-
-    } catch (err) {
-        console.error(`
-====================================================
-❌ SERVER CORE START UP FAILURE
-====================================================
-${err.message}
-====================================================
-        `);
-        process.exit(1);
+    // Environment Validation via Exceptions
+    if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
+        throw new Error("Missing vital configuration tokens: [MONGO_URI, JWT_SECRET] are completely mandatory.");
     }
+
+    const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
+    console.log(`\n🚀 NAWI-EMPIRE001 PLATFORM ENGINE LAYER OPENED`);
+    console.log(`----------------------------------------------------`);
+    console.log(`PID         : ${process.pid}`);
+    console.log(`NODE VER    : ${process.version}`);
+    console.log(`ENVIRONMENT : ${NODE_ENV.toUpperCase()}`);
+    console.log(`MEMORY INI  : ${memoryUsage} MB`);
+    console.log(`TIMEZONE    : ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
+    console.log(`----------------------------------------------------\n`);
+
+    // Connect Database Pooled Target
+    await connectDB();
+
+    if (mongoose.connection.readyState !== 1) {
+        throw new Error("Database validation pass failed. Target data cluster remains unreachable.");
+    }
+
+    // Create Base HTTP Server Instantiation
+    serverInstance = http.createServer(app);
+
+    // Hardened Timeout Configuration Profiles
+    serverInstance.timeout = 60000;
+    serverInstance.requestTimeout = 60000; // Aligned with modern Node runtime guidelines
+    serverInstance.keepAliveTimeout = 65000;
+    serverInstance.headersTimeout = 66000;
+
+    // Optional WebSocket Orchestration Engine Attach
+    try {
+        const socketModule = require('./sockets');
+        const initSockets = typeof socketModule === 'function' ? socketModule : socketModule.initSockets;
+        if (typeof initSockets === 'function') {
+            const io = initSockets(serverInstance);
+            app.set("io", io);
+            console.log('Orchestration Hub: 🟣 WebSocket Layer Active.');
+        }
+    } catch (err) {
+        // Safe omission fallback handler
+    }
+
+    // Port Binding Promise Framework with Native Error Capturing
+    return new Promise((resolve, reject) => {
+        serverInstance.once('error', (err) => {
+            console.error('❌ SYSTEM NETWORK BINDING EXCEPTION CONFLICT:', err.message);
+            reject(err);
+        });
+
+        serverInstance.listen(PORT, '0.0.0.0', () => {
+            console.log(`\n👑 NAWI-EMPIRE001 SYSTEM ENTRYPOINT ONLINE`);
+            console.log(`THE CITY OF MULTIPILLARS PRODUCES ALL WHAT I NEED`);
+            console.log(`STATUS      : FUNCTIONAL AND LISTENING ON PORT ${PORT}\n`);
+            resolve(serverInstance);
+        });
+    });
 };
 
 // =========================================================
-// GRACEFUL CONNECTION CLOSURE MATRIX
+// RE-ENGINEERED GRACEFUL SHUTDOWN SEQUENCING
 // =========================================================
 const shutdown = async (signal) => {
-    console.log(`
-====================================================
-${signal} SIGNAL TERMINATION RECEIVED
-SAFE CLOSURE OF SYSTEM ENGINES INITIATED
-====================================================
-    `);
+    console.log(`\nReceived ${signal}. Gracefully stopping transactional engines...`);
 
-    const timeout = setTimeout(() => {
-        console.error('⚠️ Shutdown threshold exceeded. Forcing breakdown...');
+    const forceKillTimeout = setTimeout(() => {
+        console.error('⚠️ Graceful resolution limits crossed. Dropping container process.');
         process.exit(1);
     }, 10000);
 
     try {
         if (serverInstance) {
-            serverInstance.close(async () => {
-                await mongoose.connection.close();
-                console.log('🟢 MongoDB Connection Gracefully Disconnected.');
-                clearTimeout(timeout);
-                process.exit(0);
-            });
-        } else {
-            await mongoose.connection.close();
-            clearTimeout(timeout);
-            process.exit(0);
+            await new Promise((resolve) => serverInstance.close(resolve));
+            console.log('🟢 HTTP transaction channels disconnected safely.');
         }
+        
+        if (mongoose.connection.readyState !== 0) {
+            await mongoose.connection.close();
+            console.log('🟢 MongoDB storage structures disconnected neatly.');
+        }
+
+        clearTimeout(forceKillTimeout);
+        process.exit(0);
     } catch (error) {
-        console.error('Shutdown Procedure Error:', error.message);
+        console.error('Error encountered while processing system tear down:', error.message);
         process.exit(1);
     }
 };
 
-// =========================================================
-// PROCESS SIGNAL TRAFFIC CONTROLLERS
-// =========================================================
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// Initialize Infrastructure
-startServer();
-
-module.exports = serverInstance;
+module.exports = { app, startServer };
