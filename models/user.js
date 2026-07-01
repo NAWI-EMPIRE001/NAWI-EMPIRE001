@@ -2,11 +2,15 @@
  * NAWI-EMPIRE001 Core Infrastructure
  * Module: models/user.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
- * Description: Unified, high-performance database schema tracking compliance, themes, and pillar authorizations.
+ * Description: Fully optimized, production-grade User infrastructure model. Features automated 
+ * instance decryption methods, lifecycle pre-save hooks, strict E.164 tracking, and data leak protection.
  */
 
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 12;
 
 const UserSchema = new mongoose.Schema(
 {
@@ -18,8 +22,8 @@ const UserSchema = new mongoose.Schema(
 
     userId: {
         type: String,
+        required: true,
         unique: true,
-        index: true,
         default: () => crypto.randomUUID()
     },
 
@@ -36,23 +40,31 @@ const UserSchema = new mongoose.Schema(
         type: String,
         required: true,
         unique: true,
-        lowercase: true,
-        trim: true
+        trim: true,
+        set: value => value.toLowerCase().trim(), // ⚡ Pre-validation processing guard
+        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid, secure email address']
     },
 
     password: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        minlength: 8, // 🔒 Enforced strict length boundary
+        select: false 
     },
 
     // Unified fields supporting legacy and new formats
     phone: {
         type: String,
+        trim: true,
+        match: [/^\+?[1-9]\d{6,14}$/, 'Please provide a valid international phone number format'],
         default: ''
     },
     
     phone_number: {
         type: String,
+        trim: true,
+        match: [/^\+?[1-9]\d{6,14}$/, 'Please provide a valid international phone number format'],
         default: ''
     },
 
@@ -64,6 +76,10 @@ const UserSchema = new mongoose.Schema(
     verified: {
         type: Boolean,
         default: false
+    },
+
+    verifiedAt: {
+        type: Date
     },
 
     role: {
@@ -344,7 +360,18 @@ const UserSchema = new mongoose.Schema(
         is_banned: { type: Boolean, default: false },
         scam_alert_flag: { type: Number, default: 0 },
         multi_factor_auth: { type: String, default: 'ENABLED' },
-        lastLogin: { type: Date }
+        lastLoginAt: { type: Date },
+        lastLogoutAt: { type: Date },
+        lastLoginIp: { type: String }
+    },
+
+    // Administrative Recovery & Soft Deletes
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date
     }
 },
 {
@@ -352,27 +379,100 @@ const UserSchema = new mongoose.Schema(
     timestamps: true
 });
 
-// Middleware verification proxy layer - Clear race-conditions safely
+// =========================================================
+// PERFORMANCE LOGICAL SUB-INDEX ARRAYS
+// =========================================================
+UserSchema.index({ isDeleted: 1 }); // ⚡ Optimized for high-frequency live soft-delete application state checks
+
+// =========================================================
+// VIRTUAL PRIMARY KEY MAPPING PATTERNS
+// =========================================================
+UserSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+// =========================================================
+// DATA LEAK PLUGINS & RESPONSE FORMATTING TRANSFORMS
+// =========================================================
+const sanitizeTransform = {
+    virtuals: true,
+    transform(doc, ret) {
+        delete ret.password;
+        delete ret.__v;
+        delete ret.backupCodes;
+        delete ret.platform_watermark; 
+        return ret;
+    }
+};
+
+UserSchema.set('toJSON', sanitizeTransform);
+UserSchema.set('toObject', sanitizeTransform); // Synchronized execution parameters mapped across both data states
+
+// =========================================================
+// ENCAPSULATED MODEL INSTANCE INTERNET ACCESS METHODS
+// =========================================================
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+    // Standard secure encapsulation architecture
+    return bcrypt.compare(candidatePassword, this.password);
+};
+
+// =========================================================
+// AUTO-ENCRYPTION SECURITY MIDDLEWARE LAYER
+// =========================================================
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    
+    try {
+        const salt = await bcrypt.genSalt(SALT_ROUNDS);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+// =========================================================
+// INTERCEPT SYNCHRONIZATION MATRIX PROXY LAYER
+// =========================================================
 UserSchema.pre('save', function (next) {
+    // Sync Phone Fields safely
     if (this.isModified('phone_number')) {
         this.phone = this.phone_number;
     } else if (this.isModified('phone')) {
         this.phone_number = this.phone;
     }
 
+    // Sync Verification Tiers safely
     if (this.isModified('current_tier')) {
         this.verificationTier = this.current_tier;
     } else if (this.isModified('verificationTier')) {
         this.current_tier = this.verificationTier;
     }
     
-    if (this.isModified('verification_metrics.day_1_video_url')) {
-        this.biometricVerification.day1VideoUrl = this.verification_metrics.day_1_video_url;
-    } else if (this.isModified('biometricVerification.day1VideoUrl')) {
-        this.verification_metrics.day_1_video_url = this.biometricVerification.day1VideoUrl;
+    // Sync Biometric Video Links with explicit structural validation
+    if (this.verification_metrics && this.biometricVerification) {
+        if (this.isModified('verification_metrics.day_1_video_url')) {
+            this.biometricVerification.day1VideoUrl = this.verification_metrics.day_1_video_url;
+        }
+        if (this.isModified('biometricVerification.day1VideoUrl')) {
+            this.verification_metrics.day_1_video_url = this.biometricVerification.day1VideoUrl;
+        }
+    }
+
+    // Sync Business Documentation parameters safely
+    if (this.verification_metrics && this.businessVerification) {
+        if (this.isModified('verification_metrics.businessName')) {
+            this.businessVerification.businessName = this.verification_metrics.businessName;
+        }
+        if (this.isModified('verification_metrics.cacNumber')) {
+            this.businessVerification.registrationNumber = this.verification_metrics.cacNumber;
+        }
+        if (this.isModified('verification_metrics.secure_docs_url')) {
+            this.businessVerification.registrationDocument = this.verification_metrics.secure_docs_url;
+        }
     }
 
     next();
 });
 
-module.exports = mongoose.models.User || mongoose.models('User', UserSchema);
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
