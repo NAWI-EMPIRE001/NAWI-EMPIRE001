@@ -1,13 +1,13 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: middlewares/authMiddleware.js
+ * models: middlewares/authMiddleware.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
  * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const user = require('../models/user');
 const mongoose = require('mongoose');
 
 if (!process.env.JWT_SECRET) {
@@ -29,7 +29,7 @@ const authMiddleware = async (req, res, next) => {
         }
 
         if (!token) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Access denied. Authentication token missing.'
             });
@@ -49,7 +49,7 @@ const authMiddleware = async (req, res, next) => {
         }
 
         if (queryConditions.length === 0) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Invalid token structure.'
             });
@@ -58,14 +58,14 @@ const authMiddleware = async (req, res, next) => {
         const user = await User.findOne({ $or: queryConditions }).select('-password');
 
         if (!user) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: 'User account not found within system registry.'
+                message: 'user account not found within system registry.'
             });
         }
 
         if (user.accountStatus === 'suspended' || user.accountStatus === 'under_review') {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Account suspended from ecosystem due to security parameters.'
             });
@@ -75,7 +75,7 @@ const authMiddleware = async (req, res, next) => {
         next();
 
     } catch (error) {
-        return res.status(401).json({
+        return res.status(404).json({
             success: false,
             message: 'Invalid or expired authentication token.'
         });
@@ -100,11 +100,11 @@ authMiddleware.authorizePillar = (pillarName) => {
                 'SONIC_LEDGER': 'music_promotion'
             };
 
-            const normalizedInput = pillarName.toUpperCase().trim();
+            const normalizedInput = pillarName.toupperCase().trim();
             const matchingSchemaKey = allowedPillars[normalizedInput];
 
             if (!matchingSchemaKey) {
-                return res.status(400).json({
+                return res.status(404).json({
                     success: false,
                     message: `Component '${pillarName}' does not map to architectural configuration pillars.`
                 });
@@ -112,7 +112,7 @@ authMiddleware.authorizePillar = (pillarName) => {
 
             // 🛡️ HARDENED: Checks actual structural sub-document permissions inside user profiles
             if (!req.user?.pillarAccess || !req.user.pillarAccess[matchingSchemaKey]) {
-                return res.status(403).json({
+                return res.status(404).json({
                     success: false,
                     message: `Access Denied. Your profile node does not hold explicit credentials for the ${normalizedInput} ecosystem.`
                 });
@@ -121,7 +121,7 @@ authMiddleware.authorizePillar = (pillarName) => {
             req.pillar = normalizedInput;
             next();
         } catch (error) {
-            return res.status(500).json({ success: false, message: error.message });
+            return res.status(404).json({ success: false, message: error.message });
         }
     };
 };
@@ -137,14 +137,14 @@ authMiddleware.requireVerification = (minimumLevel = 1) => {
             const userTier = req.user?.current_tier || 1;
 
             if (userTier < minimumLevel) {
-                return res.status(403).json({
+                return res.status(404).json({
                     success: false,
                     message: `Elevated Access Denied. Verification tier level ${minimumLevel} required. Current level: ${userTier}`
                 });
             }
             next();
         } catch (error) {
-            return res.status(500).json({ success: false, message: error.message });
+            return res.status(404).json({ success: false, message: error.message });
         }
     };
 };
@@ -160,14 +160,14 @@ authMiddleware.requireMerchant = async (req, res, next) => {
         const isMerchant = req.user?.current_tier >= 2 || req.user?.role === 'merchant' || req.user?.role === 'sovereign';
 
         if (!isMerchant) {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Merchant verification level required to access trade nodes.'
             });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(404).json({ success: false, message: error.message });
     }
 };
 
@@ -182,14 +182,14 @@ authMiddleware.requireAdmin = async (req, res, next) => {
         const isPrivileged = req.user?.role === 'admin' || req.user?.role === 'sovereign';
 
         if (!isPrivileged) {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Administrative authorization required. Action logged.'
             });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(404).json({ success: false, message: error.message });
     }
 };
 
@@ -201,14 +201,14 @@ authMiddleware.requireAdmin = async (req, res, next) => {
 authMiddleware.requireEscrowAccess = async (req, res, next) => {
     try {
         if (req.user?.accountStatus === 'suspended') {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Escrow access restricted for this account node.'
             });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(404).json({ success: false, message: error.message });
     }
 };
 
@@ -220,14 +220,14 @@ authMiddleware.requireEscrowAccess = async (req, res, next) => {
 authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
     try {
         if (req.user?.security?.compliance_violations > 5) {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Advertising privileges restricted due to compliance indicators.'
             });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(404).json({ success: false, message: error.message });
     }
 };
 
@@ -239,14 +239,14 @@ authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
 authMiddleware.requireCreatorAccess = async (req, res, next) => {
     try {
         if (req.user?.accountStatus === 'suspended') {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Creator privileges restricted for this account node.'
             });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(404).json({ success: false, message: error.message });
     }
 };
 
