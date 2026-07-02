@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * models: server.js
+ * models:server.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
  * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Permanently frozen enterprise production bootstrap orchestrator.
