@@ -2,7 +2,7 @@
  * NAWI-EMPIRE001 Core Infrastructure
  * models: models/user.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
- * Description: Fully optimized, production-grade User infrastructure model. Features automated 
+ * Description: Fully optimized, production-grade user infrastructure models. Features automated 
  * instance decryption methods, lifecycle pre-save hooks, strict E.164 tracking, and data leak protection.
  */
 
