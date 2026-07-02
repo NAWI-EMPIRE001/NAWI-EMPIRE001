@@ -1,13 +1,19 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Models: middlewares/authMiddleware.js
+ * Module: middlewares/authMiddleware.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
+ * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // Synchronized with your real lowercase folder path
+const User = require('../models/user');
 const mongoose = require('mongoose');
+
+if (!process.env.JWT_SECRET) {
+    throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing from configuration targets.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * ==========================================================
@@ -29,9 +35,9 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET');
+        // 🛡️ HARDENED: Strict verification using direct variable mapping (no insecure plain-string fallback)
+        const decoded = jwt.verify(token, JWT_SECRET);
 
-        // Build safe dynamic query conditions to prevent CastErrors on invalid ObjectIds
         const queryConditions = [];
         if (decoded.userId) {
             queryConditions.push({ userId: decoded.userId });
@@ -58,15 +64,13 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        // Integrity security check interceptor
-        if (user.accountStatus === 'banned' || user.security?.is_banned === true) {
+        if (user.accountStatus === 'suspended' || user.accountStatus === 'under_review') {
             return res.status(403).json({
                 success: false,
                 message: 'Account suspended from ecosystem due to security parameters.'
             });
         }
 
-        // Attach verified user profile context directly onto request stream
         req.user = user;
         next();
 
@@ -86,22 +90,31 @@ const authMiddleware = async (req, res, next) => {
 authMiddleware.authorizePillar = (pillarName) => {
     return async (req, res, next) => {
         try {
-            const allowedPillars = [
-                'ARENA_NODE',
-                'SOVEREIGN_EXCHANGE',
-                'VISIBILITY_ENGINE',
-                'CULINARY_MATRIX',
-                'AESTHETIC_NEXUS',
-                'DIAMONDBACK_FORGE',
-                'SONIC_LEDGER'
-            ];
+            const allowedPillars = {
+                'ARENA_NODE': 'gaming_studio',
+                'SOVEREIGN_EXCHANGE': 'marketplace',
+                'VISIBILITY_ENGINE': 'ads_program',
+                'CULINARY_MATRIX': 'kitchen_meal',
+                'AESTHETIC_NEXUS': 'content_creation',
+                'DIAMONDBACK_FORGE': 'marketplace', // Extends via Merchant validation logic
+                'SONIC_LEDGER': 'music_promotion'
+            };
 
             const normalizedInput = pillarName.toUpperCase().trim();
+            const matchingSchemaKey = allowedPillars[normalizedInput];
 
-            if (!allowedPillars.includes(normalizedInput)) {
+            if (!matchingSchemaKey) {
                 return res.status(400).json({
                     success: false,
                     message: `Component '${pillarName}' does not map to architectural configuration pillars.`
+                });
+            }
+
+            // 🛡️ HARDENED: Checks actual structural sub-document permissions inside user profiles
+            if (!req.user?.pillarAccess || !req.user.pillarAccess[matchingSchemaKey]) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Access Denied. Your profile node does not hold explicit credentials for the ${normalizedInput} ecosystem.`
                 });
             }
 
@@ -121,12 +134,12 @@ authMiddleware.authorizePillar = (pillarName) => {
 authMiddleware.requireVerification = (minimumLevel = 1) => {
     return async (req, res, next) => {
         try {
-            const userTier = req.user?.current_tier || req.user?.verificationTier || 1;
+            const userTier = req.user?.current_tier || 1;
 
             if (userTier < minimumLevel) {
                 return res.status(403).json({
                     success: false,
-                    message: `Elevated Access Denied. Verification level ${minimumLevel} required. Current level: ${userTier}`
+                    message: `Elevated Access Denied. Verification tier level ${minimumLevel} required. Current level: ${userTier}`
                 });
             }
             next();
@@ -143,7 +156,8 @@ authMiddleware.requireVerification = (minimumLevel = 1) => {
  */
 authMiddleware.requireMerchant = async (req, res, next) => {
     try {
-        const isMerchant = req.user?.current_tier >= 2 || req.user?.identity?.legacy_rank === 'Verified Merchant';
+        // 🛡️ HARDENED: Authorizes via immutable role indices and structural account tiers
+        const isMerchant = req.user?.current_tier >= 2 || req.user?.role === 'merchant' || req.user?.role === 'sovereign';
 
         if (!isMerchant) {
             return res.status(403).json({
@@ -164,9 +178,10 @@ authMiddleware.requireMerchant = async (req, res, next) => {
  */
 authMiddleware.requireAdmin = async (req, res, next) => {
     try {
-        const rank = req.user?.identity?.legacy_rank;
+        // 🛡️ HARDENED: Protected against string field manipulation by relying on strict system roles
+        const isPrivileged = req.user?.role === 'admin' || req.user?.role === 'sovereign';
 
-        if (rank !== 'Founder' && rank !== 'Administrator') {
+        if (!isPrivileged) {
             return res.status(403).json({
                 success: false,
                 message: 'Administrative authorization required. Action logged.'
@@ -185,7 +200,7 @@ authMiddleware.requireAdmin = async (req, res, next) => {
  */
 authMiddleware.requireEscrowAccess = async (req, res, next) => {
     try {
-        if (req.user?.security?.is_banned) {
+        if (req.user?.accountStatus === 'suspended') {
             return res.status(403).json({
                 success: false,
                 message: 'Escrow access restricted for this account node.'
@@ -204,7 +219,7 @@ authMiddleware.requireEscrowAccess = async (req, res, next) => {
  */
 authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
     try {
-        if (req.user?.security?.scam_alert_flag > 5) {
+        if (req.user?.security?.compliance_violations > 5) {
             return res.status(403).json({
                 success: false,
                 message: 'Advertising privileges restricted due to compliance indicators.'
@@ -223,7 +238,7 @@ authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
  */
 authMiddleware.requireCreatorAccess = async (req, res, next) => {
     try {
-        if (req.user?.security?.is_banned) {
+        if (req.user?.accountStatus === 'suspended') {
             return res.status(403).json({
                 success: false,
                 message: 'Creator privileges restricted for this account node.'
@@ -235,4 +250,5 @@ authMiddleware.requireCreatorAccess = async (req, res, next) => {
     }
 };
 
-models.exports = authMiddleware;
+// 🟢 FIXED: Typo corrected from models.exports to module.exports to guarantee clean compilation pass
+module.exports = authMiddleware;
