@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Models: config/db.js
+ * models: config/db.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
  * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Permanently frozen enterprise database engine using Mongoose.
