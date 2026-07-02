@@ -1,5 +1,5 @@
 {
-  "name": "nawi-empire001-sovereign-platform",
+  "name": "NAWI-EMPIRE001-sovereign-platform",
   "version": "1.0.0",
   "description": "NAWI-EMPIRE001 Unified Sovereign Production Platform Engine | The 7 Core Architectural Pillars",
   "main": "server.js",
@@ -55,9 +55,11 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.1.0",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
     "express-rate-limit": "^7.3.1",
     "express-validator": "^7.1.0",
     "fluent-ffmpeg": "^2.1.2",
@@ -69,7 +71,8 @@
     "sharp": "^0.33.4",
     "socket.io": "^4.7.5",
     "stripe": "^15.12.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
