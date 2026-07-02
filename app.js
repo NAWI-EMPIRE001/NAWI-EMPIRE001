@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: app.js
+ * models: app.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
  * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Fully hardened production Express core application engine. 
