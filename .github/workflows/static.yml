@@ -1,6 +1,6 @@
 # ======================================================
 # protected_by_diamondback231_authority_nawi-empire001
-# file: .github/workflows/deploy.yml
+# file: GitHub Actions/.github/workflows/static.yml
 # purpose: automated deployment of static content to pages.
 # description: official pipeline for nawi-empire001 site deployment.
 # ======================================================
