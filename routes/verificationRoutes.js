@@ -24,4 +24,4 @@ router.put('/approve/:verificationId', approveVerification);
 // Admin rejects verification
 router.put('/reject/:verificationId', rejectVerification);
 
-module.exports = router;
+models.exports = router;

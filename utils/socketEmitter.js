@@ -44,7 +44,7 @@ const emitToUser = (userId, event, payload) => {
 // Get io instance if needed elsewhere
 const getIO = () => io;
 
-module.exports = {
+models.exports = {
     initializeSocketEmitter,
     emitGlobal,
     emitToRoom,

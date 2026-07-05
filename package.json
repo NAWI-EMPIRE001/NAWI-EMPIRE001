@@ -1,5 +1,5 @@
 {
-  "name": "nawi-empire001-sovereign-platform",
+  "name": "NAWI-EMPIRE001-sovereign-platform",
   "version": "1.0.0",
   "description": "NAWI-EMPIRE001 Unified Sovereign Production Platform Engine | The 7 Core Architectural Pillars",
   "main": "server.js",
@@ -14,16 +14,13 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "production": "NODE_ENV=production node server.js",
-    
+    "production": "node server.js",
     "render-build": "npm install",
     "seed": "node scripts/seed.js",
     "restart": "npm run start",
-    
     "watermark:apply": "node scripts/apply-platform-seal.js",
     "vault:sync": "node scripts/sync-liquidity.js",
     "secure:gate": "node scripts/p2p-handshake.js",
-
     "pillar:arena-node": "node microservices/arena-node.js",
     "pillar:sovereign-exchange": "node microservices/sovereign-exchange.js",
     "pillar:visibility-engine": "node microservices/visibility-engine.js",
@@ -58,21 +55,24 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.1.0",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
     "express-rate-limit": "^7.3.1",
     "express-validator": "^7.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.1",
+    "mongoose": "^9.7.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "sharp": "^0.33.4",
     "socket.io": "^4.7.5",
     "stripe": "^15.12.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
@@ -86,4 +86,3 @@
   },
   "homepage": "https://nawi-empire001.onrender.com"
 }
-

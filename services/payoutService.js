@@ -74,4 +74,4 @@ class PayoutService {
     }
 }
 
-module.exports = PayoutService;
+models.exports = PayoutService;

@@ -95,4 +95,4 @@ class EscrowService {
     }
 }
 
-module.exports = EscrowService;
+models.exports = EscrowService;

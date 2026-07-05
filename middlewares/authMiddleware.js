@@ -1,13 +1,38 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: middlewares/authMiddleware.js
- * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
+ * middlewares/authMiddleware.js
+ * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+ * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../module/user'); // Synchronized with your real lowercase folder path
 const mongoose = require('mongoose');
+const User = require('../models/user');
+
+if (!process.env.JWT_SECRET) {
+    throw new Error(
+        'FATAL SECURITY ERROR: JWT_SECRET environment variable is missing from configuration targets.'
+    );
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const BLOCKED_ACCOUNT_STATUSES = Object.freeze([
+    'suspended',
+    'under_review',
+    'banned'
+]);
+
+const ALLOWED_PILLARS = Object.freeze({
+    ARENA_NODE: 'gaming_studio',
+    SOVEREIGN_EXCHANGE: 'marketplace',
+    VISIBILITY_ENGINE: 'ads_program',
+    CULINARY_MATRIX: 'kitchen_meal',
+    AESTHETIC_NEXUS: 'content_creation',
+    DIAMONDBACK_FORGE: 'marketplace',
+    SONIC_LEDGER: 'music_promotion'
+});
 
 /**
  * ==========================================================
@@ -17,9 +42,19 @@ const mongoose = require('mongoose');
 const authMiddleware = async (req, res, next) => {
     try {
         let token;
+        const authHeader = req.headers.authorization;
 
-        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-            token = req.headers.authorization.split(' ')[1];
+        if (authHeader && /^Bearer\s+/i.test(authHeader)) {
+            const parts = authHeader.trim().split(/\s+/);
+
+            if (parts.length !== 2) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Malformed authorization header structure.'
+                });
+            }
+
+            token = parts[1];
         }
 
         if (!token) {
@@ -29,27 +64,49 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'NAWI_EMPIRE_SECRET');
-
-        // Build safe dynamic query conditions to prevent CastErrors on invalid ObjectIds
-        const queryConditions = [];
-        if (decoded.userId) {
-            queryConditions.push({ userId: decoded.userId });
+        let decoded;
+        try {
+            decoded = jwt.verify(token, JWT_SECRET);
+        } catch (err) {
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Authentication session expired. Please sign in again.'
+                });
+            }
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token signature structure.'
+            });
         }
-        
-        const potentialId = decoded.id || decoded.userId;
-        if (potentialId && mongoose.Types.ObjectId.isValid(potentialId)) {
-            queryConditions.push({ _id: potentialId });
+
+        if (!decoded || typeof decoded !== 'object') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token payload signature.'
+            });
         }
 
-        if (queryConditions.length === 0) {
+        const conditions = [];
+
+        if (typeof decoded.userId === 'string' && decoded.userId.trim()) {
+            conditions.push({ userId: decoded.userId });
+        }
+
+        const objectId = decoded.id || decoded.userId;
+        if (objectId && mongoose.Types.ObjectId.isValid(objectId)) {
+            conditions.push({ _id: objectId });
+        }
+
+        if (!conditions.length) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid token structure.'
             });
         }
 
-        const user = await User.findOne({ $or: queryConditions }).select('-password');
+        // 🛡️ FIXED: Removed .lean() to allow downstream route handlers to manipulate and save user documents directly
+        const user = await User.findOne({ $or: conditions }).select('-password');
 
         if (!user) {
             return res.status(401).json({
@@ -58,23 +115,22 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        // Integrity security check interceptor
-        if (user.accountStatus === 'banned' || user.security?.is_banned === true) {
+        if (BLOCKED_ACCOUNT_STATUSES.includes(user.accountStatus)) {
             return res.status(403).json({
                 success: false,
-                message: 'Account suspended from ecosystem due to security parameters.'
+                message: 'Account restricted or banned from ecosystem due to security parameters.'
             });
         }
 
-        // Attach verified user profile context directly onto request stream
         req.user = user;
+        req.userId = user.userId;
+        req.role = user.role || 'user';
+        req.tier = Number(user.current_tier || 1);
+
         next();
 
-    } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: 'Invalid or expired authentication token.'
-        });
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -86,29 +142,27 @@ const authMiddleware = async (req, res, next) => {
 authMiddleware.authorizePillar = (pillarName) => {
     return async (req, res, next) => {
         try {
-            const allowedPillars = [
-                'ARENA_NODE',
-                'SOVEREIGN_EXCHANGE',
-                'VISIBILITY_ENGINE',
-                'CULINARY_MATRIX',
-                'AESTHETIC_NEXUS',
-                'DIAMONDBACK_FORGE',
-                'SONIC_LEDGER'
-            ];
+            const pillar = String(pillarName || '').trim().toUpperCase();
+            const key = ALLOWED_PILLARS[pillar];
 
-            const normalizedInput = pillarName.toUpperCase().trim();
-
-            if (!allowedPillars.includes(normalizedInput)) {
+            if (!key) {
                 return res.status(400).json({
                     success: false,
                     message: `Component '${pillarName}' does not map to architectural configuration pillars.`
                 });
             }
 
-            req.pillar = normalizedInput;
+            if (!req.user?.pillarAccess || !req.user.pillarAccess[key]) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Access Denied. Your profile node does not hold explicit credentials for the ${pillar} ecosystem.`
+                });
+            }
+
+            req.pillar = pillar;
             next();
-        } catch (error) {
-            return res.status(500).json({ success: false, message: error.message });
+        } catch (err) {
+            next(err);
         }
     };
 };
@@ -119,20 +173,16 @@ authMiddleware.authorizePillar = (pillarName) => {
  * ==========================================================
  */
 authMiddleware.requireVerification = (minimumLevel = 1) => {
-    return async (req, res, next) => {
-        try {
-            const userTier = req.user?.current_tier || req.user?.verificationTier || 1;
+    return (req, res, next) => {
+        const tier = Number(req.tier || 1);
 
-            if (userTier < minimumLevel) {
-                return res.status(403).json({
-                    success: false,
-                    message: `Elevated Access Denied. Verification level ${minimumLevel} required. Current level: ${userTier}`
-                });
-            }
-            next();
-        } catch (error) {
-            return res.status(500).json({ success: false, message: error.message });
+        if (tier < minimumLevel) {
+            return res.status(403).json({
+                success: false,
+                message: `Elevated Access Denied. Verification tier level ${minimumLevel} required. Current level: ${tier}`
+            });
         }
+        next();
     };
 };
 
@@ -141,20 +191,19 @@ authMiddleware.requireVerification = (minimumLevel = 1) => {
  * 4. TIER 2 VERIFIED MERCHANT GUARD
  * ==========================================================
  */
-authMiddleware.requireMerchant = async (req, res, next) => {
-    try {
-        const isMerchant = req.user?.current_tier >= 2 || req.user?.identity?.legacy_rank === 'Verified Merchant';
+authMiddleware.requireMerchant = (req, res, next) => {
+    const merchant =
+        req.role === 'merchant' ||
+        req.role === 'sovereign' ||
+        Number(req.tier) >= 2;
 
-        if (!isMerchant) {
-            return res.status(403).json({
-                success: false,
-                message: 'Merchant verification level required to access trade nodes.'
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+    if (!merchant) {
+        return res.status(403).json({
+            success: false,
+            message: 'Merchant verification level required to access trade nodes.'
+        });
     }
+    next();
 };
 
 /**
@@ -162,20 +211,16 @@ authMiddleware.requireMerchant = async (req, res, next) => {
  * 5. FOUNDER & ADMINISTRATOR COMMAND AUTHORITY
  * ==========================================================
  */
-authMiddleware.requireAdmin = async (req, res, next) => {
-    try {
-        const rank = req.user?.identity?.legacy_rank;
+authMiddleware.requireAdmin = (req, res, next) => {
+    const admin = req.role === 'admin' || req.role === 'sovereign';
 
-        if (rank !== 'Founder' && rank !== 'Administrator') {
-            return res.status(403).json({
-                success: false,
-                message: 'Administrative authorization required. Action logged.'
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+    if (!admin) {
+        return res.status(403).json({
+            success: false,
+            message: 'Administrative authorization required. Action logged.'
+        });
     }
+    next();
 };
 
 /**
@@ -183,18 +228,14 @@ authMiddleware.requireAdmin = async (req, res, next) => {
  * 6. ESCROW SHIELD VALUE PROTECTION
  * ==========================================================
  */
-authMiddleware.requireEscrowAccess = async (req, res, next) => {
-    try {
-        if (req.user?.security?.is_banned) {
-            return res.status(403).json({
-                success: false,
-                message: 'Escrow access restricted for this account node.'
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+authMiddleware.requireEscrowAccess = (req, res, next) => {
+    if (BLOCKED_ACCOUNT_STATUSES.includes(req.user?.accountStatus)) {
+        return res.status(403).json({
+            success: false,
+            message: 'Escrow access restricted for this account node.'
+        });
     }
+    next();
 };
 
 /**
@@ -202,18 +243,14 @@ authMiddleware.requireEscrowAccess = async (req, res, next) => {
  * 7. VISIBILITY ENGINE PRIVILEGES SHIELD
  * ==========================================================
  */
-authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
-    try {
-        if (req.user?.security?.scam_alert_flag > 5) {
-            return res.status(403).json({
-                success: false,
-                message: 'Advertising privileges restricted due to compliance indicators.'
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+authMiddleware.requireAdvertisingAccess = (req, res, next) => {
+    if (Number(req.user?.security?.compliance_violations || 0) > 5) {
+        return res.status(403).json({
+            success: false,
+            message: 'Advertising privileges restricted due to compliance indicators.'
+        });
     }
+    next();
 };
 
 /**
@@ -221,18 +258,17 @@ authMiddleware.requireAdvertisingAccess = async (req, res, next) => {
  * 8. DIAMONDBACK FORGE CREATOR ACCESS
  * ==========================================================
  */
-authMiddleware.requireCreatorAccess = async (req, res, next) => {
-    try {
-        if (req.user?.security?.is_banned) {
-            return res.status(403).json({
-                success: false,
-                message: 'Creator privileges restricted for this account node.'
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+authMiddleware.requireCreatorAccess = (req, res, next) => {
+    if (BLOCKED_ACCOUNT_STATUSES.includes(req.user?.accountStatus)) {
+        return res.status(403).json({
+            success: false,
+            message: 'Creator privileges restricted for this account node.'
+        });
     }
+    next();
 };
+
+authMiddleware.BLOCKED_ACCOUNT_STATUSES = BLOCKED_ACCOUNT_STATUSES;
+authMiddleware.ALLOWED_PILLARS = ALLOWED_PILLARS;
 
 module.exports = authMiddleware;

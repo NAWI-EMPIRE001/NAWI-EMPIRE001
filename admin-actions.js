@@ -1,33 +1,33 @@
 // THE VERIFICATION CONTROLLER (server.js)
 app.post('/api/master/verify-user', async (req, res) => {
-    const { masterSecret, targetUserId, pillarCategory } = req.body;
+    const { mastersecret, targetuserId, pillarcategory } = req.body;
 
-    // 1. Security Check: Only the Master can run this
-    if (masterSecret !== "EMPIRE_7_SECRET_2024") {
-        return res.status(403).json({ message: "Unauthorized Authority." });
+    // 1. security check: only the master can run this
+    if (masterSecret !== "empire_7_secret_2026") {
+        return res.status(403).json({ message: "unauthorized authority." });
     }
 
     try {
-        const user = await User.findById(targetUserId);
+        const user = await user.findById(targetuserid);
         
-        // 2. Upgrade the Citizen
-        user.isVerified = true;
-        user.rank = `Verified ${pillarCategory} Merchant`; // e.g., Verified Music Merchant
-        user.level = 10; // Instantly boost to high level
+        // 2. upgrade the citizen
+        user.isverified = true;
+        user.rank = `verified ${pillarcategory} merchant`; // e.g., verified music merchant
+        user.level = 10; // instantly boost to high level
         
-        // 3. Send the Imperial Notification
-        const badgeAlert = new Message({
+        // 3. Send the imperial notification
+        const badgeAlert = new message({
             recipientId: targetUserId,
-            sender: "Empire Authority",
-            text: `Congratulations. You have been awarded the Golden 7 Badge for your talent in ${pillarCategory}.`,
+            sender: "empire authority",
+            text: `congratulations. You have been awarded the golden 7 badge for your talent in ${pillarcategory}.`,
             icon: "fa-solid fa-certificate",
-            type: "ANNOUNCEMENT"
+            type: "announcement"
         });
 
         await user.save();
         await badgeAlert.save();
 
-        res.json({ success: true, message: `User ${user.username} is now a Verified Merchant.` });
+        res.json({ success: true, message: `user ${user.username} is now a verified merchant.` });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }

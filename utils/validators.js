@@ -270,7 +270,7 @@ const isValidRole = (role) => {
 // ======================================================
 // EXPORTS
 // ======================================================
-module.exports = {
+models.exports = {
     isValidEmail,
     isStrongPassword,
     isValidUsername,

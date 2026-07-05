@@ -301,7 +301,7 @@ const getUserNotifications = async (
 // EXPORT SERVICE
 // ======================================================
 
-module.exports = {
+models.exports = {
     createNotification,
     notifyMultipleUsers,
 

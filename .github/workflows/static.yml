@@ -1,0 +1,47 @@
+# ======================================================
+# protected_by_diamondback231_authority_nawi-empire001
+# file: GitHub Actions/.github/workflows/static.yml
+# purpose: automated deployment of static content to pages.
+# description: official pipeline for nawi-empire001 site deployment.
+# ======================================================
+
+name: deploy_static_content_to_pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel_in_progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs_on: ubuntu_latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # note: if you are using a framework like react, vue, or next.js,
+      # add a "setup node" and "npm run build" step here.
+      
+      - name: setup_pages
+        uses: actions/configure-pages@v5
+        
+      - name: upload_artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: deploy_to_github_pages
+        id: deployment
+        uses: actions/deploy-pages@v5

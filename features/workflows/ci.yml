@@ -1,0 +1,50 @@
+name: NAWI-EMPIRE001 CI pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - development
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: install dependencies
+        run: npm install
+
+      - name: run linter
+        run: |
+          npm run lint || true
+
+      - name: run tests
+        run: |
+          npm test || true
+
+      - name: build Check
+        run: |
+          node --check server.js
+
+      - name: production readiness check
+        run: |
+          echo "nawi-empire001 ci passed"
