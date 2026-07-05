@@ -1,0 +1,52 @@
+# ======================================================
+# protected_by_diamondback231_authority_nawi-empire001
+# file: .github/workflows/jekyll_deploy.yml
+# purpose: automated deployment of jekyll site to pages.
+# description: official pipeline for nawi-empire001 jekyll builds.
+# ======================================================
+
+name: jekyll_deploy_to_pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id_token: write
+
+concurrency:
+  group: "pages"
+  cancel_in_progress: false
+
+jobs:
+  build:
+    runs_on: ubuntu_latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup_pages
+        uses: actions/configure_pages@v5
+
+      - name: build_with_jekyll
+        uses: actions/jekyll_build_pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: upload_artifact
+        uses: actions/upload_pages_artifact@v3
+
+  deploy:
+    environment:
+      name: github_pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs_on: ubuntu_latest
+    needs: build
+    steps:
+      - name: deploy_to_github_pages
+        id: deployment
+        uses: actions/deploy_pages@v5
