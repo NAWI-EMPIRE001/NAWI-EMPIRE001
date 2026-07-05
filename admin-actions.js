@@ -3,7 +3,7 @@ app.post('/api/master/verify-user', async (req, res) => {
     const { mastersecret, targetuserId, pillarcategory } = req.body;
 
     // 1. security check: only the master can run this
-    if (masterSecret !== "EMPIRE_7_SECRET_2024") {
+    if (masterSecret !== "empire_7_secret_2026") {
         return res.status(403).json({ message: "unauthorized authority." });
     }
 
