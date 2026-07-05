@@ -32,7 +32,7 @@ projects:
       startCommand: node server.js
       autoDeployTrigger: commit
       previews:
-        generation: automatic}
+      generation:automatic}
  },
   "repository": {
     "type": "git",
