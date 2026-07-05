@@ -33,7 +33,7 @@ jobs:
       - name: install dependencies
         run: npm install
 
-      - name: run Linter
+      - name: run linter
         run: |
           npm run lint || true
 
