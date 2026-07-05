@@ -36,4 +36,14 @@ projects:
       - key: MONGO_URI
         sync: false
       previews:
-        generation: automatic
+        generation: automatic}
+ },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nawi-empire001/sovereign-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
+  },
+  "homepage": "https://nawi-empire001.onrender.com"
+}
