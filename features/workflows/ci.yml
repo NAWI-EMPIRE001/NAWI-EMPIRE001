@@ -1,4 +1,4 @@
-name: NAWI-EMPIRE001 CI Pipeline
+name: NAWI-EMPIRE001 CI pipeline
 
 on:
   push:
@@ -22,29 +22,29 @@ jobs:
 
     steps:
 
-      - name: Checkout Repository
+      - name: checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
+      - name: install dependencies
         run: npm install
 
-      - name: Run Linter
+      - name: run Linter
         run: |
           npm run lint || true
 
-      - name: Run Tests
+      - name: run tests
         run: |
           npm test || true
 
-      - name: Build Check
+      - name: build Check
         run: |
           node --check server.js
 
-      - name: Production Readiness Check
+      - name: production readiness check
         run: |
-          echo "NAWI-EMPIRE001 CI PASSED"
+          echo "nawi-empire001 ci passed"
