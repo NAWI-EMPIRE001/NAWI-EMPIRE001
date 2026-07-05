@@ -38,7 +38,7 @@ jobs:
       - name: Write run-harden.sh
         run: |
           cat > run-harden.sh <<'script'
-#!/usr/bin/env bash
+#/usr/bin/env bash
 set -euo pipefail
 
 branch="security/hardening-core"
