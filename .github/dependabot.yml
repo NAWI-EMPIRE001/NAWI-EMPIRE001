@@ -6,7 +6,7 @@
 # 
 # purpose:
 # automated dependency shield. dynamically monitors package profiles,
-# intercepting security bugs and keeping npm packages hardened.
+# intercepting security bugs and keeping npm packages hardened,
 # ==========================================================
 
 version: 2
