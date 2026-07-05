@@ -1,63 +1,63 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Models: routes/authRoutes.js
- * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
- * Description: Fully optimized mapping for Authentication, Profiles, 7-Pillar Routing, and Security Engines.
+ * models: routes/authroutes.js
+ * System enforcement watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+ * description: fully optimized mapping for authentication, profiles, 7-pillar routing, and security engines.
  */
 
 const express = require('express');
-const router = express.Router();
+const router = express.router();
 
-// Import Unified Core Controllers
+// import unified core controllers
 const authController = require('../controllers/authController');
 const profileController = require('../controllers/profileController');
 
-// Import System Infrastructure Middleware
-const authMiddleware = require('../middleware/authMiddleware');
+// import system infrastructure middleware
+const authmiddleware = require('../middleware/authmiddleware');
 
-// Safe controller mapping validations to stop boot crashes if profileController methods are being built
-const getProfileHandler = (profileController && profileController.getMyProfile) 
-    ? profileController.getMyProfile 
+// safe controller mapping validations to stop boot crashes if profileController methods are being built
+const getprofilehandler = (profileController && profileController.getmyprofile) 
+    ? profileController.getmyProfile 
     : (req, res) => res.status(200).json({ success: true, user: req.user });
 
-const updateProfileHandler = (profileController && profileController.updateProfile)
+const updateProfilehandler = (profileController && profileController.updateProfile)
     ? profileController.updateProfile
     : (req, res) => res.status(500).json({ success: false, message: "Profile update handler syncing." });
 
-const updatePhotoHandler = (profileController && profileController.updateProfilePhoto)
+const updatePhotohandler = (profileController && profileController.updateProfilePhoto)
     ? profileController.updateProfilePhoto
     : (req, res) => res.status(500).json({ success: false, message: "Photo engine syncing." });
 
-const getDashboardHandler = (profileController && profileController.getDashboardSummary)
-    ? profileController.getDashboardSummary
-    : (req, res) => res.status(200).json({ success: true, message: "Dashboard node synchronized.", metrics: req.user });
+const getdashboardhandler = (profileController && profileController.getdashboardsummary)
+    ? profileController.getdashboardsummary
+    : (req, res) => res.status(200).json({ success: true, message: "dashboard node synchronized.", metrics: req.user });
 
-const getProfileByIdHandler = (profileController && profileController.getProfileByUserId)
-    ? profileController.getProfileByUserId
-    : (req, res) => res.status(500).json({ success: false, message: "User registry lookup syncing." });
+const getProfileByIdhandler = (profileController && profileController.getProfilebyuserId)
+    ? profileController.getProfilebyuserId
+    : (req, res) => res.status(500).json({ success: false, message: "user registry lookup syncing." });
 
 // ==========================================
 // CORE SECURE ONBOARDING & SESSIONS
 // ==========================================
 router.post('/register', authController.registerUser);
-router.post('/login', authController.handleUserSession);
-router.post('/recovery/otp', authController.initiateDualChannelRecovery);
+router.post('/login', authController.handleuserSession);
+router.post('/recovery/otp', authController.initiatedualchannelrecovery);
 
 // ==========================================
 // UNIFIED CITIZEN PROFILE RECOVERY & MANAGEMENT
 // ==========================================
-router.get('/profile', authMiddleware, getProfileHandler);
-router.put('/profile', authMiddleware, updateProfileHandler);
-router.put('/profile/photo', authMiddleware, updatePhotoHandler);
-router.get('/profile/dashboard', authMiddleware, getDashboardHandler);
-router.get('/profile/:userId', getProfileByIdHandler);
+router.get('/profile', authmiddleware, getProfilehandler);
+router.put('/profile', authmiddleware, updateprofilehandler);
+router.put('/profile/photo', authmiddleware, updatephotohandler);
+router.get('/profile/dashboard', authmiddleware, getdashboardhandler);
+router.get('/profile/:userId', getProfilebyIdhandler);
 
 // ==========================================
 // 7-PILLAR GATEWAYS & ECOSYSTEM ENGINES
 // ==========================================
-router.post('/pillar/route', authMiddleware, authController.routeToPillar);
-router.post('/stylist/apply', authMiddleware, authController.applySovereignStylist);
-router.post('/merchant/evaluate', authMiddleware, authController.evaluateMerchantStatus);
-router.post('/challenge/trigger', authMiddleware, authController.triggerSovereignChallenge);
+router.post('/pillar/route', authmiddleware, authController.routetoPillar);
+router.post('/stylist/apply', authmiddleware, authController.applysovereignStylist);
+router.post('/merchant/evaluate', authmiddleware, authController.evaluatemerchantStatus);
+router.post('/challenge/trigger', authiddleware, authController.triggersovereignchallenge);
 
-models.exports = router;
+module.exports = router;
