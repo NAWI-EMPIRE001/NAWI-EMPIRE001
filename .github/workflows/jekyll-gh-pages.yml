@@ -1,6 +1,7 @@
 # ======================================================
 # protected_by_diamondback231_authority_nawi-empire001
-# file: .github/workflows/jekyll_deploy.yml
+# file: gitHub Actions/.github/workflows/jekyll-gh-pages.yml
+
 # purpose: automated deployment of jekyll site to pages.
 # description: official pipeline for nawi-empire001 jekyll builds.
 # ======================================================
@@ -19,7 +20,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel_in_progress: false
+  cancel_in_progress: cancel-in-progress:
 
 jobs:
   build:
