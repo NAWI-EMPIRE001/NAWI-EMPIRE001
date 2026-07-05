@@ -16,7 +16,7 @@ app.post('/api/master/verify-user', async (req, res) => {
         user.level = 10; // instantly boost to high level
         
         // 3. Send the imperial notification
-        const badgeAlert = new Message({
+        const badgeAlert = new message({
             recipientId: targetUserId,
             sender: "empire authority",
             text: `congratulations. You have been awarded the golden 7 badge for your talent in ${pillarcategory}.`,
