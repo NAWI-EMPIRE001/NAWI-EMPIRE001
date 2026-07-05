@@ -1,38 +1,38 @@
-# NAWI-EMPIRE001 Deployment Guide
+# NAWI-EMPIRE001 deployment guide
 
-## Production Stack
+## production stack
 
-- Node.js
-- Express
-- MongoDB Atlas
-- Render
-- Socket.IO
+- node.js
+- express
+- mongodb atlas
+- render
+- socket.iO
 
 ---
 
-# Environment Variables
+# environment variables
 
 ```env
-PORT=10000
+port=10000
 
-NODE_ENV=production
+node_env=production
 
 MONGO_URI=your_mongodb_connection
 
-JWT_SECRET=your_secret
+jwt_secret=your_secret
 
-JWT_EXPIRE=30d
+jwt_secret=30d
 
-CLIENT_URL=https://yourfrontend.com
+client_url=https://yourfrontend.com
 
-EMAIL_USER=
+email_user=
 
-EMAIL_PASSWORD=
+email_password=
 ```
 
 ---
 
-# Install Dependencies
+# install dependencies
 
 ```bash
 npm install
@@ -40,7 +40,7 @@ npm install
 
 ---
 
-# Run Development
+# run development
 
 ```bash
 npm run dev
@@ -48,7 +48,7 @@ npm run dev
 
 ---
 
-# Run Production
+# run production
 
 ```bash
 npm start
@@ -56,7 +56,7 @@ npm start
 
 ---
 
-# Run Tests
+# run tests
 
 ```bash
 npm test
@@ -64,26 +64,26 @@ npm test
 
 ---
 
-# Deploy to Render
+# deploy to render
 
-1. Connect GitHub repository.
-2. Select Web Service.
-3. Add Environment Variables.
-4. Deploy.
+1. connect gitHub repository.
+2. select web service.
+3. add environment variables.
+4. deploy.
 
 ---
 
-# Health Check
+# health check
 
 ```text
-GET /health
+get /health
 ```
 
-Expected Response:
+expected Response:
 
 ```json
 {
   "success": true,
-  "status": "HEALTHY"
+  "status": "healthy"
 }
 ```
