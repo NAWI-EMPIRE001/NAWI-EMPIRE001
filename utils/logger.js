@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 core infrastructure
- * file: utils/logger.js
+ * file: utils:logger.js
  * system enforcement watermark code: protected_by_diamondback231_authority_NAWI-EMPIRE001
  * funder matrix: excellency of NAWI-EMPIRE001 ecosystem the city of multipillars that produce all what I need and The 7 Core Architectural Pillars.
  * description: system-wide logging & audit tracking for user daily tasks.
