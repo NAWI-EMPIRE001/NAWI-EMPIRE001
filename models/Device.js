@@ -1,38 +1,38 @@
 const mongoose = require('mongoose');
 
-const DeviceSchema = new mongoose.Schema({
+const deviceSchema = new mongoose.schema({
 
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: mongoose.schema.Types.ObjectId,
+        ref: 'user',
         required: true,
         index: true
     },
 
     fingerprint: {
-        type: String,
+        type: string,
         required: true,
         unique: true
     },
 
-    deviceName: String,
+    deviceName: string,
 
-    platform: String,
+    platform: string,
 
-    os: String,
+    os: string,
 
-    browser: String,
+    browser: string,
 
-    ipAddress: String,
+    ipaddress: string,
 
     trusted: {
-        type: Boolean,
+        type: boolean,
         default: false
     },
 
     lastSeen: {
-        type: Date,
-        default: Date.now
+        type: date,
+        default: date.now
     }
 
 }, {
@@ -41,6 +41,6 @@ const DeviceSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model(
-    'Device',
-    DeviceSchema
+    'device',
+    deviceSchema
 );
