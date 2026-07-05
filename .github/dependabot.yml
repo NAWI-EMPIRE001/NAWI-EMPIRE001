@@ -1,29 +1,29 @@
 # ==========================================================
-# NAWI-EMPIRE001 Core Infrastructure
-# FILE: .github/dependabot.yml
-# System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
-# Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
+# NAWI-EMPIRE001 core infrastructure
+# fILE: .github:dependabot.yml
+# system enforcement watermark code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+# funder matrix: excellency of nawi-empire001 ecosystem
 # 
-# PURPOSE:
-# Automated Dependency Shield. Dynamically monitors package profiles,
+# purpose:
+# automated dependency shield. dynamically monitors package profiles,
 # intercepting security bugs and keeping npm packages hardened.
 # ==========================================================
 
 version: 2
 updates:
-  # 🟢 1. CORE APPLICATION DEPENDENCY SHIELD (Node.js Engine)
+  # 🟢 1. core application dependency shield (node.js Engine)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily" # Daily scan cadence to instantly catch high-concurrency layer exploits
+      interval: "daily" # daily scan cadence to instantly catch high-concurrency layer exploits
     open-pull-requests-limit: 10
     allow:
-      - dependency-type: "all" # Tracks both direct server requirements and development tools
+      - dependency-type: "all" # tracks both direct server requirements and development tools
     labels:
       - "security"
       - "dependencies"
 
-  # 🟢 2. WORKFLOW AUTOMATION MATRIX PROTECTION (GitHub Actions / CodeQL)
+  # 🟢 2. workflow automation matrix protection (gitHub actions / codeQL)
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
