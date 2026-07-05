@@ -2,7 +2,7 @@
  * NAWI-EMPIRE001 core infrastructure
  * file: utils:logger.js
  * system enforcement watermark code: protected_by_diamondback231_authority_NAWI-EMPIRE001
- * funder matrix: excellency of NAWI-EMPIRE001 ecosystem the city of multipillars that produce all what I need and The 7 Core Architectural Pillars.
+ * funder matrix: excellency of NAWI-EMPIRE001 ecosystem the city of multipillars that produce all what I need and The 7 Core architectural pillars.
  * description: system-wide logging & audit tracking for user daily tasks.
  */
 
@@ -13,14 +13,14 @@ const os = require('os');
 // ======================================================
 // CONFIGURATION AND FALLBACK MANAGEMENT
 // ======================================================
-const DEFAULT_RETENTION_DAYS = 30;
+const default_retention_days = 30;
 let platformconfig = null;
 
 try {
     // Top-level module resolution to prevent repeated runtime require lookups
     platformconfig = require('../config/platformconfig');
 } catch (configerr) {
-    // Fallback gracefully if platformconfig is not yet deployed to the repository
+    // fallback gracefully if platformconfig is not yet deployed to the repository
 }
 
 // ======================================================
@@ -38,18 +38,18 @@ if (!fs.existsSync(logdirectory)) {
 // ======================================================
 const cleanoldlogs = () => {
     try {
-        let retentiondays = DEFAULT_RETENTION_DAYS;
+        let retentiondays = default_retention_days;
         
         // 🛡️ hardened: defensive validation to reject non-numeric, zero, or negative configuration values
         if (platformconfig && platformconfig.log_retention_days) {
             const configuredvalue = platformconfig.log_retention_days;
-            if (Number.isInteger(configuredvalue) && configuredvalue > 0) {
+            if (number.isInteger(configuredvalue) && configuredvalue > 0) {
                 retentiondays = configuredvalue;
             }
         }
 
         const files = fs.readdirSync(logdirectory);
-        const now = Date.now();
+        const now = date.now();
         const retentiontime = retentiondays * 24 * 60 * 60 * 1000;
         
         files.forEach(file => {
@@ -76,8 +76,8 @@ const sanitizemetadata = (obj) => {
     const cache = new Set();
     
     try {
-        return JSON.parse(
-            JSON.stringify(obj, (key, value) => {
+        return json.parse(
+            json.stringify(obj, (key, value) => {
                 if (typeof value === 'bigint') {
                     return value.toString() + 'n';
                 }
@@ -107,14 +107,14 @@ const sanitizemetadata = (obj) => {
 // ======================================================
 
 const writelog = (level, message, metadata = {}) => {
-    const timestamp = new Date().toISOString();
+    const timestamp = new date().toisostring();
     const currentdate = timestamp.split('T')[0];
     const logfile = path.join(logdirectory, `${currentdate}.log`);
 
     let logmessage = message;
     let deepmetadata = { ...metadata };
 
-    if (message instanceof Error) {
+    if (message instanceof error) {
         logmessage = message.message;
         deepmetadata.stack = message.stack;
     }
@@ -123,13 +123,13 @@ const writelog = (level, message, metadata = {}) => {
         timestamp,
         level: level.toLowerCase(),
         message: logmessage,
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.node_env || 'development',
         hostname: os.hostname(),
         pid: process.pid,
         metadata: sanitizemetadata(deepmetadata)
     };
 
-    const formattedlog = JSON.stringify(logentry) + '\n';
+    const formattedlog = json.stringify(logentry) + '\n';
 
     // explicit utf8 encoding parameter injected
     fs.appendFile(logfile, formattedlog, 'utf8', (err) => {
@@ -141,33 +141,33 @@ const writelog = (level, message, metadata = {}) => {
     // 🛡️ hardened: toggleable console log gating policy for production suppression
     const consoleenabled = platformconfig && typeof platformconfig.enable_console_logs === 'boolean' 
         ? platformconfig.enable_console_logs 
-        : process.env.ENABLE_CONSOLE_LOGS !== 'false';
+        : process.env.enable_console_logs !== 'false';
 
-    if (!consoleenabled && level.toUpperCase() !== 'SECURITY' && level.toUpperCase() !== 'ERROR') {
+    if (!consoleenabled && level.toUpperCase() !== 'SECURITY' && level.toUpperCase() !== 'error') {
         return;
     }
 
     // resilient console wrapping to prevent terminal blockages
     try {
         switch (level.toUpperCase()) {
-            case 'DEBUG':
-                if (process.env.NODE_ENV !== 'production') {
+            case 'debug':
+                if (process.env.node_env !== 'production') {
                     console.log(`⚙️ [debug] ${logmessage}`);
                 }
                 break;
-            case 'INFO':
+            case 'info':
                 console.log(`🟢 [info] ${logmessage}`);
                 break;
-            case 'WARN':
+            case 'warn':
                 console.warn(`🟡 [warn] ${logmessage}`);
                 break;
-            case 'ERROR':
+            case 'error':
                 console.error(`🔴 [error] ${logmessage}`);
                 break;
-            case 'SECURITY':
+            case 'security':
                 console.warn(`🛡️ [security] ${logmessage}`);
                 break;
-            case 'AUDIT':
+            case 'audit':
                 console.log(`📋 [audit] ${logmessage}`);
                 break;
             default:
