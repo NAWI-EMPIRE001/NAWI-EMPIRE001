@@ -8,7 +8,7 @@ projects:
     - type: web
       name: NAWI-EMPIRE001
       runtime: node
-      repo: https://github.com/NAWI-EMPIRE001/NAWI-EMPIRE001
+      repo:https://github.com/NAWI-EMPIRE001/NAWI-EMPIRE001
       plan: free
       envVars:
       - key: client.key
