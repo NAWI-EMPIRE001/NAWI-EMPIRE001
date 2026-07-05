@@ -1,15 +1,21 @@
-# These are supported funding model platforms
+# ======================================================
+# PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+# FILE: .github/funding.yml
+# PURPOSE: canonical funding model registry.
+# DESCRIPTION: provides the official sponsorship channels 
+# for the nawi-empire001 ecosystem.
+# ======================================================
 
-github: # Replace with up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
-patreon: # Replace with a single Patreon username
-open_collective: # Replace with a single Open Collective username
-ko_fi: # Replace with a single Ko-fi username
-tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
-community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
-liberapay: # Replace with a single Liberapay username
-issuehunt: # Replace with a single IssueHunt username
-lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
-polar: # Replace with a single Polar username
-buy_me_a_coffee: # Replace with a single Buy Me a Coffee username
-thanks_dev: # Replace with a single thanks.dev username
-custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
+github: []
+patreon: nawi-empire001
+open_collective: nawi-empire001
+ko_fi: nawi-empire001
+tidelift: null
+community_bridge: null
+liberapay: nawi-empire001
+issuehunt: null
+lfx_crowdfunding: null
+polar: nawi-empire001
+buy_me_a_coffee: nawi-empire001
+thanks_dev: null
+custom: []
