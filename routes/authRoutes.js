@@ -4,7 +4,7 @@
  * System enforcement watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  * description: fully optimized mapping for authentication, profiles, 7-pillar routing, and security engines.
  */
-
+ 
 const express = require('express');
 const router = express.router();
 
@@ -39,8 +39,8 @@ const getProfileByIdhandler = (profileController && profileController.getProfile
 // ==========================================
 // CORE SECURE ONBOARDING & SESSIONS
 // ==========================================
-router.post('/register', authController.registerUser);
-router.post('/login', authController.handleuserSession);
+router.post('/register', authController.registeruser);
+router.post('/login', authController.handleusersession);
 router.post('/recovery/otp', authController.initiatedualchannelrecovery);
 
 // ==========================================
@@ -50,14 +50,14 @@ router.get('/profile', authmiddleware, getProfilehandler);
 router.put('/profile', authmiddleware, updateprofilehandler);
 router.put('/profile/photo', authmiddleware, updatephotohandler);
 router.get('/profile/dashboard', authmiddleware, getdashboardhandler);
-router.get('/profile/:userId', getProfilebyIdhandler);
+router.get('/profile/:userId', getProfilebyidhandler);
 
 // ==========================================
 // 7-PILLAR GATEWAYS & ECOSYSTEM ENGINES
 // ==========================================
 router.post('/pillar/route', authmiddleware, authController.routetoPillar);
-router.post('/stylist/apply', authmiddleware, authController.applysovereignStylist);
-router.post('/merchant/evaluate', authmiddleware, authController.evaluatemerchantStatus);
+router.post('/stylist/apply', authmiddleware, authController.applysovereignstylist);
+router.post('/merchant/evaluate', authmiddleware, authController.evaluatemerchantstatus);
 router.post('/challenge/trigger', authiddleware, authController.triggersovereignchallenge);
 
 module.exports = router;
