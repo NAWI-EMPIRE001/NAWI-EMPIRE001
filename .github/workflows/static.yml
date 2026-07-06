@@ -35,7 +35,7 @@ jobs:
       # add a "setup node" and "npm run build" step here.
       
       - name: setup_pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
         
       - name: upload_artifact
         uses: actions/upload-pages-artifact@v3
