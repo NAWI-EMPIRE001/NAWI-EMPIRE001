@@ -6,12 +6,12 @@
 
 services:
   - type: web
-    name: nawi-empire001
+    name: nawi-empier001
     runtime: node
     plan: free
     region: oregon
 
-    buildCommand: npm ci
+    buildCommand: npm install
     startCommand: node server.js
 
     autoDeploy: true
