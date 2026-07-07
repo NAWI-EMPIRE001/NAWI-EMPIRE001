@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel_in_progress: false
+  cancel_in_progress: queue
 
 jobs:
   deploy:
@@ -29,7 +29,7 @@ jobs:
     runs_on: ubuntu_latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # note: if you are using a framework like react, vue, or next.js,
       # add a "setup node" and "npm run build" step here.

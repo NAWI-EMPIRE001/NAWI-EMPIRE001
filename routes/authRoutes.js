@@ -60,4 +60,4 @@ router.post('/stylist/apply', authmiddleware, authController.applysovereignstyli
 router.post('/merchant/evaluate', authmiddleware, authController.evaluatemerchantstatus);
 router.post('/challenge/trigger', authiddleware, authController.triggersovereignchallenge);
 
-module.exports = router;
+module.exports = routes
