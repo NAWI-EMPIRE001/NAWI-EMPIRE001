@@ -30,23 +30,5 @@ services:
         sync: false
       - key: seed_founder_email
         sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: MONGO_URI
-        sync: false
-      previews:
-        
-       generation: automatic}   
-        main
- },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nawi-empire001/sovereign-platform.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
-  },
-  "homepage": "https://nawi-empire001.onrender.com"
-}
       - key: seed_founder_password
         sync: false
