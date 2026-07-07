@@ -1,50 +1,42 @@
 # ======================================================
-# 👑 NAWI-EMPIRE001 BLUEPRINT ARCHITECTURE
+# PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
 # FILE: render.yaml
-# PURPOSE: Automated Cluster Deployment Definition
+# PURPOSE: Automated Render deployment definition.
 # ======================================================
 
-version: "1"
-projects:
-- name: NAWI-EMPIRE001
-  environments:
-  - name: NAWI-EMPIRE001
-    services:
-    - type: web
-      name: NAWI-EMPIRE001
-      runtime: node
-      plan: free
-      region: oregon
-      buildCommand: npm install
-      startCommand: node server.js
-      autoDeployTrigger: commit
-      envVars:
-      - key: CLIENT_KEY
-        sync: false
-      - key: SEED_FOUNDER_PASSWORD
-        sync: false
-      - key: SEED_FOUNDER_EMAIL
-        sync: false
-      - key: SEED_FOUNDER
-        sync: false
-      - key: NODE_SECRET_KEY
-        sync: false
+services:
+  - type: web
+    name: nawi-empire001
+    runtime: node
+    plan: free
+    region: oregon
+
+    buildCommand: npm ci
+    startCommand: node server.js
+
+    autoDeploy: true
+
+    envVars:
       - key: NODE_ENV
-        sync: false
-      - key: JWT_SECRET
-        sync: false
+        value: production
+
       - key: MONGO_URI
         sync: false
-      previews:
-        generation: automatic}
- },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nawi-empire001/sovereign-platform.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
-  },
-  "homepage": "https://nawi-empire001.onrender.com"
-}
 
+      - key: JWT_SECRET
+        sync: false
+
+      - key: NODE_SECRET_KEY
+        sync: false
+
+      - key: CLIENT_KEY
+        sync: false
+
+      - key: SEED_FOUNDER
+        sync: false
+
+      - key: SEED_FOUNDER_EMAIL
+        sync: false
+
+      - key: SEED_FOUNDER_PASSWORD
+        sync: false
