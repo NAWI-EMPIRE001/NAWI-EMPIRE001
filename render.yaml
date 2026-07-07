@@ -12,23 +12,23 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildcommand: npm install
-    startcommand: node server.js
-    autodeploytrigger: commit
-    envvars:
-      - key: client_key
-        sync: false
-      - key: seed_founder_password
-        sync: false
-      - key: seed_founder_email
-        sync: false
-      - key: seed_founder
-        sync: false
-      - key: node_secret_key
-        sync: false
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
       - key: node_env
+        value: production
+      - key: mongo_uri
         sync: false
       - key: jwt_secret
         sync: false
-      - key: mongo_uri
+      - key: node_secret_key
+        sync: false
+      - key: client_key
+        sync: false
+      - key: seed_founder
+        sync: false
+      - key: seed_founder_email
+        sync: false
+      - key: seed_founder_password
         sync: false
