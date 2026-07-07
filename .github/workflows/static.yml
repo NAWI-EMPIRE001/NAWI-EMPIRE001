@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel_in_progress: false
+  cancel_in_progress: queue
 
 jobs:
   deploy:
