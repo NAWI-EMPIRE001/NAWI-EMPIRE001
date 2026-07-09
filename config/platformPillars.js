@@ -101,6 +101,19 @@ function isValid(pillar) {
 }
 
 /**
+ * Asserts whether a value is a valid pillar. Throws an explicit error if validation fails.
+ * Useful for locking down incoming pipeline entryways defensively.
+ *
+ * @param {string} pillar
+ * @throws {Error}
+ */
+function assertValid(pillar) {
+    if (!isValid(pillar)) {
+        throw new Error(`[CRITICAL ARTIFACT BOUNDARY] Unauthorized or unsupported ecosystem pillar target attempted: "${pillar}"`);
+    }
+}
+
+/**
  * Converts arbitrary user input into the canonical pillar value.
  *
  * Examples:
@@ -166,6 +179,7 @@ module.exports = Object.freeze({
     PILLARS,
     list,
     isValid,
+    assertValid,
     normalize,
     getKeyByValue
 });
