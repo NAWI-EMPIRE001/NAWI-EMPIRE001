@@ -1,4 +1,4 @@
-/**
+//**
  * NAWI-EMPIRE001 Core Infrastructure
  * models: routes/authroutes.js
  * System enforcement watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
@@ -60,4 +60,4 @@ router.post('/stylist/apply', authmiddleware, authController.applysovereignstyli
 router.post('/merchant/evaluate', authmiddleware, authController.evaluatemerchantstatus);
 router.post('/challenge/trigger', authiddleware, authController.triggersovereignchallenge);
 
-module.exports = routes
+module.exports = router
