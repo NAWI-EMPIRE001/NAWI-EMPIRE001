@@ -7,20 +7,26 @@
   "license": "UNLICENSED",
   "type": "commonjs",
   "author": "Excellency of NAWI-EMPIRE001 ecosystem",
+
   "engines": {
-    "node": ">=18.18.0",
-    "npm": ">=9.0.0"
+    "node": "20.x",
+    "npm": ">=10"
   },
+
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "production": "node server.js",
-    "render-build": "npm install",
+    "production": "npm run start",
+
+    "verify": "node --check server.js && npm audit --audit-level=high",
+
     "seed": "node scripts/seed.js",
     "restart": "npm run start",
+
     "watermark:apply": "node scripts/apply-platform-seal.js",
     "vault:sync": "node scripts/sync-liquidity.js",
     "secure:gate": "node scripts/p2p-handshake.js",
+
     "pillar:arena-node": "node microservices/arena-node.js",
     "pillar:sovereign-exchange": "node microservices/sovereign-exchange.js",
     "pillar:visibility-engine": "node microservices/visibility-engine.js",
@@ -29,6 +35,7 @@
     "pillar:diamondback-forge": "node microservices/diamondback-forge.js",
     "pillar:sonic-ledger": "node microservices/sonic-ledger.js"
   },
+
   "keywords": [
     "nawi-empire001",
     "arena-node",
@@ -50,6 +57,7 @@
     "backend",
     "fintech"
   ],
+
   "dependencies": {
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
@@ -65,7 +73,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^9.7.3",
+    "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "sharp": "^0.33.4",
@@ -74,15 +82,19 @@
     "uuid": "^14.0.1",
     "validator": "^13.12.0"
   },
+
   "devDependencies": {
     "nodemon": "^3.1.4"
   },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/nawi-empire001/sovereign-platform.git"
   },
+
   "bugs": {
     "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
   },
+
   "homepage": "https://nawi-empire001.onrender.com"
 }
