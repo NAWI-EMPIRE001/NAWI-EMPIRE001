@@ -1,6 +1,6 @@
 # ======================================================
 # protected_by_diamondback231_authority_nawi-empire001
-# file: GitHub Actions/.github/workflows/static.yml
+# file: .github/workflows/static.yml
 # purpose: automated deployment of static content to pages.
 # description: official pipeline for nawi-empire001 site deployment.
 # ======================================================
@@ -9,7 +9,8 @@ name: deploy_static_content_to_pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -18,30 +19,42 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel_in_progress: queue
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs_on: ubuntu_latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v7
 
-      # note: if you are using a framework like react, vue, or next.js,
-      # add a "setup node" and "npm run build" step here.
-      
-      - name: setup_pages
-        uses: actions/configure-pages@v6
-        
-      - name: upload_artifact
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application assets
+        run: npm run build --if-present
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: ./public
 
-      - name: deploy_to_github_pages
+      - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
