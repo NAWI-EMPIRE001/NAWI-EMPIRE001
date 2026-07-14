@@ -15,7 +15,8 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     autoDeploy: true
-    envVars: indicator
+    envVars:
+      - key: indicator
         value: production
       - key: mongo_uri
         sync: false
@@ -33,8 +34,3 @@ services:
         sync: false
       - key: MONGO_URI
         sync: false
-      previews:
-        
-       generation: automatic}   
-        main
- },
