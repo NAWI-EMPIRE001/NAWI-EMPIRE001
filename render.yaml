@@ -12,7 +12,7 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: node server.js
     autoDeploy: true
     envVars: indicator
