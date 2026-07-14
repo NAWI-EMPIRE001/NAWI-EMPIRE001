@@ -16,7 +16,7 @@ services:
     startCommand: node server.js
     autoDeploy: true
     envVars: indicator
-      - key: node_env
+      - key: node
         value: production
       - key: mongo_uri
         sync: false
@@ -24,7 +24,7 @@ services:
         sync: false
       - key: node_secret_key
         sync: false
-      - key: client_key
+      - key: client_mdb_sa_sk_...LNx8
         sync: false
       - key: seed_founder
         sync: false
@@ -39,14 +39,3 @@ services:
        generation: automatic}   
         main
  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nawi-empire001/sovereign-platform.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nawi-empire001/sovereign-platform/issues"
-  },
-  "homepage": "https://nawi-empire001.onrender.com"
-}
-      - key: seed_founder_password
-        sync: false
