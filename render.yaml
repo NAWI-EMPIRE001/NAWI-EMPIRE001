@@ -15,7 +15,7 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     autoDeploy: true
-    envVars:
+    envVars: indicator
       - key: node_env
         value: production
       - key: mongo_uri
