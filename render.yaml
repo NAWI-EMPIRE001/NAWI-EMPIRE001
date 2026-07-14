@@ -16,7 +16,6 @@ services:
     startCommand: node server.js
     autoDeploy: true
     envVars: indicator
-      - key: node
         value: production
       - key: mongo_uri
         sync: false
