@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * Module: routes/authRoutes.js
+ * models: routes/authRoutes.js
  * System Enforcement Watermark Code:
  * PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  *
