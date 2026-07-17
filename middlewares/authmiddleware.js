@@ -1,6 +1,6 @@
 /**
  * NAWI-EMPIRE001 Core Infrastructure
- * models:middleware/authMiddleware.js
+ * models:middleware/authmiddleware.js
  * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
  * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
  * Description: Unified Elite Gateway managing Token Verification, 7 Pillars Gates, and Tier Rank Access.
@@ -39,7 +39,7 @@ const ALLOWED_PILLARS = Object.freeze({
  * 1. CORE AUTHENTICATION GATEWAY (Protects Private Routes)
  * ==========================================================
  */
-const authMiddleware = async (req, res, next) => {
+const authmiddleware = async (req, res, next) => {
     try {
         let token;
         const authHeader = req.headers.authorization;
@@ -139,7 +139,7 @@ const authMiddleware = async (req, res, next) => {
  * 2. SEVEN PILLARS INTERACTIVE LAYOUT CONTROL
  * ==========================================================
  */
-authMiddleware.authorizePillar = (pillarName) => {
+authmiddleware.authorizePillar = (pillarName) => {
     return async (req, res, next) => {
         try {
             const pillar = String(pillarName || '').trim().toUpperCase();
@@ -172,7 +172,7 @@ authMiddleware.authorizePillar = (pillarName) => {
  * 3. TIER VERIFICATION LEVEL ENFORCER
  * ==========================================================
  */
-authMiddleware.requireVerification = (minimumLevel = 1) => {
+authmiddleware.requireVerification = (minimumLevel = 1) => {
     return (req, res, next) => {
         const tier = Number(req.tier || 1);
 
@@ -191,7 +191,7 @@ authMiddleware.requireVerification = (minimumLevel = 1) => {
  * 4. TIER 2 VERIFIED MERCHANT GUARD
  * ==========================================================
  */
-authMiddleware.requireMerchant = (req, res, next) => {
+authmiddleware.requireMerchant = (req, res, next) => {
     const merchant =
         req.role === 'merchant' ||
         req.role === 'sovereign' ||
@@ -211,7 +211,7 @@ authMiddleware.requireMerchant = (req, res, next) => {
  * 5. FOUNDER & ADMINISTRATOR COMMAND AUTHORITY
  * ==========================================================
  */
-authMiddleware.requireAdmin = (req, res, next) => {
+authmiddleware.requireAdmin = (req, res, next) => {
     const admin = req.role === 'admin' || req.role === 'sovereign';
 
     if (!admin) {
@@ -228,7 +228,7 @@ authMiddleware.requireAdmin = (req, res, next) => {
  * 6. ESCROW SHIELD VALUE PROTECTION
  * ==========================================================
  */
-authMiddleware.requireEscrowAccess = (req, res, next) => {
+authmiddleware.requireEscrowAccess = (req, res, next) => {
     if (BLOCKED_ACCOUNT_STATUSES.includes(req.user?.accountStatus)) {
         return res.status(403).json({
             success: false,
@@ -243,7 +243,7 @@ authMiddleware.requireEscrowAccess = (req, res, next) => {
  * 7. VISIBILITY ENGINE PRIVILEGES SHIELD
  * ==========================================================
  */
-authMiddleware.requireAdvertisingAccess = (req, res, next) => {
+authmiddleware.requireAdvertisingAccess = (req, res, next) => {
     if (Number(req.user?.security?.compliance_violations || 0) > 5) {
         return res.status(403).json({
             success: false,
@@ -258,7 +258,7 @@ authMiddleware.requireAdvertisingAccess = (req, res, next) => {
  * 8. DIAMONDBACK FORGE CREATOR ACCESS
  * ==========================================================
  */
-authMiddleware.requireCreatorAccess = (req, res, next) => {
+authmiddleware.requireCreatorAccess = (req, res, next) => {
     if (BLOCKED_ACCOUNT_STATUSES.includes(req.user?.accountStatus)) {
         return res.status(403).json({
             success: false,
@@ -268,7 +268,7 @@ authMiddleware.requireCreatorAccess = (req, res, next) => {
     next();
 };
 
-authMiddleware.BLOCKED_ACCOUNT_STATUSES = BLOCKED_ACCOUNT_STATUSES;
-authMiddleware.ALLOWED_PILLARS = ALLOWED_PILLARS;
+authmiddleware.BLOCKED_ACCOUNT_STATUSES = BLOCKED_ACCOUNT_STATUSES;
+authmiddleware.ALLOWED_PILLARS = ALLOWED_PILLARS;
 
-module.exports = authMiddleware;
+module.exports = authmiddleware;
