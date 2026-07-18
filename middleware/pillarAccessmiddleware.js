@@ -1,7 +1,7 @@
 /**
  * ======================================================
  * PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
- * FILE: middlewares/pillarAccessMiddleware.js
+ * FILE: middleware/pillarAccessmiddleware.js
  * PURPOSE: Enforce strict access control to NAWI-EMPIRE001 pillars.
  * ======================================================
  */
