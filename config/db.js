@@ -1,253 +1,260 @@
 /**
+ * ==========================================================
  * NAWI-EMPIRE001 Core Infrastructure
- * models: config/db.js
- * System Enforcement Watermark Code: PROTECTED_BY_DIAMONDBACK231_AUTHORITY
- * Funder Matrix: Excellency of NAWI-EMPIRE001 Ecosystem
- * Description: Permanently frozen enterprise database engine using Mongoose.
- * Features asynchronous singleton execution, event loop timer protection, randomized 
- * retry backoff jitter, idempotent cleanup logic, and frozen metric tracking.
+ * FILE: config/db.js
+ * SYSTEM AUTHORITY:
+ * PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
+ * Funder Matrix: Excellency of NAWI-EMPIRE001 ecosystem the city of multipillars that produce all what I need and The 7 Core Architectural Pillars.
+ * ==========================================================
  */
+const mongoose = require("mongoose");
+const { ServerApiVersion } = require("mongodb");
 
-const mongoose = require('mongoose');
-const { ServerApiVersion } = require('mongodb');
+// ======================================================
+// LOGGER
+// ======================================================
+const logger = {
+    info(message, meta = {}) {
+        console.log(JSON.stringify({ level: "INFO", timestamp: new Date().toISOString(), message, ...meta }));
+    },
+    warn(message, meta = {}) {
+        console.warn(JSON.stringify({ level: "WARN", timestamp: new Date().toISOString(), message, ...meta }));
+    },
+    error(message, meta = {}) {
+        console.error(JSON.stringify({ level: "ERROR", timestamp: new Date().toISOString(), message, ...meta }));
+    }
+};
 
-// Immutable system connection state mapping lookup
-const CONNECTION_STATES = Object.freeze({
+// ======================================================
+// STATE
+// ======================================================
+let connectionPromise = null;
+let connectedAt = null;
+let isShuttingDown = false;
+
+const STATES = {
     0: "disconnected",
     1: "connected",
     2: "connecting",
     3: "disconnecting"
-});
+};
 
-// Centralized allocation constants and structural arrays
-const HANDSHAKE_TIMEOUT_MS = 15000;
-
-const TRANSIENT_ERRORS = Object.freeze([
+const TRANSIENT_ERRORS = new Set([
     "MongoNetworkError",
     "MongoNetworkTimeoutError",
     "MongoServerSelectionError",
-    "ECONNRESET",
-    "ETIMEDOUT",
-    "ECONNREFUSED",
-    "EHOSTUNREACH",
-    "EAI_AGAIN",
-    "ENOTFOUND"
+    "MongooseServerSelectionError",
+    "MongoTopologyClosedError",
+    "MongoNotConnectedError",
+    "MongoConnectionPoolClearedError"
 ]);
 
-// Immutable production option parameters object optimized for Render containers
-const CONNECTION_OPTIONS = Object.freeze({
-    maxPoolSize: 20,                 // Upper boundary for concurrent execution channels
-    minPoolSize: 5,                  // Cold warm sockets maintained for rapid request handling
-    maxConnecting: 2,                // Prevents socket connection storms during massive traffic bursts
-    serverSelectionTimeoutMS: 10000, // Aborts cluster node search fast during shard migrations
-    socketTimeoutMS: 45000,          // Shuts down unoptimized long-running query operations
-    connectTimeoutMS: 10000,         // Halts cold database handshakes during network drops
-    heartbeatFrequencyMS: 10000,     // Periodically pings nodes to check driver connection health
-    family: 4,                       // Explicitly forces IPv4 routing to eliminate local loop delays
-    appName: "NAWI-EMPIRE001-CORE",   // Exposes clean metadata markers within MongoDB Atlas graphs
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true      // Signals driver deprecations immediately during early tests
-    }
-});
+// ======================================================
+// HELPERS
+// ======================================================
+function getDatabaseState() {
+    return STATES[mongoose.connection.readyState] || "unknown";
+}
 
-// Isolated, single-file module execution tracking states
-let listenersRegistered = false;
-let connectionPromise = null;
-let lastConnectionDuration = 0;
-
-/**
- * Attaches operational system log listeners to the Mongoose connection stream exactly once.
- */
-const registerLifecycleListeners = () => {
-    if (listenersRegistered) return;
-    listenersRegistered = true;
-
-    mongoose.connection.on("connected", () => {
-        console.log("Orchestration Hub: 🟢 Database connection stream successfully stabilized.");
-    });
-
-    mongoose.connection.on("error", (err) => {
-        console.error("Orchestration Hub Exception: ❌ Mongoose connection pool error:", {
-            message: err.message,
-            database: mongoose.connection.name,
-            timestamp: new Date().toISOString()
-        });
-    });
-
-    mongoose.connection.on("disconnected", () => {
-        console.warn("Orchestration Hub Alert: ⚠️ System detached from MongoDB cluster stream path.");
-    });
-
-    mongoose.connection.on("reconnected", () => {
-        console.log("Orchestration Hub Recovery: 🟢 Database connection successfully re-anchored to cluster.");
-    });
-};
-
-/**
- * Returns a descriptive string representation of the active Mongoose state.
- * @returns {string} Explicit state label
- */
-const getDatabaseState = () => {
-    return CONNECTION_STATES[mongoose.connection.readyState] || "unknown";
-};
-
-/**
- * Evaluates whether the connection pool is operational.
- * @returns {boolean} True if state is connected
- */
-const isDatabaseReady = () => {
+function isDatabaseReady() {
     return mongoose.connection.readyState === 1;
-};
+}
 
-/**
- * Fetches the duration of the last successful cluster connection sequence.
- * @returns {number} Time in milliseconds
- */
-const getConnectionDuration = () => {
-    return lastConnectionDuration;
-};
-
-/**
- * Aggregates complete connection telemetry into a frozen, immutable object.
- * @returns {Readonly<{state: string, host: (string|null), name: (string|null), port: (number|null), readyState: number, latencyMs: number}>}
- */
-const getDatabaseInfo = () => {
-    return Object.freeze({
+function getDatabaseInfo() {
+    return {
         state: getDatabaseState(),
         host: mongoose.connection.host || null,
         name: mongoose.connection.name || null,
         port: mongoose.connection.port || null,
         readyState: mongoose.connection.readyState,
-        latencyMs: lastConnectionDuration
-    });
-};
+        connectedAt,
+        uptimeSeconds: connectedAt ? Math.floor((Date.now() - new Date(connectedAt).getTime()) / 1000) : null
+    };
+}
 
-/**
- * Establishes a highly resilient connection to the database cluster via a singleton pattern.
- * @param {number} maxRetries - Upper execution boundaries specifying backoff limits.
- * @returns {Promise<Object>} Active, verified Mongoose connection instance.
- */
-const connectDB = async (maxRetries = 3) => {
-    // 🛡️ REUSE GUARD: Instantly return connection context if already established
+function getPoolMetrics() {
+    return {
+        readyState: mongoose.connection.readyState,
+        host: mongoose.connection.host,
+        name: mongoose.connection.name,
+        port: mongoose.connection.port
+    };
+}
+
+// ======================================================
+// LISTENERS
+// ======================================================
+function registerListeners() {
+    mongoose.connection.removeAllListeners();
+
+    mongoose.connection.on("connected", () => {
+        connectedAt = new Date().toISOString();
+        logger.info("MongoDB connected");
+    });
+    
+    mongoose.connection.on("disconnected", () => {
+        connectedAt = null;
+        logger.warn("MongoDB disconnected");
+    });
+    
+    mongoose.connection.on("reconnected", () => {
+        logger.info("MongoDB reconnected");
+    });
+    
+    mongoose.connection.on("error", error => {
+        logger.error("MongoDB error", { error: error.message });
+    });
+
+    mongoose.connection.on("close", () => {
+        logger.info("MongoDB connection permanently closed");
+    });
+}
+
+// ======================================================
+// CONNECT
+// ======================================================
+async function connectDB(maxRetries = 5) {
     if (mongoose.connection.readyState === 1) {
         return mongoose.connection;
     }
-
-    // 🛡️ SINGLETON GUARD: If connection handshake is active, return the existing thread
+    
     if (connectionPromise) {
         return connectionPromise;
     }
-
-    const dbUri = process.env.MONGO_URI;
-    if (!dbUri) {
-        throw new Error('Database Infrastructure Exception: Critical MONGO_URI environment declaration is missing.');
+    
+    const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    if (!uri) {
+        throw new Error("MongoDB connection string missing.");
     }
-
-    // Set engine defaults before opening communication ports
-    mongoose.set("bufferCommands", false); // Fail queries instantly during outages to prevent RAM exhaustion
+    
+    if (!uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://")) {
+        throw new Error("Invalid MongoDB URI format");
+    }
+    
     mongoose.set("strictQuery", true);
     mongoose.set("autoIndex", process.env.NODE_ENV !== "production");
-    mongoose.set("autoCreate", process.env.NODE_ENV !== "production");
-
-    registerLifecycleListeners();
-
-    // Assign connection flow cleanly to the singleton holder
+    
+    registerListeners();
+    isShuttingDown = false;
+    
     connectionPromise = (async () => {
-        let currentAttempt = 1;
-
-        while (currentAttempt <= maxRetries) {
-            let timeoutId = null;
-
+        let attempt = 1;
+        while (attempt <= maxRetries && !isShuttingDown) {
             try {
-                const startTime = Date.now();
-                
-                // 🛡️ TIMEOUT GUARD: Initialize a race tracker to halt hanging connection sequences
-                const connectionTimeoutPromise = new Promise((_, reject) => {
-                    timeoutId = setTimeout(() => {
-                        reject(new Error("MongoServerSelectionError: Initial driver handshake timeout exceeded."));
-                    }, HANDSHAKE_TIMEOUT_MS);
+                const connection = await mongoose.connect(uri, {
+                    maxPoolSize: 50,
+                    minPoolSize: 5,
+                    serverSelectionTimeoutMS: 10000,
+                    socketTimeoutMS: 45000,
+                    connectTimeoutMS: 15000,
+                    heartbeatFrequencyMS: 10000,
+                    minHeartbeatFrequencyMS: 1000,
+                    compressors: ["zlib"],
+                    retryWrites: true,
+                    w: "majority",
+                    family: 4,
+                    serverApi: {
+                        version: ServerApiVersion.v1,
+                        strict: true,
+                        deprecationErrors: true
+                    }
                 });
-
-                await Promise.race([
-                    mongoose.connect(dbUri, CONNECTION_OPTIONS),
-                    connectionTimeoutPromise
-                ]);
                 
-                lastConnectionDuration = Date.now() - startTime;
-                console.log(`Orchestration Hub: 🟢 Database pool mounted in ${lastConnectionDuration}ms.`);
-                console.table(getDatabaseInfo());
+                logger.info("MongoDB connection established", {
+                    host: mongoose.connection.host,
+                    database: mongoose.connection.name,
+                    attempt
+                });
                 
-                return mongoose.connection;
+                return connection;
             } catch (error) {
-                // 🛡️ TRANSIENT FAILURE SCANNER: Verify error against frozen network token rules
-                const isTransient = TRANSIENT_ERRORS.some(token => 
-                    error.name === token || error.message.includes(token) || (error.code && error.code === token)
-                );
+                if (isShuttingDown) {
+                    logger.warn("MongoDB connection aborted due to shutdown signal.");
+                    throw new Error("Connection aborted");
+                }
 
+                const isTransient = TRANSIENT_ERRORS.has(error.name);
+                
                 if (!isTransient) {
-                    console.error("Orchestration Hub: 🚨 Critical non-transient error intercepted. Terminating backoff loop immediately.");
+                    logger.error("Non-transient MongoDB error", {
+                        error: error.message,
+                        type: error.name
+                    });
                     throw error;
                 }
-
-                console.error(`Orchestration Hub: ❌ Transient database failure on attempt ${currentAttempt}/${maxRetries}:`, error.message);
                 
-                if (currentAttempt === maxRetries) {
-                    console.error('Orchestration Hub: 🚨 Maximum connection loops breached. Propagating exception context.');
-                    throw error; // Yield process control safely up to server.js
+                if (attempt >= maxRetries) {
+                    logger.error("Maximum MongoDB retries exceeded", {
+                        attempts: attempt,
+                        error: error.message
+                    });
+                    throw error;
                 }
-
-                // 🛡️ RETRY JITTER OPTIMIZATION: Compute randomized backoff offset to prevent thundering herd spikes
-                const randomJitter = Math.floor(Math.random() * 500);
-                const backoffTime = (Math.pow(2, currentAttempt) * 1000) + randomJitter;
-                console.warn(`Orchestration Hub: ⏳ Re-attempting cluster discovery channel in ${backoffTime / 1000} seconds (including ${randomJitter}ms jitter)...`);
                 
-                await new Promise((resolve) => setTimeout(resolve, backoffTime));
-                currentAttempt++;
-            } finally {
-                // 🛡️ EVENT LOOP CLEANUP: Clear timeout handle cleanly to release memory slots immediately
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                }
+                const jitter = Math.floor(Math.random() * 500);
+                const delay = Math.pow(2, attempt) * 1000 + jitter;
+                
+                logger.warn(`Retrying MongoDB in ${delay}ms`, { attempt });
+                
+                // Hardened, unref'd sleep implementation
+                await new Promise((resolve, reject) => {
+                    let timeoutId;
+                    const intervalId = setInterval(() => {
+                        if (isShuttingDown) {
+                            clearInterval(intervalId);
+                            clearTimeout(timeoutId);
+                            reject(new Error("Retry cancelled by shutdown signal"));
+                        }
+                    }, 100);
+                    intervalId.unref(); // Ensure it doesn't block process exit
+                    
+                    timeoutId = setTimeout(() => {
+                        clearInterval(intervalId);
+                        resolve();
+                    }, delay);
+                    timeoutId.unref(); // Ensure it doesn't block process exit
+                }).catch(e => {
+                    if (isShuttingDown) return;
+                    throw e;
+                });
+                
+                attempt++;
             }
         }
     })();
-
+    
     try {
         return await connectionPromise;
     } finally {
-        // 🛡 *UNIVERSAL RESYNC GUARD: Relinquish promise handler context on completion
         connectionPromise = null;
     }
-};
+}
 
-/**
- * Gracefully flushes and closes the database connection pool.
- * Centralizes lifecycle management and cleans module states for subsequent initializations.
- * @returns {Promise<void>}
- */
-const closeDB = async () => {
-    // 🛡️ IDEMPOTENCY GUARD: Terminate early without running execution operations if already detached
+// ======================================================
+// CLOSE
+// ======================================================
+async function closeDB() {
+    isShuttingDown = true;
     if (mongoose.connection.readyState === 0) {
-        connectionPromise = null;
         return;
     }
-
-    console.warn("Orchestration Hub: 🔌 Initiating safe closure of Mongoose database connections...");
+    logger.warn("Closing MongoDB connection");
     try {
         await mongoose.connection.close(false);
-        console.log("Orchestration Hub: 🟢 Database connection pool gracefully dissolved.");
+        logger.info("MongoDB connection closed gracefully");
     } finally {
         connectionPromise = null;
     }
-};
+}
 
+// ======================================================
+// EXPORTS
+// ======================================================
 module.exports = {
     connectDB,
     closeDB,
     getDatabaseState,
-    isDatabaseReady,
-    getConnectionDuration,
-    getDatabaseInfo
+    getDatabaseInfo,
+    getPoolMetrics,
+    isDatabaseReady
 };

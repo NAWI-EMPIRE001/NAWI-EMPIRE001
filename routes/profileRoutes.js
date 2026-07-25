@@ -2,8 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 
-const authMiddleware =
-    require('../middleware/authMiddleware');
+const authmiddleware =
+    require('../middleware/authmiddleware');
 
 const authController =
     require('../controllers/authController');
@@ -16,37 +16,37 @@ const authController =
 
 router.get(
     '/',
-    authMiddleware,
+    authmiddleware,
     authController.getProfile
 );
 
 router.put(
     '/update',
-    authMiddleware,
+    authmiddleware,
     authController.updateProfile
 );
 
 router.get(
     '/dashboard',
-    authMiddleware,
+    authmiddleware,
     authController.getProfileDashboard
 );
 
 router.put(
     '/theme',
-    authMiddleware,
+    authmiddleware,
     authController.updateTheme
 );
 
 router.post(
     '/merchant-evaluation',
-    authMiddleware,
+    authmiddleware,
     authController.evaluateMerchantStatus
 );
 
 router.post(
     '/business-verification',
-    authMiddleware,
+    authmiddleware,
     authController.submitBusinessVerification
 );
 
@@ -65,4 +65,4 @@ router.post(
     authController.resetPassword
 );
 
-models.exports = router;
+module.exports = router;

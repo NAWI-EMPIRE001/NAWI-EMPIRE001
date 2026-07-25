@@ -1,21 +1,13 @@
 # ======================================================
 # PROTECTED_BY_DIAMONDBACK231_AUTHORITY_NAWI-EMPIRE001
-# FILE: .github/funding.yml
-# PURPOSE: canonical funding model registry.
-# DESCRIPTION: provides the official sponsorship channels 
-# for the nawi-empire001 ecosystem.
+# FILE: .github/FUNDING.yml
+# PURPOSE: Canonical funding model registry.
 # ======================================================
 
-github: []
+github: nawi-empire001
 patreon: nawi-empire001
 open_collective: nawi-empire001
 ko_fi: nawi-empire001
-tidelift: null
-community_bridge: null
 liberapay: nawi-empire001
-issuehunt: null
-lfx_crowdfunding: null
 polar: nawi-empire001
 buy_me_a_coffee: nawi-empire001
-thanks_dev: null
-custom: []
