@@ -24,7 +24,7 @@ services:
         sync: false
       - key: node_secret_key
         sync: false
-      - key: client_mdb_sa_sk_...LNx8
+      - key: client_
         sync: false
       - key: seed_founder
         sync: false
